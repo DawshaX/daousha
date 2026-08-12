@@ -175,6 +175,14 @@ export async function createChangeLogEntry(input: typeof systemChangeLog.$inferI
   return (await db!.select().from(systemChangeLog).where(eq(systemChangeLog.id, id)).limit(1))[0];
 }
 
+export async function recordAnalyticsSnapshot(input: typeof analyticsSnapshots.$inferInsert) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(analyticsSnapshots).values(input);
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(analyticsSnapshots).where(eq(analyticsSnapshots.id, id)).limit(1))[0];
+}
+
 export async function getDashboardData(ownerId: number) {
   const db = await getDb();
   if (!db) databaseUnavailable();

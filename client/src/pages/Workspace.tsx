@@ -46,6 +46,7 @@ import SourceRegistry from "@/components/SourceRegistry";
 import VisualForge from "@/components/VisualForge";
 import ScheduleDeck from "@/components/ScheduleDeck";
 import ChangeLogPanel from "@/components/ChangeLogPanel";
+import AnalyticsBridge from "@/components/AnalyticsBridge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -419,6 +420,7 @@ function Insights() {
     <Frame section="insights">
       <section className="grid gap-4 md:grid-cols-3"><MetricCard label="المشاهدات" value="0" description="بعد ربط القنوات الرسمية" icon={Play} /><MetricCard label="الاحتفاظ" value="—" description="لا توجد فيديوهات منشورة" icon={TrendingUp} /><MetricCard label="التفاعل" value="—" description="لا توجد بيانات متاحة" icon={CheckCheck} /></section>
       <Card className="mt-5 border-white/8 bg-zinc-950/60"><CardHeader><CardTitle className="text-white">سجل الأداء</CardTitle><CardDescription className="mt-2 text-zinc-500">المخطط ينتظر أول بيانات موثقة من الحسابات المربوطة.</CardDescription></CardHeader><CardContent><div className="relative flex h-72 items-end gap-3 overflow-hidden rounded-xl border border-white/7 bg-[linear-gradient(180deg,rgba(239,68,68,.04),transparent_65%),repeating-linear-gradient(0deg,transparent,transparent_47px,rgba(255,255,255,.04)_48px)] px-8 pb-9"><div className="absolute inset-x-8 bottom-9 border-t border-dashed border-zinc-700" />{Array.from({ length: 8 }).map((_, i) => <div key={i} className="relative z-10 flex flex-1 flex-col items-center gap-2"><div className="w-full rounded-t bg-zinc-800/80" style={{ height: `${18 + (i % 3) * 7}px` }} /><span className="text-[10px] text-zinc-600">—</span></div>)}</div></CardContent></Card>
+      <AnalyticsBridge />
     </Frame>
   );
 }
@@ -441,6 +443,7 @@ function Settings() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {[["القنوات الرسمية", "اربط YouTube أو TikTok أو Instagram من الواجهات الرسمية عند الجاهزية.", Globe2],["التخزين السحابي", "ملفات المشاريع والمواد تبقى منظمة في تخزين آمن مع بياناتها الوصفية.", UploadCloud],["التنبيهات", "استلم تنبيهًا عند تعثر مهمة أو وصول فيديو لبوابة المراجعة.", BellRing]].map(([title, detail, Icon]) => { const ItemIcon = Icon as React.ElementType; return <Card key={String(title)} className="border-white/8 bg-zinc-950/60"><CardHeader><ItemIcon className="h-6 w-6 text-red-400" /><CardTitle className="mt-5 text-white">{title as string}</CardTitle></CardHeader><CardContent><p className="text-sm leading-6 text-zinc-500">{detail as string}</p><Button variant="outline" className="mt-5 w-full border-white/10 bg-white/[0.03] text-zinc-300 hover:bg-white/[0.08] hover:text-white" onClick={() => toast("يحتاج هذا الربط إلى موافقتك وبيانات الوصول الخاصة بك.")}>تهيئة الربط</Button></CardContent></Card>})}
       </section>
+      <Card className="border-red-500/18 bg-zinc-950/60"><CardHeader><CardTitle className="text-white">دورة التحديث والنشر</CardTitle></CardHeader><CardContent className="grid gap-3 text-sm leading-7 text-zinc-400 md:grid-cols-2"><p><b className="text-red-300">تحديث فوري:</b> إضافة مشروع أو مادة أو مصدر أو تعديل إعداد موجود يظهر فور الحفظ داخل النسخة المنشورة.</p><p><b className="text-red-300">إصدار جديد:</b> تغيير واجهة دعوشة أو الكود أو إضافة قدرة جديدة يتطلب حفظ نسخة جديدة ثم الضغط على Publish لنقلها للموقع العام.</p></CardContent></Card>
     </Frame>
   );
 }

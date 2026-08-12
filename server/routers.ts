@@ -103,6 +103,9 @@ export const appRouter = router({
       .input(z.object({ projectId: z.number().int().positive(), platform: z.string().trim().min(2).max(80), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
       .mutation(({ ctx, input }) => db.createSchedule({ ownerId: ctx.user.id, ...input, status: "draft" })),
     changeLog: protectedProcedure.query(({ ctx }) => db.listChangeLog(ctx.user.id)),
+    recordAnalytics: protectedProcedure
+      .input(z.object({ projectId: z.number().int().positive().optional(), platform: z.string().trim().min(2).max(80), views: z.number().int().min(0), engagements: z.number().int().min(0), retentionRate: z.number().int().min(0).max(100) }))
+      .mutation(({ ctx, input }) => db.recordAnalyticsSnapshot({ ownerId: ctx.user.id, ...input })),
   }),
 });
 
