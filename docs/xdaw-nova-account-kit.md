@@ -15,17 +15,17 @@
 
 **Arabic**
 
-> إكس داو نوفا | أفكار نافعة، قصص قوية، ومعرفة تتحرك للأمام. محتوى أصلي بالعربية والإنجليزية، يُصنع بعقل ومسؤولية.
+> إكس داو نوفا | نور ومعرفة ورحمة في حركة. محتوى أصلي بالعربية والإنجليزية، يُصنع بقوة مسؤولة وقيمة نافعة للناس.
 
 **English**
 
-> XDAW NOVA | Useful ideas, powerful stories, and knowledge in motion. Original Arabic and English content, made with intent and responsibility.
+> XDAW NOVA | Light, knowledge, and compassion in motion. Original Arabic and English content, made with responsible strength and useful intent.
 
 ## وصف القناة الموسّع
 
-XDAW NOVA is a bilingual content universe for useful ideas, strong stories, practical knowledge, and positive entertainment. We explore topics with curiosity, create original short-form and long-form videos, and keep one rule at the center: value before noise.
+XDAW NOVA is a bilingual, global content universe for light, practical knowledge, powerful stories, and positive entertainment. We explore with curiosity, create original short-form and long-form videos, and keep one rule at the center: value before noise, strength with responsibility, and compassion without weakness.
 
-إكس داو نوفا مساحة محتوى ثنائية اللغة للأفكار النافعة والقصص القوية والمعرفة العملية والترفيه الإيجابي. نصنع فيديوهات أصلية قصيرة وطويلة، ونضع قاعدة واحدة في المقدمة: قيمة قبل الضجيج.
+إكس داو نوفا مساحة محتوى عالمية ثنائية اللغة للنور والمعرفة العملية والقصص القوية والترفيه الإيجابي. نصنع فيديوهات أصلية قصيرة وطويلة، ونضع قاعدة واحدة في المقدمة: قيمة قبل الضجيج، وقوة مسؤولة ورحمة نافعة للناس.
 
 ## حزم هاشتاغات أولية
 
