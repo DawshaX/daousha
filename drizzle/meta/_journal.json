@@ -1,5 +1,27 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1786564970884,
+      "tag": "0000_windy_the_captain",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1786565607478,
+      "tag": "0001_same_changeling",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786565728930,
+      "tag": "0002_chief_moonstone",
+      "breakpoints": true
+    }
+  ]
 }
