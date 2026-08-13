@@ -53,6 +53,8 @@ export const videoProjects = mysqlTable("video_projects", {
   scriptArabic: text("scriptArabic"),
   scriptEnglish: text("scriptEnglish"),
   humanApprovedAt: timestamp("humanApprovedAt"),
+  previewAcknowledgedAt: timestamp("previewAcknowledgedAt"),
+  previewAcknowledgedBy: int("previewAcknowledgedBy"),
   scheduledAt: timestamp("scheduledAt"),
   publishedAt: timestamp("publishedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

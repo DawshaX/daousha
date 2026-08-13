@@ -36,6 +36,13 @@
       "when": 1786603682698,
       "tag": "0004_unique_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1786625951832,
+      "tag": "0005_lush_raider",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ export type PublishReadiness = {
   originalContent: boolean;
   rightsClear: boolean;
   safetyClear: boolean;
+  previewAcknowledged: boolean;
   hasPrivateCanary: boolean;
   publicationsInLast24Hours: number;
 };
@@ -37,6 +38,10 @@ export function evaluatePublishGuard(
 
   if (!readiness.originalContent || !readiness.rightsClear || !readiness.safetyClear) {
     return { allowed: false, visibility: "private", reason: "لم تكتمل فحوص الأصالة أو الحقوق أو السلامة." };
+  }
+
+  if (!readiness.previewAcknowledged) {
+    return { allowed: false, visibility: "private", reason: "لم يُسجّل إقرار معاينة النسخة النهائية بعد." };
   }
 
   if (readiness.publicationsInLast24Hours >= policy.maxPublicationsPerDay) {

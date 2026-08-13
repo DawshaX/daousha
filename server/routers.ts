@@ -150,17 +150,49 @@ export const appRouter = router({
       }),
     publishingRuns: protectedProcedure.query(({ ctx }) => db.listPublishingRuns(ctx.user.id)),
     notificationEvents: protectedProcedure.query(({ ctx }) => db.listNotificationEvents(ctx.user.id)),
+    projectVideoAssets: protectedProcedure.query(({ ctx }) => db.listOwnedProjectVideoAssets(ctx.user.id)),
+    linkProjectAsset: protectedProcedure
+      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), clipRole: z.enum(["primary", "broll", "audio", "reference"]).default("primary") }))
+      .mutation(async ({ ctx, input }) => {
+        const link = await db.linkOwnedAssetToProject(ctx.user.id, input.projectId, input.assetId, input.clipRole);
+        if (!link) throw new TRPCError({ code: "NOT_FOUND", message: "لا يمكن ربط مشروع أو مادة غير مملوكة للحساب." });
+        return link;
+      }),
+    acknowledgeProjectPreview: protectedProcedure
+      .input(z.object({ projectId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const project = await db.acknowledgeProjectPreview(ctx.user.id, input.projectId);
+        if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود." });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: "إقرار معاينة الفيديو", details: `تمت معاينة النسخة النهائية للمشروع: ${project.title}`, actorType: "user" });
+        return project;
+      }),
+    preflightVettedYouTubeVideo: protectedProcedure
+      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const [linked, policy, runs] = await Promise.all([db.getOwnedProjectVideoAsset(ctx.user.id, input.projectId, input.assetId), db.getPublishingPolicy(ctx.user.id), db.listPublishingRuns(ctx.user.id)]);
+        if (!linked) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط ملف الفيديو بالمشروع نفسه قبل فحص النشر." });
+        const { project, asset } = linked;
+        const decision = evaluatePublishGuard(policy, {
+          originalContent: /أصلي|original/i.test(asset.licenseType),
+          rightsClear: asset.licenseStatus === "approved",
+          safetyClear: asset.safetyStatus === "clear",
+          previewAcknowledged: Boolean(project.previewAcknowledgedAt),
+          hasPrivateCanary: runs.some(run => run.projectId === project.id && run.platform === "youtube" && run.status === "private_uploaded"),
+          publicationsInLast24Hours: runs.filter(run => run.status === "public_uploaded" && run.createdAt.getTime() >= Date.now() - 24 * 60 * 60 * 1000).length,
+        });
+        return { decision, previewAcknowledgedAt: project.previewAcknowledgedAt };
+      }),
     uploadVettedYouTubeVideo: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), title: z.string().trim().min(3).max(100), description: z.string().trim().min(10).max(5000), tags: z.array(z.string().trim().min(1).max(80)).max(15), confirmPublic: z.boolean().default(false) }))
       .mutation(async ({ ctx, input }) => {
-        const [project, asset, policy, connections, runs] = await Promise.all([
-          db.getOwnedProject(ctx.user.id, input.projectId),
-          db.getOwnedAsset(ctx.user.id, input.assetId),
+        const [linked, policy, connections, runs] = await Promise.all([
+          db.getOwnedProjectVideoAsset(ctx.user.id, input.projectId, input.assetId),
           db.getPublishingPolicy(ctx.user.id),
           db.listChannelConnections(ctx.user.id),
           db.listPublishingRuns(ctx.user.id),
         ]);
-        if (!project || !asset) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع أو ملف الفيديو غير موجود." });
+        if (!linked) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط ملف الفيديو بالمشروع نفسه قبل طلب الرفع." });
+        const { project, asset } = linked;
         const youtube = connections.find(connection => connection.platform === "youtube" && connection.status === "authorized");
         if (!youtube?.credentialCiphertext) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط قناة YouTube رسميًا قبل الرفع." });
         if (!asset.storageKey || asset.assetKind !== "video") throw new TRPCError({ code: "PRECONDITION_FAILED", message: "أضف ملف فيديو محفوظًا في التخزين الآمن أولًا." });
@@ -168,7 +200,7 @@ export const appRouter = router({
         const originalContent = /أصلي|original/i.test(asset.licenseType);
         const hasPrivateCanary = runs.some(run => run.projectId === project.id && run.platform === "youtube" && run.status === "private_uploaded");
         const publicationsInLast24Hours = runs.filter(run => run.status === "public_uploaded" && run.createdAt.getTime() >= Date.now() - 24 * 60 * 60 * 1000).length;
-        const decision = evaluatePublishGuard(policy, { originalContent, rightsClear: asset.licenseStatus === "approved", safetyClear: asset.safetyStatus === "clear", hasPrivateCanary, publicationsInLast24Hours });
+        const decision = evaluatePublishGuard(policy, { originalContent, rightsClear: asset.licenseStatus === "approved", safetyClear: asset.safetyStatus === "clear", previewAcknowledged: Boolean(project.previewAcknowledgedAt), hasPrivateCanary, publicationsInLast24Hours });
         if (!decision.allowed) {
           const blockedRun = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "youtube", status: "blocked", visibility: "private", decisionReason: decision.reason, initiatedBy: "user" });
           return { published: false, requiresPublicConfirmation: false, run: blockedRun, reason: decision.reason };
@@ -176,7 +208,6 @@ export const appRouter = router({
         if (decision.visibility === "public" && !input.confirmPublic) {
           return { published: false, requiresPublicConfirmation: true, reason: "الفيديو جاهز للنشر العام. أرسل التأكيد العام المحدد لتنفيذ الرفع." };
         }
-
         const run = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "youtube", status: "queued", visibility: decision.visibility, decisionReason: decision.reason, initiatedBy: "user" });
         try {
           const uploaded = await uploadVettedVideoToYouTube(youtube, { storageKey: asset.storageKey, title: input.title, description: input.description, tags: input.tags, visibility: decision.visibility });

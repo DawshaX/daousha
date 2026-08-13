@@ -8,6 +8,7 @@ import {
   developmentProposals,
   InsertUser,
   notificationEvents,
+  projectAssets,
   publishingPolicies,
   publishingRuns,
   publishingSchedules,
@@ -17,6 +18,7 @@ import {
   workflowTasks,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
+import { isOwnedLinkedVideo } from "./projectAssetGuard";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -78,6 +80,13 @@ export async function getOwnedProject(ownerId: number, projectId: number) {
   const db = await getDb();
   if (!db) databaseUnavailable();
   return (await db!.select().from(videoProjects).where(and(eq(videoProjects.id, projectId), eq(videoProjects.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function acknowledgeProjectPreview(ownerId: number, projectId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(videoProjects).set({ previewAcknowledgedAt: new Date(), previewAcknowledgedBy: ownerId }).where(and(eq(videoProjects.id, projectId), eq(videoProjects.ownerId, ownerId)));
+  return getOwnedProject(ownerId, projectId);
 }
 
 export async function saveProjectScripts(ownerId: number, projectId: number, scripts: { arabicScript: string; englishScript: string }) {
@@ -252,6 +261,44 @@ export async function getOwnedAsset(ownerId: number, assetId: number) {
   const db = await getDb();
   if (!db) databaseUnavailable();
   return (await db!.select().from(contentAssets).where(and(eq(contentAssets.id, assetId), eq(contentAssets.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function linkOwnedAssetToProject(ownerId: number, projectId: number, assetId: number, clipRole: "primary" | "broll" | "audio" | "reference" = "primary") {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const [project, asset] = await Promise.all([getOwnedProject(ownerId, projectId), getOwnedAsset(ownerId, assetId)]);
+  if (!project || !asset) return undefined;
+  const existing = (await db!.select().from(projectAssets).where(and(eq(projectAssets.projectId, projectId), eq(projectAssets.assetId, assetId))).limit(1))[0];
+  if (existing) return existing;
+  const result = await db!.insert(projectAssets).values({ projectId, assetId, clipRole });
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(projectAssets).where(eq(projectAssets.id, id)).limit(1))[0];
+}
+
+export async function getOwnedProjectVideoAsset(ownerId: number, projectId: number, assetId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const [project, asset, link] = await Promise.all([
+    getOwnedProject(ownerId, projectId),
+    getOwnedAsset(ownerId, assetId),
+    db!.select().from(projectAssets).where(and(eq(projectAssets.projectId, projectId), eq(projectAssets.assetId, assetId))).limit(1),
+  ]);
+  if (!project || !asset || !isOwnedLinkedVideo({ projectId, assetId, assetKind: asset.assetKind, link: link[0] })) return undefined;
+  return { project, asset, link: link[0] };
+}
+
+export async function listOwnedProjectVideoAssets(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const links = await db!.select().from(projectAssets);
+  const [projects, assets] = await Promise.all([listProjects(ownerId), listAssets(ownerId)]);
+  const projectMap = new Map(projects.map(project => [project.id, project]));
+  const assetMap = new Map(assets.filter(asset => asset.assetKind === "video").map(asset => [asset.id, asset]));
+  return links.flatMap(link => {
+    const project = projectMap.get(link.projectId);
+    const asset = assetMap.get(link.assetId);
+    return project && asset ? [{ project, asset, link }] : [];
+  });
 }
 
 export async function markPolicyPublished(ownerId: number) {

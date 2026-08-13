@@ -41,6 +41,7 @@ import { platformReferences, workflowStages } from "@shared/daousha";
 import LaunchConsole from "@/components/LaunchConsole";
 import AssetVault from "@/components/AssetVault";
 import ReviewQueue from "@/components/ReviewQueue";
+import ReviewPublishDesk from "@/components/ReviewPublishDesk";
 import ScriptForge from "@/components/ScriptForge";
 import SourceRegistry from "@/components/SourceRegistry";
 import VisualForge from "@/components/VisualForge";
@@ -383,8 +384,42 @@ function Review() {
           </Card>
         ))}
       </section>
+      <PublishPreviewGate />
+      <ReviewPublishDesk />
       <ReviewQueue />
     </Frame>
+  );
+}
+
+function PublishPreviewGate() {
+  const { data: projectVideoAssets } = trpc.daousha.projectVideoAssets.useQuery();
+  const pair = projectVideoAssets?.find(item => item.project.status !== "published") ?? projectVideoAssets?.[0];
+  const videoAsset = pair?.asset;
+  const project = pair?.project;
+  const utils = trpc.useUtils();
+  const acknowledgePreview = trpc.daousha.acknowledgeProjectPreview.useMutation({
+    onSuccess: () => { toast.success("تم حفظ إقرار معاينة الفيديو في سجل المشروع."); utils.daousha.projectVideoAssets.invalidate(); },
+    onError: error => toast.error(error.message),
+  });
+  const previewAcknowledged = Boolean(project?.previewAcknowledgedAt);
+
+  return (
+    <Card className="overflow-hidden border-red-500/20 bg-[linear-gradient(145deg,rgba(69,10,10,.22),rgba(9,9,11,.88))]">
+      <CardHeader className="border-b border-white/8 pb-4">
+        <CardTitle className="flex items-center gap-2 text-white"><Play className="h-5 w-5 text-red-400" /> معاينة إلزامية قبل النشر</CardTitle>
+        <CardDescription className="mt-2 leading-6 text-zinc-500">لا يقبل مسار النشر العام في الدورات التالية أي طلب ما لم يتضمن إقرارًا بأن النسخة النهائية عُرضت داخل هذه البوابة.</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-5 p-5 lg:grid-cols-[1.1fr_.9fr]">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-black">
+          {videoAsset?.storageUrl ? <video controls preload="metadata" src={videoAsset.storageUrl} className="aspect-video w-full bg-black" /> : <div className="flex aspect-video items-center justify-center text-sm text-zinc-500">لا يوجد فيديو نهائي متاح للمعاينة بعد.</div>}
+        </div>
+        <div className="flex flex-col justify-between gap-4 rounded-xl border border-white/8 bg-black/20 p-4">
+          <div><p className="text-sm font-semibold text-zinc-100">{videoAsset?.title ?? "بانتظار ملف فيديو"}</p><p className="mt-2 text-xs leading-6 text-zinc-500">شاهد الفيديو، وتحقق من الصوت والترجمة والرسالة والحقوق قبل طلب النشر. الإقرار لا ينشر الفيديو بنفسه؛ إنه شرط منفصل عن التأكيد العلني.</p></div>
+          <div className="flex items-center justify-between gap-4 rounded-lg border border-white/8 bg-white/[0.02] p-3"><span className="text-xs text-zinc-300">راجعت النسخة النهائية داخل المنصة</span><Button size="sm" variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white" disabled={!videoAsset?.storageUrl || !project || previewAcknowledged || acknowledgePreview.isPending} onClick={() => project && acknowledgePreview.mutate({ projectId: project.id })}>{previewAcknowledged ? "تم الحفظ" : acknowledgePreview.isPending ? "جارٍ الحفظ…" : "حفظ الإقرار"}</Button></div>
+          <Badge className={previewAcknowledged ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-100 hover:bg-emerald-500/10" : "border border-amber-500/25 bg-amber-500/10 text-amber-100 hover:bg-amber-500/10"}>{previewAcknowledged ? "المعاينة مُقَرّة" : "المعاينة مطلوبة"}</Badge>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

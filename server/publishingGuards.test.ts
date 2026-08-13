@@ -15,6 +15,7 @@ const readyContent = {
   originalContent: true,
   rightsClear: true,
   safetyClear: true,
+  previewAcknowledged: true,
   hasPrivateCanary: true,
   publicationsInLast24Hours: 0,
 };
@@ -35,6 +36,12 @@ describe("evaluatePublishGuard", () => {
     const decision = evaluatePublishGuard(basePolicy, { ...readyContent, publicationsInLast24Hours: 6 });
     expect(decision.allowed).toBe(false);
     expect(decision.reason).toContain("سقف النشر اليومي");
+  });
+
+  it("blocks all upload paths until the final preview acknowledgement is stored", () => {
+    const decision = evaluatePublishGuard(basePolicy, { ...readyContent, previewAcknowledged: false });
+    expect(decision.allowed).toBe(false);
+    expect(decision.reason).toContain("معاينة");
   });
 
   it("allows public publishing only after all safeguards pass", () => {
