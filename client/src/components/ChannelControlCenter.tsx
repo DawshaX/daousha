@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
-import { BellRing, Bot, ExternalLink, LockKeyhole, RadioTower, ShieldCheck, Youtube } from "lucide-react";
+import { BellRing, Bot, ExternalLink, Facebook, Instagram, LockKeyhole, Music2, RadioTower, ShieldCheck, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +15,13 @@ function statusLabel(status?: string) {
   return "غير مرتبط";
 }
 
+const distributionPlatforms = [
+  { platform: "youtube", label: "YouTube", description: "Shorts والفيديوهات الطويلة", icon: Youtube },
+  { platform: "tiktok", label: "TikTok", description: "مقاطع عمودية قصيرة", icon: Music2 },
+  { platform: "instagram", label: "Instagram", description: "Reels وحساب العلامة", icon: Instagram },
+  { platform: "facebook", label: "Facebook", description: "Reels وصفحة العلامة", icon: Facebook },
+] as const;
+
 export default function ChannelControlCenter() {
   const utils = trpc.useUtils();
   const { data: integrations, isLoading: integrationsLoading } = trpc.daousha.integrations.useQuery();
@@ -22,11 +29,15 @@ export default function ChannelControlCenter() {
   const { data: events } = trpc.daousha.notificationEvents.useQuery();
   const [minIntervalMinutes, setMinIntervalMinutes] = useState(10);
   const [maxPublicationsPerDay, setMaxPublicationsPerDay] = useState(6);
+  const [dailyShortTarget, setDailyShortTarget] = useState(4);
+  const [dailyLongTarget, setDailyLongTarget] = useState(2);
 
   useEffect(() => {
     if (!policy) return;
     setMinIntervalMinutes(policy.minIntervalMinutes);
     setMaxPublicationsPerDay(policy.maxPublicationsPerDay);
+    setDailyShortTarget(policy.dailyShortTarget);
+    setDailyLongTarget(policy.dailyLongTarget);
   }, [policy]);
 
   const claimTelegram = trpc.daousha.claimTelegramChat.useMutation({
@@ -54,7 +65,7 @@ export default function ChannelControlCenter() {
     onError: error => toast.error(error.message),
   });
 
-  const patchPolicy = (patch: Partial<{ mode: "human_review" | "guarded_auto"; publicPublishingEnabled: boolean; killSwitchEnabled: boolean; requirePrivateCanary: boolean; minIntervalMinutes: number; maxPublicationsPerDay: number }>) => {
+  const patchPolicy = (patch: Partial<{ mode: "human_review" | "guarded_auto"; publicPublishingEnabled: boolean; killSwitchEnabled: boolean; requirePrivateCanary: boolean; minIntervalMinutes: number; maxPublicationsPerDay: number; dailyShortTarget: number; dailyLongTarget: number }>) => {
     if (!policy) return;
     updatePolicy.mutate({
       mode: patch.mode ?? policy.mode,
@@ -63,6 +74,8 @@ export default function ChannelControlCenter() {
       requirePrivateCanary: patch.requirePrivateCanary ?? policy.requirePrivateCanary,
       minIntervalMinutes: patch.minIntervalMinutes ?? policy.minIntervalMinutes,
       maxPublicationsPerDay: patch.maxPublicationsPerDay ?? policy.maxPublicationsPerDay,
+      dailyShortTarget: patch.dailyShortTarget ?? policy.dailyShortTarget,
+      dailyLongTarget: patch.dailyLongTarget ?? policy.dailyLongTarget,
     });
   };
 
@@ -113,6 +126,23 @@ export default function ChannelControlCenter() {
         </Card>
       </section>
 
+      <Card className="border-white/8 bg-zinc-950/60">
+        <CardHeader className="flex-row items-start justify-between space-y-0">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-white"><RadioTower className="h-5 w-5 text-red-400" /> وجهات النشر المتوازي</CardTitle>
+            <CardDescription className="mt-2 leading-6 text-zinc-500">تُرسل الحزمة نفسها إلى الحسابات المفوّضة رسميًا فقط. المنصات غير المرتبطة لا تدخل طابور النشر ولا يُحفظ لها أي وصول يدوي.</CardDescription>
+          </div>
+          <Badge variant="outline" className="border-white/10 text-zinc-400">{distributionPlatforms.filter(item => integrations?.connections.some(connection => connection.platform === item.platform && connection.status === "authorized")).length} / 4 مفوّض</Badge>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {distributionPlatforms.map(item => {
+            const connection = integrations?.connections.find(candidate => candidate.platform === item.platform);
+            const Icon = item.icon;
+            return <div key={item.platform} className="rounded-xl border border-white/8 bg-black/25 p-3"><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><Icon className="h-4 w-4 text-red-400" /><p className="text-sm font-medium text-zinc-100">{item.label}</p></div><Badge variant="outline" className="border-white/10 text-[10px] text-zinc-400">{statusLabel(connection?.status)}</Badge></div><p className="mt-3 min-h-8 text-xs leading-5 text-zinc-500">{connection?.status === "authorized" ? "جاهز كوجهة مستقلة في طابور التوزيع." : `${item.description} — يتطلب OAuth رسميًا قبل التفعيل.`}</p></div>;
+          })}
+        </CardContent>
+      </Card>
+
       <Card className="border-red-500/20 bg-[linear-gradient(145deg,rgba(69,10,10,.32),rgba(9,9,11,.8))]">
         <CardHeader className="flex-row items-start justify-between space-y-0">
           <div>
@@ -129,8 +159,13 @@ export default function ChannelControlCenter() {
           </div>
           <div className="space-y-3 rounded-xl border border-white/8 bg-black/20 p-4">
             <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium text-zinc-100">مفتاح الإيقاف الفوري</p><p className="mt-1 text-xs text-zinc-500">يمنع أي رفع جديد فورًا، مع بقاء السجل محفوظًا.</p></div><Switch checked={policy?.killSwitchEnabled ?? true} disabled={policyBusy} onCheckedChange={checked => patchPolicy({ killSwitchEnabled: checked })} /></div>
-            <div className="grid grid-cols-2 gap-3"><label className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><span className="text-[11px] text-zinc-500">أقصر فاصل (دقيقة)</span><Input type="number" min={10} max={1440} value={minIntervalMinutes} onChange={event => setMinIntervalMinutes(Math.max(10, Math.min(1440, Number(event.target.value) || 10)))} disabled={policyBusy} className="mt-2 h-9 border-white/10 bg-black/30 font-mono text-base text-white" /></label><label className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><span className="text-[11px] text-zinc-500">السقف اليومي (فيديو)</span><Input type="number" min={1} max={144} value={maxPublicationsPerDay} onChange={event => setMaxPublicationsPerDay(Math.max(1, Math.min(144, Number(event.target.value) || 1)))} disabled={policyBusy} className="mt-2 h-9 border-white/10 bg-black/30 font-mono text-base text-white" /></label></div>
-            <Button variant="outline" className="w-full border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white" disabled={policyBusy} onClick={() => patchPolicy({ minIntervalMinutes, maxPublicationsPerDay })}>حفظ حدود النشر</Button>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><span className="text-[11px] text-zinc-500">أقصر فاصل (دقيقة)</span><Input type="number" min={10} max={1440} value={minIntervalMinutes} onChange={event => setMinIntervalMinutes(Math.max(10, Math.min(1440, Number(event.target.value) || 10)))} disabled={policyBusy} className="mt-2 h-9 border-white/10 bg-black/30 font-mono text-base text-white" /></label>
+              <label className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><span className="text-[11px] text-zinc-500">السقف اليومي (فيديو)</span><Input type="number" min={1} max={144} value={maxPublicationsPerDay} onChange={event => setMaxPublicationsPerDay(Math.max(1, Math.min(144, Number(event.target.value) || 1)))} disabled={policyBusy} className="mt-2 h-9 border-white/10 bg-black/30 font-mono text-base text-white" /></label>
+              <label className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><span className="text-[11px] text-zinc-500">هدف Reels / Shorts</span><Input type="number" min={0} max={100} value={dailyShortTarget} onChange={event => setDailyShortTarget(Math.max(0, Math.min(100, Number(event.target.value) || 0)))} disabled={policyBusy} className="mt-2 h-9 border-white/10 bg-black/30 font-mono text-base text-white" /></label>
+              <label className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><span className="text-[11px] text-zinc-500">هدف الفيديو الطويل</span><Input type="number" min={0} max={20} value={dailyLongTarget} onChange={event => setDailyLongTarget(Math.max(0, Math.min(20, Number(event.target.value) || 0)))} disabled={policyBusy} className="mt-2 h-9 border-white/10 bg-black/30 font-mono text-base text-white" /></label>
+            </div>
+            <Button variant="outline" className="w-full border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white" disabled={policyBusy} onClick={() => patchPolicy({ minIntervalMinutes, maxPublicationsPerDay, dailyShortTarget, dailyLongTarget })}>حفظ حدود وأهداف النشر</Button>
             <a href="/docs/autonomous-youtube-policy.md" target="_blank" rel="noreferrer" className="inline-flex items-center text-xs text-red-300 hover:text-red-200"><ExternalLink className="ml-1 h-3.5 w-3.5" /> قراءة سياسة التشغيل الكاملة</a>
           </div>
         </CardContent>

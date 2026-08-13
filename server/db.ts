@@ -174,6 +174,39 @@ export async function createSchedule(input: typeof publishingSchedules.$inferIns
   return (await db!.select().from(publishingSchedules).where(eq(publishingSchedules.id, id)).limit(1))[0];
 }
 
+export async function getOwnedSchedule(ownerId: number, scheduleId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(publishingSchedules).where(and(eq(publishingSchedules.id, scheduleId), eq(publishingSchedules.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function getScheduleByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(publishingSchedules).where(eq(publishingSchedules.scheduleCronTaskUid, taskUid)).limit(1))[0];
+}
+
+export async function activateSchedule(ownerId: number, scheduleId: number, taskUid: string, nextRunAt?: string | null) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(publishingSchedules).set({ status: "active", scheduleCronTaskUid: taskUid, nextRunAt: nextRunAt ? new Date(nextRunAt) : null }).where(and(eq(publishingSchedules.id, scheduleId), eq(publishingSchedules.ownerId, ownerId)));
+  return getOwnedSchedule(ownerId, scheduleId);
+}
+
+export async function setScheduleStatus(ownerId: number, scheduleId: number, status: "paused" | "active" | "failed" | "needs_approval", nextRunAt?: string | null) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(publishingSchedules).set({ status, nextRunAt: nextRunAt ? new Date(nextRunAt) : null }).where(and(eq(publishingSchedules.id, scheduleId), eq(publishingSchedules.ownerId, ownerId)));
+  return getOwnedSchedule(ownerId, scheduleId);
+}
+
+export async function markScheduleExecuted(ownerId: number, scheduleId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(publishingSchedules).set({ lastRunAt: new Date() }).where(and(eq(publishingSchedules.id, scheduleId), eq(publishingSchedules.ownerId, ownerId)));
+  return getOwnedSchedule(ownerId, scheduleId);
+}
+
 export async function listChangeLog(ownerId: number) {
   const db = await getDb();
   if (!db) databaseUnavailable();
@@ -223,10 +256,26 @@ export async function upsertChannelConnection(input: typeof channelConnections.$
 export async function getPublishingPolicy(ownerId: number) {
   const db = await getDb();
   if (!db) databaseUnavailable();
-  const current = await db!.select().from(publishingPolicies).where(eq(publishingPolicies.ownerId, ownerId)).limit(1);
-  if (current[0]) return current[0];
+  const existing = (await db!.select().from(publishingPolicies).where(eq(publishingPolicies.ownerId, ownerId)).limit(1))[0];
+  if (existing) return existing;
   await db!.insert(publishingPolicies).values({ ownerId });
   return (await db!.select().from(publishingPolicies).where(eq(publishingPolicies.ownerId, ownerId)).limit(1))[0];
+}
+
+export async function getContentMixStatus(ownerId: number) {
+  const [policy, projects] = await Promise.all([getPublishingPolicy(ownerId), listProjects(ownerId)]);
+  const startOfToday = new Date();
+  startOfToday.setUTCHours(0, 0, 0, 0);
+  const publishedToday = projects.filter(project => project.status === "published" && project.publishedAt && project.publishedAt >= startOfToday);
+  const readyProjects = projects.filter(project => ["approved", "review"].includes(project.status));
+  return {
+    dailyShortTarget: policy.dailyShortTarget,
+    dailyLongTarget: policy.dailyLongTarget,
+    publishedShorts: publishedToday.filter(project => project.contentFormat === "short").length,
+    publishedLongs: publishedToday.filter(project => project.contentFormat === "long").length,
+    readyShorts: readyProjects.filter(project => project.contentFormat === "short").length,
+    readyLongs: readyProjects.filter(project => project.contentFormat === "long").length,
+  };
 }
 
 export async function updatePublishingPolicy(ownerId: number, patch: Partial<Omit<typeof publishingPolicies.$inferInsert, "id" | "ownerId" | "createdAt" | "updatedAt">>) {
@@ -306,6 +355,13 @@ export async function markPolicyPublished(ownerId: number) {
   if (!db) databaseUnavailable();
   await db!.update(publishingPolicies).set({ lastPublishedAt: new Date() }).where(eq(publishingPolicies.ownerId, ownerId));
   return getPublishingPolicy(ownerId);
+}
+
+export async function markProjectPublished(ownerId: number, projectId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(videoProjects).set({ status: "published", publishedAt: new Date() }).where(and(eq(videoProjects.ownerId, ownerId), eq(videoProjects.id, projectId)));
+  return getOwnedProject(ownerId, projectId);
 }
 
 export async function listNotificationEvents(ownerId: number) {

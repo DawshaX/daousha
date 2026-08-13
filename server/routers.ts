@@ -12,9 +12,15 @@ import { generateImage, listImageModels } from "./_core/imageGeneration";
 import { discoverLatestTelegramChatId, sendTelegramOperationalNotification, telegramIsConfigured } from "./telegram";
 import { evaluatePublishGuard } from "./publishingGuards";
 import { uploadVettedVideoToYouTube } from "./youtubePublisher";
+import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
+
+function readSessionToken(cookieHeader?: string) {
+  const item = cookieHeader?.split(";").map(value => value.trim()).find(value => value.startsWith(`${COOKIE_NAME}=`));
+  return item ? decodeURIComponent(item.slice(COOKIE_NAME.length + 1)) : "";
+}
 
 export const appRouter = router({
   system: systemRouter,
@@ -35,7 +41,7 @@ export const appRouter = router({
         return input?.status ? projects.filter(project => project.status === input.status) : projects;
       }),
     createProject: protectedProcedure
-      .input(z.object({ title: z.string().trim().min(3).max(255), brief: z.string().trim().max(12000).optional(), targetLanguage: z.enum(["ar", "en", "both"]).default("both") }))
+      .input(z.object({ title: z.string().trim().min(3).max(255), brief: z.string().trim().max(12000).optional(), targetLanguage: z.enum(["ar", "en", "both"]).default("both"), contentFormat: z.enum(["short", "long"]).default("short"), parentProjectId: z.number().int().positive().optional() }))
       .mutation(({ ctx, input }) => db.createProject({ ownerId: ctx.user.id, ...input })),
     transitionProject: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive(), status: z.enum(["idea", "research", "script", "production", "review", "approved", "blocked"]) }))
@@ -105,6 +111,34 @@ export const appRouter = router({
     createScheduleDraft: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive(), platform: z.string().trim().min(2).max(80), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
       .mutation(({ ctx, input }) => db.createSchedule({ ownerId: ctx.user.id, ...input, status: "draft" })),
+    activateSchedule: protectedProcedure
+      .input(z.object({ scheduleId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getOwnedSchedule(ctx.user.id, input.scheduleId);
+        if (!schedule) throw new TRPCError({ code: "NOT_FOUND", message: "مسودة الجدولة غير موجودة." });
+        if (schedule.status === "active" && schedule.scheduleCronTaskUid) return schedule;
+        const task = await createHeartbeatJob({
+          name: `xdaw-publish-${ctx.user.id}-${schedule.id}`,
+          cron: schedule.cronExpression,
+          path: "/api/scheduled/publish",
+          payload: { scheduleId: schedule.id },
+          description: `XDAW NOVA scheduled publication for project ${schedule.projectId}`,
+        }, readSessionToken(ctx.req.headers.cookie));
+        const active = await db.activateSchedule(ctx.user.id, schedule.id, task.taskUid, task.nextExecutionAt);
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "schedule", summary: "تفعيل دورة نشر دورية", details: `المشروع ${schedule.projectId} | ${schedule.platform} | ${schedule.cronExpression}`, actorType: "user" });
+        return active;
+      }),
+    pauseSchedule: protectedProcedure
+      .input(z.object({ scheduleId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getOwnedSchedule(ctx.user.id, input.scheduleId);
+        if (!schedule) throw new TRPCError({ code: "NOT_FOUND", message: "مسودة الجدولة غير موجودة." });
+        if (!schedule.scheduleCronTaskUid) return db.setScheduleStatus(ctx.user.id, schedule.id, "paused");
+        const task = await updateHeartbeatJob(schedule.scheduleCronTaskUid, { enable: false }, readSessionToken(ctx.req.headers.cookie));
+        const paused = await db.setScheduleStatus(ctx.user.id, schedule.id, "paused", task.nextExecutionAt);
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "schedule", summary: "إيقاف دورة نشر دورية", details: `المشروع ${schedule.projectId} | ${schedule.platform}`, actorType: "user" });
+        return paused;
+      }),
     integrations: protectedProcedure.query(async ({ ctx }) => ({
       connections: await db.listChannelConnections(ctx.user.id),
       telegramConfigured: telegramIsConfigured(),
@@ -134,18 +168,19 @@ export const appRouter = router({
       return result;
     }),
     configureConnection: protectedProcedure
-      .input(z.object({ platform: z.enum(["youtube", "telegram"]), label: z.string().trim().min(2).max(160), externalAccountRef: z.string().trim().max(320).optional(), status: z.enum(["disconnected", "configured", "authorized", "error"]), scopeSummary: z.string().trim().max(4000).optional() }))
+      .input(z.object({ platform: z.enum(["youtube", "tiktok", "instagram", "facebook", "telegram"]), label: z.string().trim().min(2).max(160), externalAccountRef: z.string().trim().max(320).optional(), status: z.enum(["disconnected", "configured", "authorized", "error"]), scopeSummary: z.string().trim().max(4000).optional() }))
       .mutation(async ({ ctx, input }) => {
         const connection = await db.upsertChannelConnection({ ownerId: ctx.user.id, ...input, lastVerifiedAt: input.status === "authorized" ? new Date() : undefined });
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: `تحديث اتصال ${input.platform}`, details: `الحالة: ${input.status}`, actorType: "user" });
         return connection;
       }),
     publishingPolicy: protectedProcedure.query(({ ctx }) => db.getPublishingPolicy(ctx.user.id)),
+    contentMixStatus: protectedProcedure.query(({ ctx }) => db.getContentMixStatus(ctx.user.id)),
     updatePublishingPolicy: protectedProcedure
-      .input(z.object({ mode: z.enum(["human_review", "guarded_auto"]), publicPublishingEnabled: z.boolean(), killSwitchEnabled: z.boolean(), requirePrivateCanary: z.boolean(), minIntervalMinutes: z.number().int().min(10).max(1440), maxPublicationsPerDay: z.number().int().min(1).max(144) }))
+      .input(z.object({ mode: z.enum(["human_review", "guarded_auto"]), publicPublishingEnabled: z.boolean(), killSwitchEnabled: z.boolean(), requirePrivateCanary: z.boolean(), minIntervalMinutes: z.number().int().min(10).max(1440), maxPublicationsPerDay: z.number().int().min(1).max(144), dailyShortTarget: z.number().int().min(0).max(100), dailyLongTarget: z.number().int().min(0).max(20) }))
       .mutation(async ({ ctx, input }) => {
         const policy = await db.updatePublishingPolicy(ctx.user.id, input);
-        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "safety_rule", summary: "تحديث سياسة النشر", details: `الوضع: ${input.mode} | علني: ${input.publicPublishingEnabled ? "نعم" : "لا"} | الإيقاف: ${input.killSwitchEnabled ? "مفعّل" : "غير مفعّل"}`, actorType: "user" });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "safety_rule", summary: "تحديث سياسة النشر", details: `الوضع: ${input.mode} | علني: ${input.publicPublishingEnabled ? "نعم" : "لا"} | الإيقاف: ${input.killSwitchEnabled ? "مفعّل" : "غير مفعّل"} | القصير: ${input.dailyShortTarget} | الطويل: ${input.dailyLongTarget}`, actorType: "user" });
         return policy;
       }),
     publishingRuns: protectedProcedure.query(({ ctx }) => db.listPublishingRuns(ctx.user.id)),

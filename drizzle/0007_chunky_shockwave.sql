@@ -1,0 +1,1 @@
+ALTER TABLE `channel_connections` MODIFY COLUMN `platform` enum('youtube','tiktok','instagram','facebook','telegram') NOT NULL;

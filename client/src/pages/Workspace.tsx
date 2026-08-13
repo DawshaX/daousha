@@ -49,6 +49,7 @@ import ScheduleDeck from "@/components/ScheduleDeck";
 import ChangeLogPanel from "@/components/ChangeLogPanel";
 import AnalyticsBridge from "@/components/AnalyticsBridge";
 import ChannelControlCenter from "@/components/ChannelControlCenter";
+import ContentMixPanel from "@/components/ContentMixPanel";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -446,6 +447,7 @@ function Automation() {
           <CardContent><p className="text-sm leading-7 text-zinc-400">يقسم المحرك العمل إلى دورات قصيرة مسجلة: رصد، تقييم، إنتاج، ثم رفع. لا يعيد النشر عند الفشل، ولا يتجاوز الحد الزمني أو سقف النشر اليومي، ومفتاح الإيقاف يقطع الرفع الجديد فورًا.</p><Button className="mt-6 bg-red-600 hover:bg-red-500" onClick={() => toast("فعّل قواعد النشر والربط من مركز القنوات في الإعدادات.")}><Plus className="ml-2 h-4 w-4" /> ضبط المحرك</Button></CardContent>
         </Card>
       </section>
+      <ContentMixPanel />
       <ScheduleDeck />
     </Frame>
   );
