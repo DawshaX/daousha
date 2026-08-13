@@ -1,0 +1,44 @@
+import { describe, expect, it } from "vitest";
+import { evaluatePublishGuard } from "./publishingGuards";
+
+const basePolicy = {
+  mode: "guarded_auto" as const,
+  publicPublishingEnabled: true,
+  killSwitchEnabled: false,
+  requirePrivateCanary: false,
+  minIntervalMinutes: 10,
+  maxPublicationsPerDay: 6,
+  lastPublishedAt: null,
+};
+
+const readyContent = {
+  originalContent: true,
+  rightsClear: true,
+  safetyClear: true,
+  hasPrivateCanary: true,
+  publicationsInLast24Hours: 0,
+};
+
+describe("evaluatePublishGuard", () => {
+  it("blocks immediately when the kill switch is enabled", () => {
+    const decision = evaluatePublishGuard({ ...basePolicy, killSwitchEnabled: true }, readyContent);
+    expect(decision.allowed).toBe(false);
+    expect(decision.reason).toContain("الإيقاف");
+  });
+
+  it("requires a private canary before public publishing when configured", () => {
+    const decision = evaluatePublishGuard({ ...basePolicy, requirePrivateCanary: true }, { ...readyContent, hasPrivateCanary: false });
+    expect(decision).toEqual({ allowed: true, visibility: "private", reason: "نسخة اختبار خاصة مطلوبة قبل النشر العام." });
+  });
+
+  it("blocks public publishing when the daily cap is reached", () => {
+    const decision = evaluatePublishGuard(basePolicy, { ...readyContent, publicationsInLast24Hours: 6 });
+    expect(decision.allowed).toBe(false);
+    expect(decision.reason).toContain("سقف النشر اليومي");
+  });
+
+  it("allows public publishing only after all safeguards pass", () => {
+    const decision = evaluatePublishGuard(basePolicy, readyContent);
+    expect(decision).toEqual({ allowed: true, visibility: "public", reason: "اجتاز المشروع حواجز النشر العام." });
+  });
+});

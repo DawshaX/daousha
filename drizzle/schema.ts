@@ -1,4 +1,4 @@
-import { index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, index, int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /** Core account table backing Manus OAuth. */
 export const users = mysqlTable("users", {
@@ -126,6 +126,65 @@ export const analyticsSnapshots = mysqlTable("analytics_snapshots", {
   engagements: int("engagements").default(0).notNull(),
   retentionRate: int("retentionRate").default(0).notNull(),
   capturedAt: timestamp("capturedAt").defaultNow().notNull(),
+});
+
+/** Official channel connection metadata. OAuth credentials stay server-side and are never returned to the client. */
+export const channelConnections = mysqlTable("channel_connections", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  platform: mysqlEnum("platform", ["youtube", "telegram"]).notNull(),
+  label: varchar("label", { length: 160 }).notNull(),
+  externalAccountRef: varchar("externalAccountRef", { length: 320 }),
+  status: mysqlEnum("status", ["disconnected", "configured", "authorized", "error"]).default("disconnected").notNull(),
+  scopeSummary: text("scopeSummary"),
+  credentialCiphertext: text("credentialCiphertext"),
+  credentialExpiresAt: timestamp("credentialExpiresAt"),
+  lastVerifiedAt: timestamp("lastVerifiedAt"),
+  lastError: text("lastError"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [uniqueIndex("channel_connections_owner_platform_idx").on(table.ownerId, table.platform)]);
+
+/** Guardrails for autonomous publishing. A kill switch always takes precedence over the selected mode. */
+export const publishingPolicies = mysqlTable("publishing_policies", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull().unique(),
+  mode: mysqlEnum("mode", ["human_review", "guarded_auto"]).default("human_review").notNull(),
+  publicPublishingEnabled: boolean("publicPublishingEnabled").default(false).notNull(),
+  killSwitchEnabled: boolean("killSwitchEnabled").default(true).notNull(),
+  requirePrivateCanary: boolean("requirePrivateCanary").default(true).notNull(),
+  minIntervalMinutes: int("minIntervalMinutes").default(10).notNull(),
+  maxPublicationsPerDay: int("maxPublicationsPerDay").default(6).notNull(),
+  lastPublishedAt: timestamp("lastPublishedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+/** Append-only operational history for every proposed, blocked, uploaded, or published item. */
+export const publishingRuns = mysqlTable("publishing_runs", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  projectId: int("projectId"),
+  platform: varchar("platform", { length: 80 }).notNull(),
+  status: mysqlEnum("status", ["queued", "blocked", "private_uploaded", "public_uploaded", "failed", "skipped"]).default("queued").notNull(),
+  visibility: mysqlEnum("visibility", ["private", "public"]).default("private").notNull(),
+  decisionReason: text("decisionReason").notNull(),
+  externalVideoId: varchar("externalVideoId", { length: 160 }),
+  externalUrl: varchar("externalUrl", { length: 1500 }),
+  initiatedBy: mysqlEnum("initiatedBy", ["user", "system", "scheduled_job"]).default("system").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+/** Delivery history for private operational notifications such as Telegram status updates. */
+export const notificationEvents = mysqlTable("notification_events", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  publishingRunId: int("publishingRunId"),
+  channel: mysqlEnum("channel", ["telegram"]).default("telegram").notNull(),
+  eventType: varchar("eventType", { length: 120 }).notNull(),
+  deliveryStatus: mysqlEnum("deliveryStatus", ["pending", "sent", "failed"]).default("pending").notNull(),
+  detail: text("detail").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export type User = typeof users.$inferSelect;

@@ -22,6 +22,20 @@
       "when": 1786565728930,
       "tag": "0002_chief_moonstone",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1786603309515,
+      "tag": "0003_worthless_magneto",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1786603682698,
+      "tag": "0004_unique_radioactive_man",
+      "breakpoints": true
     }
   ]
 }

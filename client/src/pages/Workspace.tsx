@@ -47,6 +47,7 @@ import VisualForge from "@/components/VisualForge";
 import ScheduleDeck from "@/components/ScheduleDeck";
 import ChangeLogPanel from "@/components/ChangeLogPanel";
 import AnalyticsBridge from "@/components/AnalyticsBridge";
+import ChannelControlCenter from "@/components/ChannelControlCenter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -90,7 +91,7 @@ const sectionMeta: Record<Section, { eyebrow: string; title: string; description
   automation: {
     eyebrow: "PULSE ENGINE",
     title: "الأتمتة والجدولة",
-    description: "جهّز قواعد التشغيل، واترك آخر قرار للنشر بيدك دائمًا.",
+    description: "شغّل المحرك ضمن قواعد حقوق وسلامة وسقف نشر واضح وسجل لا يضيع.",
   },
   insights: {
     eyebrow: "SIGNAL INTELLIGENCE",
@@ -187,7 +188,7 @@ function Dashboard() {
               ابنِ خط محتوى يعرف متى <span className="text-red-400">يتوقف</span> قبل أن يعرف متى ينشر.
             </h2>
             <p className="max-w-xl text-sm leading-7 text-zinc-400">
-              ابدأ بمشروع واحد، أضف مادة ذات ترخيص واضح، ثم مرّرها عبر السكربت والإنتاج والمراجعة. الربط الفعلي بالقنوات يبقى مغلقًا حتى تختاره أنت.
+              ابدأ بمشروع واحد، أضف مادة ذات ترخيص واضح، ثم مرّرها عبر السكربت والإنتاج والمراجعة. لا يتجاوز المحرك الحقوق أو السلامة أو سقف النشر حتى عند تفعيل التشغيل المستقل.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button className="bg-red-600 text-white shadow-[0_0_28px_rgba(239,68,68,.28)] hover:bg-red-500" onClick={() => toast("أنشئ مشروعك الأول من الاستوديو.")}> 
@@ -202,7 +203,7 @@ function Dashboard() {
             <StatZero value={String(stats?.activeProjects ?? 0)} label="مشروعات نشطة" sublabel="كل مشروع يبدأ من الفكرة" />
             <StatZero value={String(stats?.reviewProjects ?? 0)} label="جاهز للمراجعة" sublabel="ينتظر قرارك البشري" />
             <StatZero value={String(stats?.activeSchedules ?? 0)} label="نشرات مجدولة" sublabel="لا تفعّل قبل الاعتماد" />
-            <StatZero label="قنوات مرتبطة" sublabel="الربط الرسمي فقط" />
+            <StatZero value={String(dashboard?.connections?.filter(connection => connection.status === "authorized").length ?? 0)} label="قنوات مرتبطة" sublabel="تفويض رسمي فقط" />
           </div>
         </div>
       </section>
@@ -237,7 +238,7 @@ function Dashboard() {
             </div>
             <div className="mt-5 rounded-xl border border-amber-500/15 bg-amber-500/[0.05] p-3 text-xs leading-6 text-amber-100/75">
               <AlertTriangle className="ml-2 inline h-4 w-4 text-amber-400" />
-              النشر محجوب افتراضيًا. لا يصبح المشروع جاهزًا إلا بعد اعتماد الترخيص والسلامة ثم موافقتك البشرية.
+              النشر محجوب افتراضيًا. في الوضع المستقل، لا يصبح المشروع مؤهلًا إلا بعد فحص الحقوق والسلامة والأصالة وسقف النشر.
             </div>
           </CardContent>
         </Card>
@@ -251,7 +252,7 @@ function Dashboard() {
               ["رادار الترندات", "بانتظار اعتماد مصادر الرصد", "متوقف"],
               ["مكتبة الحقوق", "جاهزة لإضافة مواد مرخّصة", "جاهز"],
               ["إنتاج الذكاء الاصطناعي", "يُشغّل من الاستوديو", "عند الطلب"],
-              ["النشر", "يتطلب ربط منصة وموافقة", "محمي"],
+              ["النشر", "يتطلب ربط منصة واجتياز سياسة الحماية", "محمي"],
             ].map(([name, detail, state]) => (
               <div key={name} className="flex items-center justify-between gap-3 rounded-lg border border-white/7 bg-white/[0.02] px-3 py-2.5">
                 <div>
@@ -392,12 +393,12 @@ function Automation() {
     <Frame section="automation">
       <section className="grid gap-5 xl:grid-cols-[1.1fr_.9fr]">
         <Card className="border-white/8 bg-zinc-950/60">
-          <CardHeader><CardTitle className="flex items-center gap-2 text-white"><Clock3 className="h-5 w-5 text-red-400" /> قواعد التشغيل</CardTitle><CardDescription className="mt-2 leading-6 text-zinc-500">الأتمتة تسرّع العمل، لكنها لا تتجاوز بوابة الموافقة البشرية.</CardDescription></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2 text-white"><Clock3 className="h-5 w-5 text-red-400" /> قواعد التشغيل</CardTitle><CardDescription className="mt-2 leading-6 text-zinc-500">الأتمتة تسرّع العمل، لكنها لا تتجاوز الحقوق والسلامة وسقف النشر.</CardDescription></CardHeader>
           <CardContent className="space-y-3">
             {[
               ["تحويل الأفكار المعتمدة إلى موجز إنتاج", "مفعّل عند الطلب", true],
               ["فحص اكتمال بيانات الترخيص", "مفعّل دائمًا", true],
-              ["إرسال أي مشروع إلى النشر النهائي", "محجوب حتى اعتمادك", false],
+              ["إرسال أي مشروع إلى النشر النهائي", "محجوب حتى اجتياز الحواجز والربط الرسمي", false],
             ].map(([name, detail, enabled]) => (
               <div key={String(name)} className="flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-white/[0.02] p-4">
                 <div><p className="text-sm font-medium text-zinc-200">{name as string}</p><p className="mt-1 text-xs text-zinc-600">{detail as string}</p></div><Switch checked={enabled as boolean} onCheckedChange={() => toast("تُحفظ قواعد التشغيل عند ربط محرك الجدولة.")} />
@@ -407,7 +408,7 @@ function Automation() {
         </Card>
         <Card className="border-red-500/18 bg-[linear-gradient(145deg,rgba(69,10,10,.4),rgba(9,9,11,.8))]">
           <CardHeader><Bot className="h-7 w-7 text-red-300" /><CardTitle className="mt-4 text-white">تشغيل مستمر، بحراسة مستمرة.</CardTitle></CardHeader>
-          <CardContent><p className="text-sm leading-7 text-zinc-400">سيُستخدم تشغيل دوري موثوق للمهام القصيرة مثل التحقق والتنبيه. أمّا أي مهمة تستلزم بحثًا أو توليدًا أو نشرًا فتبقى مسجلة وقابلة للمراجعة، ولا تعمل في الخلفية بلا حدود أو بلا سجل.</p><Button className="mt-6 bg-red-600 hover:bg-red-500" onClick={() => toast("جدولة المهام ستتطلب نشر النسخة وربطها من الإعدادات.")}><Plus className="ml-2 h-4 w-4" /> قاعدة تشغيل جديدة</Button></CardContent>
+          <CardContent><p className="text-sm leading-7 text-zinc-400">يقسم المحرك العمل إلى دورات قصيرة مسجلة: رصد، تقييم، إنتاج، ثم رفع. لا يعيد النشر عند الفشل، ولا يتجاوز الحد الزمني أو سقف النشر اليومي، ومفتاح الإيقاف يقطع الرفع الجديد فورًا.</p><Button className="mt-6 bg-red-600 hover:bg-red-500" onClick={() => toast("فعّل قواعد النشر والربط من مركز القنوات في الإعدادات.")}><Plus className="ml-2 h-4 w-4" /> ضبط المحرك</Button></CardContent>
         </Card>
       </section>
       <ScheduleDeck />
@@ -443,6 +444,7 @@ function Settings() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {[["القنوات الرسمية", "اربط YouTube أو TikTok أو Instagram من الواجهات الرسمية عند الجاهزية.", Globe2],["التخزين السحابي", "ملفات المشاريع والمواد تبقى منظمة في تخزين آمن مع بياناتها الوصفية.", UploadCloud],["التنبيهات", "استلم تنبيهًا عند تعثر مهمة أو وصول فيديو لبوابة المراجعة.", BellRing]].map(([title, detail, Icon]) => { const ItemIcon = Icon as React.ElementType; return <Card key={String(title)} className="border-white/8 bg-zinc-950/60"><CardHeader><ItemIcon className="h-6 w-6 text-red-400" /><CardTitle className="mt-5 text-white">{title as string}</CardTitle></CardHeader><CardContent><p className="text-sm leading-6 text-zinc-500">{detail as string}</p><Button variant="outline" className="mt-5 w-full border-white/10 bg-white/[0.03] text-zinc-300 hover:bg-white/[0.08] hover:text-white" onClick={() => toast("يحتاج هذا الربط إلى موافقتك وبيانات الوصول الخاصة بك.")}>تهيئة الربط</Button></CardContent></Card>})}
       </section>
+      <ChannelControlCenter />
       <Card className="border-red-500/18 bg-zinc-950/60"><CardHeader><CardTitle className="text-white">دورة التحديث والنشر</CardTitle></CardHeader><CardContent className="grid gap-3 text-sm leading-7 text-zinc-400 md:grid-cols-2"><p><b className="text-red-300">تحديث فوري:</b> إضافة مشروع أو مادة أو مصدر أو تعديل إعداد موجود يظهر فور الحفظ داخل النسخة المنشورة.</p><p><b className="text-red-300">إصدار جديد:</b> تغيير واجهة دعوشة أو الكود أو إضافة قدرة جديدة يتطلب حفظ نسخة جديدة ثم الضغط على Publish لنقلها للموقع العام.</p></CardContent></Card>
     </Frame>
   );

@@ -2,10 +2,14 @@ import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   analyticsSnapshots,
+  channelConnections,
   contentAssets,
   contentSources,
   developmentProposals,
   InsertUser,
+  notificationEvents,
+  publishingPolicies,
+  publishingRuns,
   publishingSchedules,
   systemChangeLog,
   users,
@@ -183,10 +187,98 @@ export async function recordAnalyticsSnapshot(input: typeof analyticsSnapshots.$
   return (await db!.select().from(analyticsSnapshots).where(eq(analyticsSnapshots.id, id)).limit(1))[0];
 }
 
+export async function listChannelConnections(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(channelConnections).where(eq(channelConnections.ownerId, ownerId)).orderBy(desc(channelConnections.updatedAt));
+}
+
+export async function upsertChannelConnection(input: typeof channelConnections.$inferInsert) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.insert(channelConnections).values(input).onDuplicateKeyUpdate({
+    set: {
+      label: input.label,
+      externalAccountRef: input.externalAccountRef,
+      status: input.status,
+      scopeSummary: input.scopeSummary,
+      credentialCiphertext: input.credentialCiphertext,
+      credentialExpiresAt: input.credentialExpiresAt,
+      lastVerifiedAt: input.lastVerifiedAt,
+      lastError: input.lastError,
+    },
+  });
+  return (await db!.select().from(channelConnections).where(and(eq(channelConnections.ownerId, input.ownerId), eq(channelConnections.platform, input.platform))).limit(1))[0];
+}
+
+export async function getPublishingPolicy(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const current = await db!.select().from(publishingPolicies).where(eq(publishingPolicies.ownerId, ownerId)).limit(1);
+  if (current[0]) return current[0];
+  await db!.insert(publishingPolicies).values({ ownerId });
+  return (await db!.select().from(publishingPolicies).where(eq(publishingPolicies.ownerId, ownerId)).limit(1))[0];
+}
+
+export async function updatePublishingPolicy(ownerId: number, patch: Partial<Omit<typeof publishingPolicies.$inferInsert, "id" | "ownerId" | "createdAt" | "updatedAt">>) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.insert(publishingPolicies).values({ ownerId, ...patch }).onDuplicateKeyUpdate({ set: patch });
+  return getPublishingPolicy(ownerId);
+}
+
+export async function listPublishingRuns(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(publishingRuns).where(eq(publishingRuns.ownerId, ownerId)).orderBy(desc(publishingRuns.createdAt));
+}
+
+export async function createPublishingRun(input: typeof publishingRuns.$inferInsert) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(publishingRuns).values(input);
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(publishingRuns).where(eq(publishingRuns.id, id)).limit(1))[0];
+}
+
+export async function updatePublishingRun(ownerId: number, runId: number, patch: Partial<Omit<typeof publishingRuns.$inferInsert, "id" | "ownerId" | "createdAt">>) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(publishingRuns).set(patch).where(and(eq(publishingRuns.id, runId), eq(publishingRuns.ownerId, ownerId)));
+  return (await db!.select().from(publishingRuns).where(and(eq(publishingRuns.id, runId), eq(publishingRuns.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function getOwnedAsset(ownerId: number, assetId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(contentAssets).where(and(eq(contentAssets.id, assetId), eq(contentAssets.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function markPolicyPublished(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(publishingPolicies).set({ lastPublishedAt: new Date() }).where(eq(publishingPolicies.ownerId, ownerId));
+  return getPublishingPolicy(ownerId);
+}
+
+export async function listNotificationEvents(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(notificationEvents).where(eq(notificationEvents.ownerId, ownerId)).orderBy(desc(notificationEvents.createdAt));
+}
+
+export async function recordNotificationEvent(input: typeof notificationEvents.$inferInsert) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(notificationEvents).values(input);
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(notificationEvents).where(eq(notificationEvents.id, id)).limit(1))[0];
+}
+
 export async function getDashboardData(ownerId: number) {
   const db = await getDb();
   if (!db) databaseUnavailable();
-  const [projects, assets, tasks, snapshots, proposals, schedules, changeLog] = await Promise.all([
+  const [projects, assets, tasks, snapshots, proposals, schedules, changeLog, connections, policy, runs] = await Promise.all([
     db!.select().from(videoProjects).where(eq(videoProjects.ownerId, ownerId)),
     db!.select().from(contentAssets).where(eq(contentAssets.ownerId, ownerId)),
     db!.select().from(workflowTasks).where(eq(workflowTasks.ownerId, ownerId)),
@@ -194,6 +286,9 @@ export async function getDashboardData(ownerId: number) {
     db!.select().from(developmentProposals).where(eq(developmentProposals.ownerId, ownerId)),
     db!.select().from(publishingSchedules).where(eq(publishingSchedules.ownerId, ownerId)),
     db!.select().from(systemChangeLog).where(eq(systemChangeLog.ownerId, ownerId)),
+    db!.select().from(channelConnections).where(eq(channelConnections.ownerId, ownerId)),
+    getPublishingPolicy(ownerId),
+    db!.select().from(publishingRuns).where(eq(publishingRuns.ownerId, ownerId)).orderBy(desc(publishingRuns.createdAt)),
   ]);
   return {
     projects,
@@ -203,6 +298,9 @@ export async function getDashboardData(ownerId: number) {
     proposals,
     schedules,
     changeLog,
+    connections,
+    policy,
+    runs,
     stats: {
       activeProjects: projects.filter(project => !["published", "blocked"].includes(project.status)).length,
       reviewProjects: projects.filter(project => project.status === "review").length,
