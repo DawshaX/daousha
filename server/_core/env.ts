@@ -11,4 +11,6 @@ export const ENV = {
   telegramChatId: process.env.TELEGRAM_CHAT_ID ?? "",
   youtubeClientId: process.env.YOUTUBE_CLIENT_ID ?? "",
   youtubeClientSecret: process.env.YOUTUBE_CLIENT_SECRET ?? "",
+  metaAppId: process.env.META_APP_ID ?? "",
+  metaAppSecret: process.env.META_APP_SECRET ?? "",
 };

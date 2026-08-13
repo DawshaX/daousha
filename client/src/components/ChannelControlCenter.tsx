@@ -86,6 +86,7 @@ export default function ChannelControlCenter() {
   };
 
   const youtube = integrations?.connections.find(connection => connection.platform === "youtube");
+  const facebook = integrations?.connections.find(connection => connection.platform === "facebook");
   const telegram = integrations?.connections.find(connection => connection.platform === "telegram");
   const policyBusy = policyLoading || updatePolicy.isPending;
 
@@ -105,6 +106,22 @@ export default function ChannelControlCenter() {
               {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.youtubeClientConfigured ? "بيانات تطبيق OAuth مهيأة. سيطلب Google موافقة مالك القناة على نطاق الرفع والقراءة فقط." : <>أضف هذا العنوان كـ Redirect URI عند إنشاء OAuth في Google Cloud: <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations?.youtubeRedirectUri}</span></>}
             </div>
             {integrations?.youtubeClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/youtube/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض YouTube الرسمي</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> أضف بيانات OAuth أولًا</Button>}
+          </CardContent>
+        </Card>
+
+        <Card className="border-white/8 bg-zinc-950/60">
+          <CardHeader className="flex-row items-start justify-between space-y-0">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-white"><Facebook className="h-5 w-5 text-red-400" /> Facebook الرسمي</CardTitle>
+              <CardDescription className="mt-2 leading-6 text-zinc-500">تفويض رسمي لصفحة واحدة يختارها المدير صراحةً؛ لا يربط أو ينقل حساب Instagram المستقل.</CardDescription>
+            </div>
+            <Badge variant="outline" className="border-white/10 text-zinc-300">{statusLabel(facebook?.status)}</Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-xl border border-white/8 bg-black/25 p-3 text-xs leading-6 text-zinc-400">
+              {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.facebookClientConfigured ? <>بيانات تطبيق Meta مهيأة. بعد منح الموافقة ستختار صفحة XDAW NOVA الجديدة من قائمة الصفحات التي يديرها الحساب. <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations.facebookRedirectUri}</span></> : "أضف معرّف تطبيق Meta ومفتاحه السري في الأسرار المحمية أولًا."}
+            </div>
+            {integrations?.facebookClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/facebook/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض صفحة Facebook</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> إعداد Meta غير مكتمل</Button>}
           </CardContent>
         </Card>
 

@@ -9,6 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { registerYouTubeOAuthRoutes } from "../youtubeOAuth";
+import { registerFacebookOAuthRoutes } from "../facebookOAuth";
 import { registerScheduledRoutes } from "../scheduledRoutes";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -39,6 +40,7 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerYouTubeOAuthRoutes(app);
+  registerFacebookOAuthRoutes(app);
   registerScheduledRoutes(app);
   // tRPC API
   app.use(
