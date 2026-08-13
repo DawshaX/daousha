@@ -11,6 +11,7 @@ import { TRPCError } from "@trpc/server";
 import { generateImage, listImageModels } from "./_core/imageGeneration";
 import { discoverLatestTelegramChatId, sendTelegramOperationalNotification, telegramIsConfigured } from "./telegram";
 import { evaluatePublishGuard } from "./publishingGuards";
+import { resolveDistributionReadiness } from "./publishingDestinations";
 import { uploadVettedVideoToYouTube } from "./youtubePublisher";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 
@@ -139,12 +140,16 @@ export const appRouter = router({
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "schedule", summary: "إيقاف دورة نشر دورية", details: `المشروع ${schedule.projectId} | ${schedule.platform}`, actorType: "user" });
         return paused;
       }),
-    integrations: protectedProcedure.query(async ({ ctx }) => ({
-      connections: await db.listChannelConnections(ctx.user.id),
-      telegramConfigured: telegramIsConfigured(),
-      youtubeClientConfigured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET),
-      youtubeRedirectUri: `${ctx.req.header("x-forwarded-proto")?.split(",")[0] ?? ctx.req.protocol}://${ctx.req.header("x-forwarded-host") ?? ctx.req.header("host")}/api/integrations/youtube/callback`,
-    })),
+    integrations: protectedProcedure.query(async ({ ctx }) => {
+      const connections = await db.listChannelConnections(ctx.user.id);
+      return {
+        connections,
+        distributionReadiness: resolveDistributionReadiness(connections),
+        telegramConfigured: telegramIsConfigured(),
+        youtubeClientConfigured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET),
+        youtubeRedirectUri: `${ctx.req.header("x-forwarded-proto")?.split(",")[0] ?? ctx.req.protocol}://${ctx.req.header("x-forwarded-host") ?? ctx.req.header("host")}/api/integrations/youtube/callback`,
+      };
+    }),
     claimTelegramChat: protectedProcedure.mutation(async ({ ctx }) => {
       const chatId = await discoverLatestTelegramChatId();
       if (!chatId) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "أرسل start إلى البوت أولًا ثم أعد المحاولة." });

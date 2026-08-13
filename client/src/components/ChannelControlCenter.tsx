@@ -15,6 +15,12 @@ function statusLabel(status?: string) {
   return "غير مرتبط";
 }
 
+function distributionLabel(mode?: string) {
+  if (mode === "automatic_api") return "نشر آلي";
+  if (mode === "confirmation_required") return "تأكيد مطلوب";
+  return "تفويض ناقص";
+}
+
 const distributionPlatforms = [
   { platform: "youtube", label: "YouTube", description: "Shorts والفيديوهات الطويلة", icon: Youtube },
   { platform: "tiktok", label: "TikTok", description: "مقاطع عمودية قصيرة", icon: Music2 },
@@ -130,15 +136,16 @@ export default function ChannelControlCenter() {
         <CardHeader className="flex-row items-start justify-between space-y-0">
           <div>
             <CardTitle className="flex items-center gap-2 text-white"><RadioTower className="h-5 w-5 text-red-400" /> وجهات النشر المتوازي</CardTitle>
-            <CardDescription className="mt-2 leading-6 text-zinc-500">تُرسل الحزمة نفسها إلى الحسابات المفوّضة رسميًا فقط. المنصات غير المرتبطة لا تدخل طابور النشر ولا يُحفظ لها أي وصول يدوي.</CardDescription>
+            <CardDescription className="mt-2 leading-6 text-zinc-500">تُرسل الحزمة إلى الحسابات المفوّضة رسميًا فقط. تفرّق اللوحة بين النشر الآلي والتأكيد المطلوب والتفويض الناقص، ولا تستخدم أي جلسة متصفح شخصية.</CardDescription>
           </div>
-          <Badge variant="outline" className="border-white/10 text-zinc-400">{distributionPlatforms.filter(item => integrations?.connections.some(connection => connection.platform === item.platform && connection.status === "authorized")).length} / 4 مفوّض</Badge>
+          <Badge variant="outline" className="border-white/10 text-zinc-400">{integrations?.distributionReadiness.filter(item => item.eligible).length ?? 0} / 4 مهيأ للتوزيع</Badge>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {distributionPlatforms.map(item => {
             const connection = integrations?.connections.find(candidate => candidate.platform === item.platform);
+            const readiness = integrations?.distributionReadiness.find(candidate => candidate.platform === item.platform);
             const Icon = item.icon;
-            return <div key={item.platform} className="rounded-xl border border-white/8 bg-black/25 p-3"><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><Icon className="h-4 w-4 text-red-400" /><p className="text-sm font-medium text-zinc-100">{item.label}</p></div><Badge variant="outline" className="border-white/10 text-[10px] text-zinc-400">{statusLabel(connection?.status)}</Badge></div><p className="mt-3 min-h-8 text-xs leading-5 text-zinc-500">{connection?.status === "authorized" ? "جاهز كوجهة مستقلة في طابور التوزيع." : `${item.description} — يتطلب OAuth رسميًا قبل التفعيل.`}</p></div>;
+            return <div key={item.platform} className="rounded-xl border border-white/8 bg-black/25 p-3"><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><Icon className="h-4 w-4 text-red-400" /><p className="text-sm font-medium text-zinc-100">{item.label}</p></div><Badge variant="outline" className="border-white/10 text-[10px] text-zinc-400">{readiness ? distributionLabel(readiness.mode) : statusLabel(connection?.status)}</Badge></div><p className="mt-3 min-h-10 text-xs leading-5 text-zinc-500">{readiness?.reason ?? `${item.description} — يتطلب OAuth رسميًا قبل التفعيل.`}</p></div>;
           })}
         </CardContent>
       </Card>
