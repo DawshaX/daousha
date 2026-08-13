@@ -4,6 +4,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Legal from "./pages/Legal";
 import NotFound from "./pages/NotFound";
 import Workspace from "./pages/Workspace";
 import DashboardLayout from "./components/DashboardLayout";
@@ -23,6 +24,9 @@ function Router() {
     <Route path="/insights"><ToolRoute section="insights" /></Route>
     <Route path="/evolution"><ToolRoute section="evolution" /></Route>
     <Route path="/settings"><ToolRoute section="settings" /></Route>
+    <Route path="/privacy"><Legal kind="privacy" /></Route>
+    <Route path="/terms"><Legal kind="terms" /></Route>
+    <Route path="/data-deletion"><Legal kind="data-deletion" /></Route>
     <Route path="/404" component={NotFound} />
     <Route component={NotFound} />
   </Switch>;
