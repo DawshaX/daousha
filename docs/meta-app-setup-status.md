@@ -10,5 +10,6 @@
 - **مسارات الامتثال المنشورة:** `/privacy` و`/terms` و`/data-deletion`، وأُدخلت روابطها وحُفظت داخل إعدادات التطبيق.
 - **البيانات السرية:** حُفظ معرّف التطبيق والمفتاح السري في مخزن الأسرار المحمي، واجتازا فحصًا مباشرًا وخفيفًا إلى Graph API.
 - **مسار التفويض داخل XDAW NOVA:** `/api/integrations/facebook/authorize` ثم اختيار صريح لصفحة واحدة قبل الحفظ المشفّر لرمز الصفحة.
+- **ملاحظة OAuth:** رغم أن `manus.space` محفوظ ضمن App Domains وURI الكامل محفوظ في Facebook Login for Business، أعادت Meta رفض نطاق الاستضافة الفرعي. يدعم مرجع Meta الرسمي تحديث `app_domains` باستخدام App Access Token؛ لذلك سيعتمد المسار على إضافة المضيف الدقيق خادميًا قبل بدء OAuth. المصدر: https://developers.facebook.com/docs/graph-api/reference/application/
 
 > لا يحتوي هذا الملف على App Secret أو رموز وصول أو كلمات مرور.
