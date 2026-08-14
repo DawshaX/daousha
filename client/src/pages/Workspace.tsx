@@ -53,6 +53,7 @@ import ProjectBriefStudio from "@/components/ProjectBriefStudio";
 import TrendRadar from "@/components/TrendRadar";
 import PerformanceInsights from "@/components/PerformanceInsights";
 import OperationalNotifications from "@/components/OperationalNotifications";
+import PerformanceImprovementLoop from "@/components/PerformanceImprovementLoop";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -411,7 +412,7 @@ function Evolution() {
     <Frame section="evolution">
       <section className="grid gap-5 lg:grid-cols-[.9fr_1.1fr]">
         <Card className="border-red-500/18 bg-zinc-950/60"><CardHeader><CardTitle className="flex items-center gap-2 text-white"><Bot className="h-5 w-5 text-red-400" /> مبدأ التطوير المحكوم</CardTitle></CardHeader><CardContent><p className="text-sm leading-7 text-zinc-400">دعوشة يمكنه تسجيل اقتراح لمصدر أو قاعدة أو قدرة جديدة عندما يكتشف حاجة حقيقية. لكنه لا يضيف كودًا، ولا يربط مصدرًا، ولا يغيّر النشر من تلقاء نفسه. كل اقتراح يظل في هذا السجل حتى تعتمدَه.</p><div className="mt-5 rounded-xl border border-red-500/15 bg-red-500/[0.04] p-3 text-xs leading-6 text-red-100/70"><ShieldCheck className="ml-2 inline h-4 w-4 text-red-400" /> التحكم البشري شرط بنيوي، وليس زرًا تجميليًا.</div></CardContent></Card>
-        <Card className="border-white/8 bg-zinc-950/60"><CardHeader><CardTitle className="text-white">اقتراحات أولية</CardTitle><CardDescription className="mt-2 text-zinc-500">لا توجد تحديثات تم تنفيذها تلقائيًا.</CardDescription></CardHeader><CardContent className="space-y-3">{[["مصدر لقطات جديد", "راجع رخصته وشروط استخدام واجهته قبل التفعيل."],["محلل احتفاظ بالفيديو", "يتطلب وصولًا رسميًا إلى بيانات المنصة."],["مترجم مراجعة ثانٍ", "يُقترح عند ظهور فرق كبير بين النص والترجمة."]].map(([title, detail]) => <div key={title} className="flex items-start justify-between gap-4 rounded-xl border border-white/8 bg-white/[0.02] p-4"><div><p className="text-sm font-medium text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><Badge variant="outline" className="border-amber-500/25 bg-amber-500/[0.04] text-amber-200">مقترح</Badge></div>)}</CardContent></Card>
+        <PerformanceImprovementLoop />
       </section>
       <ChangeLogPanel />
     </Frame>

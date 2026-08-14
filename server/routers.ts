@@ -22,6 +22,8 @@ import { hasApprovedSafeVideo, isAllowedWorkflowTransition, type WorkflowStatus 
 import { assessAssetIntake } from "./rightsSafetyGate";
 import { fetchGoogleTrendSignals } from "./trendRadar";
 import { notifyOwnerOperationalEvent } from "./operationalNotifications";
+import { derivePerformanceImprovementSuggestion } from "../shared/performanceImprovement";
+import { performanceExperimentAdvice, summarizePerformance } from "../shared/performanceSummary";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -149,6 +151,23 @@ export const appRouter = router({
     proposeDevelopment: protectedProcedure
       .input(z.object({ proposalKind: z.enum(["source", "workflow", "integration", "model", "safety_rule"]), title: z.string().trim().min(3).max(255), rationale: z.string().trim().min(10).max(8000), referenceUrl: url.optional() }))
       .mutation(({ ctx, input }) => db.createProposal({ ownerId: ctx.user.id, ...input, state: "proposed" })),
+    performanceImprovementSuggestions: protectedProcedure.query(async ({ ctx }) => {
+      const dashboard = await db.getDashboardData(ctx.user.id);
+      const suggestion = derivePerformanceImprovementSuggestion(dashboard.snapshots);
+      const recordedTitles = new Set(dashboard.proposals.filter(proposal => proposal.state === "proposed").map(proposal => proposal.title));
+      return { message: performanceExperimentAdvice(summarizePerformance(dashboard.snapshots)), suggestions: suggestion ? [{ ...suggestion, recorded: recordedTitles.has(suggestion.title) }] : [] };
+    }),
+    recordPerformanceImprovement: protectedProcedure
+      .input(z.object({ suggestionId: z.enum(["retention_hook", "engagement_cta", "single_variable_experiment"]) }))
+      .mutation(async ({ ctx, input }) => {
+        const dashboard = await db.getDashboardData(ctx.user.id);
+        const suggestion = derivePerformanceImprovementSuggestion(dashboard.snapshots);
+        if (!suggestion || suggestion.id !== input.suggestionId) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا توجد لقطة أداء موثقة تدعم هذا الاقتراح حاليًا." });
+        const existing = dashboard.proposals.find(proposal => proposal.state === "proposed" && proposal.title === suggestion.title);
+        if (existing) return { created: false, proposal: existing };
+        const proposal = await db.createProposal({ ownerId: ctx.user.id, proposalKind: "workflow", title: suggestion.title, rationale: suggestion.rationale, state: "proposed" });
+        return { created: true, proposal };
+      }),
     schedules: protectedProcedure.query(({ ctx }) => db.listSchedules(ctx.user.id)),
     createScheduleDraft: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive(), platform: z.enum(["youtube"]), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
