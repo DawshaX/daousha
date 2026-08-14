@@ -18,7 +18,7 @@ YouTube publishing uses a refresh token obtained via the project OAuth client `2
 
 Instagram is connected through the Manus Instagram connector (account @xdaw_nova) and publishes reels without needing the Meta app to be in live mode.
 
-Facebook publishes via Meta Graph API with a page token generated from Graph API Explorer (app `XDAW NOVA Publisher`, App ID 2828503350861658, user-scoped token with pages_manage_posts + friends permissions). The token is short-lived relative to the user session: **regenerate from the Explorer when the user logs out/in** and paste the new value into the local secrets file.
+Facebook publishes via Meta Graph API with a page token generated from Graph API Explorer (app `XDAW NOVA Publisher`, App ID 2828503350861658). Target page is **XDAW NOVA, page ID 1265727539958933**, linked at https://www.facebook.com/1265727539958933 — owned by the owner's personal Facebook account ("محمد ضياء" profile); publishing always goes to the **page**, never to the personal profile. The token is short-lived relative to the user session: **regenerate from the Explorer when the user logs out/in** and paste the new value into the local secrets file.
 
 TikTok (App ID 7673768835363145748) remains sandbox-only; live-mode review pending at developers.tiktok.com.
 
