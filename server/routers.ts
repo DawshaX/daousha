@@ -52,14 +52,22 @@ export const appRouter = router({
         const projects = await db.listProjects(ctx.user.id);
         return input?.status ? projects.filter(project => project.status === input.status) : projects;
       }),
+    operationalProjects: protectedProcedure.query(({ ctx }) => db.listOperationalProjects(ctx.user.id)),
     createProject: protectedProcedure
       .input(z.object({ title: z.string().trim().min(3).max(255), brief: z.string().trim().max(12000).optional(), targetLanguage: z.enum(["ar", "en", "both"]).default("both"), contentFormat: z.enum(["short", "long"]).default("short"), parentProjectId: z.number().int().positive().optional() }))
       .mutation(({ ctx, input }) => db.createProject({ ownerId: ctx.user.id, ...input })),
+    createTwoFormatProjectPackage: protectedProcedure
+      .input(z.object({ title: z.string().trim().min(3).max(220), brief: z.string().trim().max(12000).optional(), targetLanguage: z.enum(["ar", "en", "both"]).default("both") }))
+      .mutation(async ({ ctx, input }) => {
+        const bundle = await db.createTwoFormatProjectPackage({ ownerId: ctx.user.id, ...input });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: "إنشاء حزمة إنتاج قصيرة وطويلة", details: `الفكرة الأم: ${bundle.parent.id} | النسخ: ${bundle.variants.map(item => item.id).join(", ")}`, actorType: "user" });
+        return bundle;
+      }),
     transitionProject: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive(), status: z.enum(["idea", "research", "script", "production", "review", "approved", "blocked"]) }))
       .mutation(async ({ ctx, input }) => {
         const current = await db.getOwnedProject(ctx.user.id, input.projectId);
-        if (!current) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود." });
+        if (!current || current.projectKind === "package_parent") throw new TRPCError({ code: "NOT_FOUND", message: "اختر نسخة تشغيلية من الحزمة بدل الفكرة الأم." });
         if (!isAllowedWorkflowTransition(current.status as WorkflowStatus, input.status as WorkflowStatus)) {
           throw new TRPCError({ code: "PRECONDITION_FAILED", message: `لا يمكن نقل المشروع من ${current.status} إلى ${input.status} قبل إكمال المرحلة السابقة.` });
         }
@@ -80,7 +88,7 @@ export const appRouter = router({
       .input(z.object({ projectId: z.number().int().positive() }))
       .mutation(async ({ ctx, input }) => {
         const project = await db.getOwnedProject(ctx.user.id, input.projectId);
-        if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود أو لا تملك صلاحية الوصول إليه." });
+        if (!project || project.projectKind === "package_parent") throw new TRPCError({ code: "NOT_FOUND", message: "اختر نسخة تشغيلية من الحزمة لتوليد السكربت." });
         const draft = await generateOriginalScript(project);
         await db.saveProjectScripts(ctx.user.id, input.projectId, draft);
         return { draft };
@@ -89,7 +97,7 @@ export const appRouter = router({
       .input(z.object({ projectId: z.number().int().positive(), prompt: z.string().trim().min(12).max(1800) }))
       .mutation(async ({ ctx, input }) => {
         const project = await db.getOwnedProject(ctx.user.id, input.projectId);
-        if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود أو لا تملك صلاحية الوصول إليه." });
+        if (!project || project.projectKind === "package_parent") throw new TRPCError({ code: "NOT_FOUND", message: "اختر نسخة تشغيلية من الحزمة لتوليد المشهد." });
         const { models } = await listImageModels();
         const generated = await generateImage({ model: models[0]?.model, prompt: `Create a fully original production still for this video project. No logos, watermarks, copyrighted characters, real identifiable people, or text. Project: ${project.title}. Creative brief: ${input.prompt}` });
         const assetInput = { title: `مشهد أصلي — ${project.title}`, assetKind: "image" as const, storageUrl: generated.url, licenseType: "مشهد مولّد أصليًا بواسطة دعوشة", attribution: "Daousha ImageService" };
@@ -146,7 +154,7 @@ export const appRouter = router({
       .input(z.object({ projectId: z.number().int().positive(), platform: z.enum(["youtube"]), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
       .mutation(async ({ ctx, input }) => {
         const [project, connections] = await Promise.all([db.getOwnedProject(ctx.user.id, input.projectId), db.listChannelConnections(ctx.user.id)]);
-        if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود." });
+        if (!project || project.projectKind === "package_parent") throw new TRPCError({ code: "NOT_FOUND", message: "لا يمكن جدولة الفكرة الأم؛ اختر نسخة قصيرة أو طويلة." });
         const youtube = connections.find(connection => connection.platform === "youtube" && connection.status === "authorized" && connection.credentialCiphertext);
         if (!youtube) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن جدولة النشر إلا لقناة YouTube المفوضة رسميًا." });
         return db.createSchedule({ ownerId: ctx.user.id, ...input, status: "draft" });
@@ -395,7 +403,13 @@ export const appRouter = router({
     changeLog: protectedProcedure.query(({ ctx }) => db.listChangeLog(ctx.user.id)),
     recordAnalytics: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive().optional(), platform: z.string().trim().min(2).max(80), contentVariant: z.enum(["ar", "en", "both", "none"]).default("none"), views: z.number().int().min(0), engagements: z.number().int().min(0), retentionRate: z.number().int().min(0).max(100) }))
-      .mutation(({ ctx, input }) => db.recordAnalyticsSnapshot({ ownerId: ctx.user.id, ...input })),
+      .mutation(async ({ ctx, input }) => {
+        if (input.projectId) {
+          const project = await db.getOwnedProject(ctx.user.id, input.projectId);
+          if (!project || project.projectKind === "package_parent") throw new TRPCError({ code: "NOT_FOUND", message: "سجّل اللقطة على نسخة تشغيلية من الحزمة، لا على الفكرة الأم." });
+        }
+        return db.recordAnalyticsSnapshot({ ownerId: ctx.user.id, ...input });
+      }),
   }),
 });
 

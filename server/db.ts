@@ -20,6 +20,8 @@ import {
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 import { isOwnedLinkedVideo } from "./projectAssetGuard";
+import { describeTwoFormatPackage } from "../shared/projectPackage";
+import { filterOperationalProjectVideoAssets, isOperationalProject } from "./packageOperationalGuard";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -69,12 +71,34 @@ export async function listProjects(ownerId: number) {
   return db!.select().from(videoProjects).where(eq(videoProjects.ownerId, ownerId)).orderBy(desc(videoProjects.updatedAt));
 }
 
+export async function listOperationalProjects(ownerId: number) {
+  return (await listProjects(ownerId)).filter(isOperationalProject);
+}
+
 export async function createProject(input: typeof videoProjects.$inferInsert) {
   const db = await getDb();
   if (!db) databaseUnavailable();
   const result = await db!.insert(videoProjects).values(input);
   const id = Number(result[0].insertId);
   return (await db!.select().from(videoProjects).where(eq(videoProjects.id, id)).limit(1))[0];
+}
+
+export async function createTwoFormatProjectPackage(input: { ownerId: number; title: string; brief?: string; targetLanguage: "ar" | "en" | "both" }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const plan = describeTwoFormatPackage(input);
+  return db!.transaction(async tx => {
+    const parentResult = await tx.insert(videoProjects).values({ ownerId: input.ownerId, title: plan.parent.title, brief: plan.parent.brief, targetLanguage: plan.parent.targetLanguage, contentFormat: "short", projectKind: plan.parent.projectKind, orientation: plan.parent.orientation });
+    const parentId = Number(parentResult[0].insertId);
+    const variants = [];
+    for (const variant of plan.variants) {
+      const result = await tx.insert(videoProjects).values({ ownerId: input.ownerId, title: variant.title, brief: input.brief, targetLanguage: variant.targetLanguage, contentFormat: variant.contentFormat, projectKind: variant.projectKind, orientation: variant.orientation, parentProjectId: parentId });
+      const id = Number(result[0].insertId);
+      variants.push((await tx.select().from(videoProjects).where(eq(videoProjects.id, id)).limit(1))[0]);
+    }
+    const parent = (await tx.select().from(videoProjects).where(eq(videoProjects.id, parentId)).limit(1))[0];
+    return { parent, variants };
+  });
 }
 
 export async function getOwnedProject(ownerId: number, projectId: number) {
@@ -270,7 +294,7 @@ export async function getPublishingPolicy(ownerId: number) {
 }
 
 export async function getContentMixStatus(ownerId: number) {
-  const [policy, projects] = await Promise.all([getPublishingPolicy(ownerId), listProjects(ownerId)]);
+  const [policy, projects] = await Promise.all([getPublishingPolicy(ownerId), listOperationalProjects(ownerId)]);
   const startOfToday = new Date();
   startOfToday.setUTCHours(0, 0, 0, 0);
   const publishedToday = projects.filter(project => project.status === "published" && project.publishedAt && project.publishedAt >= startOfToday);
@@ -323,7 +347,7 @@ export async function linkOwnedAssetToProject(ownerId: number, projectId: number
   const db = await getDb();
   if (!db) databaseUnavailable();
   const [project, asset] = await Promise.all([getOwnedProject(ownerId, projectId), getOwnedAsset(ownerId, assetId)]);
-  if (!project || !asset) return undefined;
+  if (!project || !asset || !isOperationalProject(project)) return undefined;
   const existing = (await db!.select().from(projectAssets).where(and(eq(projectAssets.projectId, projectId), eq(projectAssets.assetId, assetId))).limit(1))[0];
   if (existing) return existing;
   const result = await db!.insert(projectAssets).values({ projectId, assetId, clipRole });
@@ -339,7 +363,7 @@ export async function getOwnedProjectVideoAsset(ownerId: number, projectId: numb
     getOwnedAsset(ownerId, assetId),
     db!.select().from(projectAssets).where(and(eq(projectAssets.projectId, projectId), eq(projectAssets.assetId, assetId))).limit(1),
   ]);
-  if (!project || !asset || !isOwnedLinkedVideo({ projectId, assetId, assetKind: asset.assetKind, link: link[0] })) return undefined;
+  if (!project || !asset || !isOperationalProject(project) || !isOwnedLinkedVideo({ projectId, assetId, assetKind: asset.assetKind, link: link[0] })) return undefined;
   return { project, asset, link: link[0] };
 }
 
@@ -350,11 +374,11 @@ export async function listOwnedProjectVideoAssets(ownerId: number) {
   const [projects, assets] = await Promise.all([listProjects(ownerId), listAssets(ownerId)]);
   const projectMap = new Map(projects.map(project => [project.id, project]));
   const assetMap = new Map(assets.filter(asset => asset.assetKind === "video").map(asset => [asset.id, asset]));
-  return links.flatMap(link => {
+  return filterOperationalProjectVideoAssets(links.flatMap(link => {
     const project = projectMap.get(link.projectId);
     const asset = assetMap.get(link.assetId);
     return project && asset ? [{ project, asset, link }] : [];
-  });
+  }));
 }
 
 export async function markPolicyPublished(ownerId: number) {

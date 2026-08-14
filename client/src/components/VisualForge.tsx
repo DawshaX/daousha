@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 export default function VisualForge() {
   const utils = trpc.useUtils();
-  const { data: projects } = trpc.daousha.projects.useQuery();
+  const { data: projects } = trpc.daousha.operationalProjects.useQuery();
   const [projectId, setProjectId] = useState("");
   const [prompt, setPrompt] = useState("");
   const generate = trpc.daousha.generateVisual.useMutation({

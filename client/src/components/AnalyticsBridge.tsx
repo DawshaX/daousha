@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export default function AnalyticsBridge() {
   const utils = trpc.useUtils();
-  const { data: projects } = trpc.daousha.projects.useQuery();
+  const { data: projects } = trpc.daousha.operationalProjects.useQuery();
   const { data: dashboard } = trpc.daousha.dashboard.useQuery();
   const [projectId, setProjectId] = useState("");
   const [platform, setPlatform] = useState("YouTube");

@@ -23,5 +23,5 @@ describe("TikTok Sandbox credentials", () => {
     const detail = `${payload.error ?? ""} ${payload.error_description ?? ""}`.toLowerCase();
 
     expect(detail).not.toMatch(/invalid[_ ]?(client|client_key|client_secret)|client.*(invalid|not found|mismatch)/);
-  });
+  }, 20_000);
 });

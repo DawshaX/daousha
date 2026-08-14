@@ -7,7 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function ScriptForge() {
-  const { data: projects, isLoading } = trpc.daousha.projects.useQuery();
+  const { data: projects, isLoading } = trpc.daousha.operationalProjects.useQuery();
   const [projectId, setProjectId] = useState("");
   const generate = trpc.daousha.generateScript.useMutation({
     onSuccess: () => toast.success("تم حفظ مسودة السكربت داخل المشروع. راجعها قبل الإنتاج."),

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 export default function ScheduleDeck() {
   const utils = trpc.useUtils();
-  const { data: projects } = trpc.daousha.projects.useQuery();
+  const { data: projects } = trpc.daousha.operationalProjects.useQuery();
   const { data: schedules } = trpc.daousha.schedules.useQuery();
   const { data: integrations } = trpc.daousha.integrations.useQuery();
   const [projectId, setProjectId] = useState("");

@@ -51,6 +51,8 @@ export const videoProjects = mysqlTable("video_projects", {
   brief: text("brief"),
   targetLanguage: mysqlEnum("targetLanguage", ["ar", "en", "both"]).default("both").notNull(),
   contentFormat: mysqlEnum("contentFormat", ["short", "long"]).default("short").notNull(),
+  projectKind: mysqlEnum("projectKind", ["standalone", "package_parent", "package_variant"]).default("standalone").notNull(),
+  orientation: mysqlEnum("orientation", ["vertical", "horizontal", "none"]).default("none").notNull(),
   parentProjectId: int("parentProjectId"),
   status: mysqlEnum("status", ["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]).default("idea").notNull(),
   scriptArabic: text("scriptArabic"),

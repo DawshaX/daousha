@@ -23,6 +23,7 @@ function Router() {
     <Route path="/review"><ToolRoute section="review" /></Route>
     <Route path="/automation"><ToolRoute section="automation" /></Route>
     <Route path="/insights"><ToolRoute section="insights" /></Route>
+    <Route path="/analytics"><ToolRoute section="insights" /></Route>
     <Route path="/evolution"><ToolRoute section="evolution" /></Route>
     <Route path="/settings"><ToolRoute section="settings" /></Route>
     <Route path="/privacy"><Legal kind="privacy" /></Route>
