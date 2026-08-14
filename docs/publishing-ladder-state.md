@@ -29,4 +29,4 @@ This file is the single source of truth for the escalating daily publishing cap.
 - telegram: إشعار النشر أُرسل بنجاح
 - instagram: منشور عبر Manus Instagram connector (حساب @xdaw_nova) — لا حاجة لمراجعة Meta
 - facebook: منشور عبر Meta Graph API (تطبيق XDAW NOVA Publisher، صفحة XDAW NOVA) — **التوكن مرتبط بجلسة المستخدم، يُعاد توليده من Graph API Explorer عند تسجيل الخروج/الدخول**
-- tiktok: Sandbox فقط (يحتاج Live Mode Review)
+- tiktok: Live Mode Review قُدِّم رسمياً 2026-08-14 (التطبيق xDaW NoVa، Production / In review، فيديو العرض مرفوع، Direct Post مفعّل) — بعد الموافقة نربط الحساب الحقيقي عبر OAuth والنشر يصبح تلقائياً بالكامل
