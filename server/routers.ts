@@ -14,7 +14,7 @@ import { evaluatePublishGuard } from "./publishingGuards";
 import { resolveDistributionReadiness } from "./publishingDestinations";
 import { uploadVettedVideoToYouTube } from "./youtubePublisher";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
-import { getFacebookRedirectUri } from "./facebookOAuth";
+import { FACEBOOK_OAUTH_DOMAIN, facebookOAuthDomainIsReady, getFacebookRedirectUri } from "./facebookOAuth";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -151,6 +151,8 @@ export const appRouter = router({
         youtubeRedirectUri: `${ctx.req.header("x-forwarded-proto")?.split(",")[0] ?? ctx.req.protocol}://${ctx.req.header("x-forwarded-host") ?? ctx.req.header("host")}/api/integrations/youtube/callback`,
         facebookClientConfigured: Boolean(process.env.META_APP_ID && process.env.META_APP_SECRET),
         facebookRedirectUri: getFacebookRedirectUri(ctx.req),
+        facebookExpectedDomain: FACEBOOK_OAUTH_DOMAIN,
+        facebookDomainReady: facebookOAuthDomainIsReady(ctx.req),
       };
     }),
     claimTelegramChat: protectedProcedure.mutation(async ({ ctx }) => {
