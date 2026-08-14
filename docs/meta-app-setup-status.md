@@ -1,7 +1,7 @@
 # حالة إعداد Meta — XDAW NOVA Publisher
 
 - **اسم التطبيق:** XDAW NOVA Publisher
-- **معرّف التطبيق:** `2828503350861658`
+- **معرّف التطبيق:** `<META_APP_ID>`
 - **صفحة Facebook المستهدفة:** صفحة XDAW NOVA الجديدة المدارة من الحساب الشخصي للمالك.
 - **Instagram:** حساب مستقل على `DAWSHAXLOL@gmail.com`؛ لا يُدمج مع Facebook ولا تُنقل ملكيته.
 - **نطاقات الصفحات المفعلة للاختبار:** `pages_show_list` و`pages_manage_posts` و`pages_read_engagement` و`pages_manage_engagement` و`pages_manage_metadata`.
