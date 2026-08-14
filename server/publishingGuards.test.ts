@@ -38,6 +38,12 @@ describe("evaluatePublishGuard", () => {
     expect(decision.reason).toContain("سقف النشر اليومي");
   });
 
+  it("blocks publishing again before the configurable minimum interval has elapsed", () => {
+    const decision = evaluatePublishGuard({ ...basePolicy, minIntervalMinutes: 10, lastPublishedAt: new Date(Date.now() - 9 * 60_000) }, readyContent);
+    expect(decision.allowed).toBe(false);
+    expect(decision.reason).toContain("الفاصل الأدنى");
+  });
+
   it("blocks all upload paths until the final preview acknowledgement is stored", () => {
     const decision = evaluatePublishGuard(basePolicy, { ...readyContent, previewAcknowledged: false });
     expect(decision.allowed).toBe(false);
