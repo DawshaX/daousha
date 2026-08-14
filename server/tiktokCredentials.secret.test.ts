@@ -23,5 +23,5 @@ describe("TikTok app credentials", () => {
 
     // A deliberately invalid authorization code should be rejected, but never as an invalid application client.
     expect(detail).not.toMatch(/invalid[_ ]?(client|client_key|client_secret)|client.*(invalid|not found|mismatch)/);
-  });
+  }, 20_000);
 });
