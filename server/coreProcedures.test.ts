@@ -97,4 +97,14 @@ describe("core content procedures", () => {
     expect(dbMock.createAsset).not.toHaveBeenCalled();
     expect(notificationMock.notifyOwnerOperationalEvent).not.toHaveBeenCalled();
   });
+
+  it("registers a generated supporting visual as a review-required B-roll asset", async () => {
+    const caller = appRouter.createCaller({ user: { id: 7 } } as any);
+    imageMock.generateImage.mockResolvedValue({ url: "https://images.example/broll.png" });
+    dbMock.createAsset.mockResolvedValue({ id: 19, title: "مادة B-roll أصلية — فكرة أصلية" });
+
+    await expect(caller.daousha.generateVisual({ projectId: 11, prompt: "تفاصيل بصرية أصلية لدعم الفكرة", outputRole: "broll" })).resolves.toMatchObject({ assetId: 19 });
+    expect(dbMock.createAsset).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, title: "مادة B-roll أصلية — فكرة أصلية", assetKind: "image" }));
+    expect(notificationMock.notifyOwnerOperationalEvent).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, eventType: "review_required" }));
+  });
 });

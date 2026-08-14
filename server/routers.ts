@@ -97,15 +97,16 @@ export const appRouter = router({
         return { draft };
       }),
     generateVisual: protectedProcedure
-      .input(z.object({ projectId: z.number().int().positive(), prompt: z.string().trim().min(12).max(1800) }))
+      .input(z.object({ projectId: z.number().int().positive(), prompt: z.string().trim().min(12).max(1800), outputRole: z.enum(["primary_scene", "broll", "cover"]).default("primary_scene") }))
       .mutation(async ({ ctx, input }) => {
         const project = await db.getOwnedProject(ctx.user.id, input.projectId);
         if (!project || project.projectKind === "package_parent") throw new TRPCError({ code: "NOT_FOUND", message: "اختر نسخة تشغيلية من الحزمة لتوليد المشهد." });
         const { models } = await listImageModels();
-        const generated = await generateImage({ model: models[0]?.model, prompt: `Create a fully original production still for this video project. No logos, watermarks, copyrighted characters, real identifiable people, or text. Project: ${project.title}. Creative brief: ${input.prompt}` });
-        const assetInput = { title: `مشهد أصلي — ${project.title}`, assetKind: "image" as const, storageUrl: generated.url, licenseType: "مشهد مولّد أصليًا بواسطة دعوشة", attribution: "Daousha ImageService" };
+        const outputLabel = { primary_scene: "مشهد أصلي رئيسي", broll: "مادة B-roll أصلية", cover: "غلاف أصلي" }[input.outputRole];
+        const generated = await generateImage({ model: models[0]?.model, prompt: `Create a fully original production still for this video project. Output role: ${outputLabel}. No logos, watermarks, copyrighted characters, real identifiable people, or text. Project: ${project.title}. Creative brief: ${input.prompt}` });
+        const assetInput = { title: `${outputLabel} — ${project.title}`, assetKind: "image" as const, storageUrl: generated.url, licenseType: "مشهد مولّد أصليًا بواسطة دعوشة", attribution: "Daousha ImageService" };
         const asset = await db.createAsset({ ownerId: ctx.user.id, ...assetInput, ...assessAssetIntake(assetInput) });
-        await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "review_required", title: "مادة أصلية تحتاج مراجعة", detail: `المشهد «${asset.title}» ينتظر قرار الحقوق والسلامة.` });
+        await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "review_required", title: "مادة أصلية تحتاج مراجعة", detail: `المخرج «${asset.title}» ينتظر قرار الحقوق والسلامة.` });
         return { assetId: asset.id, url: generated.url };
       }),
     assets: protectedProcedure.query(({ ctx }) => db.listAssets(ctx.user.id)),
