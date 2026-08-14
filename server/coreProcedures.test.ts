@@ -8,6 +8,7 @@ const dbMock = {
   reviewAsset: vi.fn(),
   createChangeLogEntry: vi.fn(),
   getOwnedProject: vi.fn(),
+  updateProjectStatus: vi.fn(),
   listChannelConnections: vi.fn(),
   createSchedule: vi.fn(),
 };
@@ -31,7 +32,8 @@ describe("core content procedures", () => {
     dbMock.createAsset.mockResolvedValue({ id: 13, title: "صوت أصلي", licenseStatus: "held", safetyStatus: "review" });
     dbMock.reviewAsset.mockResolvedValue({ id: 13, title: "صوت أصلي", licenseStatus: "approved", safetyStatus: "clear" });
     dbMock.createChangeLogEntry.mockResolvedValue({ id: 14 });
-    dbMock.getOwnedProject.mockResolvedValue({ id: 11, projectKind: "standalone" });
+    dbMock.getOwnedProject.mockResolvedValue({ id: 11, title: "فكرة أصلية", projectKind: "standalone", status: "production" });
+    dbMock.updateProjectStatus.mockResolvedValue({ id: 11, title: "فكرة أصلية", status: "review" });
     dbMock.listChannelConnections.mockResolvedValue([{ platform: "youtube", status: "authorized", credentialCiphertext: "cipher" }]);
     dbMock.createSchedule.mockResolvedValue({ id: 15, projectId: 11, platform: "youtube", status: "draft" });
     notificationMock.notifyOwnerOperationalEvent.mockResolvedValue({ delivered: false });
@@ -77,6 +79,12 @@ describe("core content procedures", () => {
     dbMock.getOwnedProject.mockResolvedValue({ id: 12, projectKind: "package_parent" });
     await expect(caller.daousha.createScheduleDraft({ projectId: 12, platform: "youtube", cronExpression: "0 0 9 * * *", timeZone: "Africa/Cairo" })).rejects.toMatchObject({ code: "NOT_FOUND" });
     expect(dbMock.createSchedule).toHaveBeenCalledTimes(1);
+  });
+
+  it("notifies the owner when an operational project enters human review", async () => {
+    const caller = appRouter.createCaller({ user: { id: 7 } } as any);
+    await expect(caller.daousha.transitionProject({ projectId: 11, status: "review" })).resolves.toMatchObject({ status: "review" });
+    expect(notificationMock.notifyOwnerOperationalEvent).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, eventType: "project_review_required", title: "مشروع بانتظار مراجعة" }));
   });
 
   it("does not create assets, scripts, or review notifications when an AI provider fails", async () => {
