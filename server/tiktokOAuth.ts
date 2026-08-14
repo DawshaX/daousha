@@ -6,7 +6,10 @@ import { sdk } from "./_core/sdk";
 import * as db from "./db";
 
 const OAUTH_STATE_COOKIE = "xdaw_tiktok_oauth_state";
+const OAUTH_ENVIRONMENT_COOKIE = "xdaw_tiktok_oauth_environment";
 const TIKTOK_SCOPES = ["user.info.basic", "video.upload", "video.publish"];
+
+export type TikTokOAuthEnvironment = "production" | "sandbox";
 
 type TikTokTokenResponse = {
   access_token?: string;
@@ -22,6 +25,23 @@ type TikTokTokenResponse = {
 function cookieOptions(req: Request) {
   const forwardedProtocol = req.header("x-forwarded-proto")?.split(",")[0];
   return { httpOnly: true, sameSite: "lax" as const, secure: req.secure || forwardedProtocol === "https", maxAge: 10 * 60 * 1000, path: "/" };
+}
+
+export function resolveTikTokOAuthEnvironment(value: unknown): TikTokOAuthEnvironment {
+  return value === "sandbox" ? "sandbox" : "production";
+}
+
+export function getTikTokOAuthCredentials(environment: TikTokOAuthEnvironment) {
+  if (environment === "sandbox") {
+    return {
+      clientKey: ENV.tiktokSandboxClientKey,
+      clientSecret: ENV.tiktokSandboxClientSecret,
+    };
+  }
+  return {
+    clientKey: ENV.tiktokClientKey,
+    clientSecret: ENV.tiktokClientSecret,
+  };
 }
 
 function credentialKey() {
@@ -67,31 +87,43 @@ export function registerTikTokOAuthRoutes(app: Express) {
   app.get("/api/integrations/tiktok/authorize", async (req, res) => {
     const user = await getAuthenticatedUser(req);
     if (!user) return res.status(401).send("سجّل الدخول إلى XDAW NOVA أولًا ثم أعد محاولة ربط TikTok.");
-    if (!ENV.tiktokClientKey || !ENV.tiktokClientSecret) return res.status(503).send("بيانات تطبيق TikTok غير مهيأة بعد.");
+    const environment = resolveTikTokOAuthEnvironment(req.query.environment);
+    const credentials = getTikTokOAuthCredentials(environment);
+    if (!credentials.clientKey || !credentials.clientSecret) return res.status(503).send(environment === "sandbox" ? "بيانات TikTok Sandbox غير مهيأة بعد." : "بيانات تطبيق TikTok غير مهيأة بعد.");
 
     const state = randomBytes(32).toString("base64url");
     res.cookie(OAUTH_STATE_COOKIE, state, cookieOptions(req));
-    return res.redirect(getTikTokAuthorizeUrl({ clientKey: ENV.tiktokClientKey, redirectUri: getTikTokRedirectUri(req), state }));
+    res.cookie(OAUTH_ENVIRONMENT_COOKIE, environment, cookieOptions(req));
+    return res.redirect(getTikTokAuthorizeUrl({ clientKey: credentials.clientKey, redirectUri: getTikTokRedirectUri(req), state }));
   });
 
   app.get("/api/integrations/tiktok/callback", async (req, res) => {
     const user = await getAuthenticatedUser(req);
     const state = typeof req.query.state === "string" ? req.query.state : "";
     const code = typeof req.query.code === "string" ? req.query.code : "";
-    const cookieState = parseCookie(req.headers.cookie ?? "")[OAUTH_STATE_COOKIE];
+    const cookies = parseCookie(req.headers.cookie ?? "");
+    const cookieState = cookies[OAUTH_STATE_COOKIE];
+    const environment = resolveTikTokOAuthEnvironment(cookies[OAUTH_ENVIRONMENT_COOKIE]);
     res.clearCookie(OAUTH_STATE_COOKIE, cookieOptions(req));
+    res.clearCookie(OAUTH_ENVIRONMENT_COOKIE, cookieOptions(req));
     if (!user || !state || !code || state !== cookieState) return res.redirect("/settings?tiktok=invalid_state");
-    if (!ENV.tiktokClientKey || !ENV.tiktokClientSecret) return res.redirect("/settings?tiktok=not_configured");
+    const credentials = getTikTokOAuthCredentials(environment);
+    if (!credentials.clientKey || !credentials.clientSecret) return res.redirect(environment === "sandbox" ? "/settings?tiktok=sandbox_not_configured" : "/settings?tiktok=not_configured");
 
     try {
       const tokenResponse = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ client_key: ENV.tiktokClientKey, client_secret: ENV.tiktokClientSecret, code, grant_type: "authorization_code", redirect_uri: getTikTokRedirectUri(req) }),
+        body: new URLSearchParams({ client_key: credentials.clientKey, client_secret: credentials.clientSecret, code, grant_type: "authorization_code", redirect_uri: getTikTokRedirectUri(req) }),
         signal: AbortSignal.timeout(20_000),
       });
       const tokenPayload = (await tokenResponse.json()) as TikTokTokenResponse;
       if (!tokenResponse.ok || !tokenPayload.access_token || !tokenPayload.open_id) throw new Error(tokenPayload.error_description || tokenPayload.error || "TOKEN_EXCHANGE_FAILED");
+
+      if (environment === "sandbox") {
+        await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "نجح TikTok Sandbox OAuth", details: `حساب Sandbox: ${tokenPayload.open_id} | النطاقات: ${tokenPayload.scope ?? TIKTOK_SCOPES.join(", ")}. لم يُحفظ أي رمز ولم يُفعّل نشر الإنتاج.`, actorType: "user" });
+        return res.redirect("/settings?tiktok=sandbox_connected");
+      }
 
       const encryptedTokenBundle = encryptCredential(JSON.stringify({
         accessToken: tokenPayload.access_token,
@@ -114,6 +146,10 @@ export function registerTikTokOAuthRoutes(app: Express) {
       await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "تم تفويض TikTok", details: `النطاقات: ${tokenPayload.scope ?? TIKTOK_SCOPES.join(", ")}`, actorType: "user" });
       return res.redirect("/settings?tiktok=connected");
     } catch {
+      if (environment === "sandbox") {
+        await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "تعذّر TikTok Sandbox OAuth", details: "راجع مفاتيح Sandbox والصلاحيات والحساب المستهدف، ثم أعد الاختبار. لم يتأثر اتصال الإنتاج.", actorType: "user" });
+        return res.redirect("/settings?tiktok=sandbox_connection_failed");
+      }
       await db.upsertChannelConnection({ ownerId: user.id, platform: "tiktok", label: "XDAW NOVA TikTok", status: "error", lastError: "تعذّر تفويض TikTok. راجع صلاحيات التطبيق ثم أعد المحاولة." });
       return res.redirect("/settings?tiktok=connection_failed");
     }

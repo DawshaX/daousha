@@ -156,6 +156,7 @@ export const appRouter = router({
         facebookExpectedDomain: FACEBOOK_OAUTH_DOMAIN,
         facebookDomainReady: facebookOAuthDomainIsReady(ctx.req),
         tiktokClientConfigured: Boolean(process.env.TIKTOK_CLIENT_KEY && process.env.TIKTOK_CLIENT_SECRET),
+        tiktokSandboxClientConfigured: Boolean(process.env.TIKTOK_SANDBOX_CLIENT_KEY && process.env.TIKTOK_SANDBOX_CLIENT_SECRET),
         tiktokRedirectUri: getTikTokRedirectUri(ctx.req),
       };
     }),

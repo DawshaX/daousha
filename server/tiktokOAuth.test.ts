@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getTikTokAuthorizeUrl } from "./tiktokOAuth";
+import { getTikTokAuthorizeUrl, resolveTikTokOAuthEnvironment } from "./tiktokOAuth";
 
 describe("TikTok OAuth authorization URL", () => {
   it("requests the minimum identity, draft upload, and direct post scopes", () => {
@@ -11,5 +11,11 @@ describe("TikTok OAuth authorization URL", () => {
     expect(url.searchParams.get("state")).toBe("csrf-state");
     expect(url.searchParams.get("scope")).toBe("user.info.basic,video.upload,video.publish");
     expect(url.searchParams.get("redirect_uri")).toBe("https://xdawnova.example/api/integrations/tiktok/callback");
+  });
+
+  it("keeps Sandbox selection explicit and defaults all other values to production", () => {
+    expect(resolveTikTokOAuthEnvironment("sandbox")).toBe("sandbox");
+    expect(resolveTikTokOAuthEnvironment("production")).toBe("production");
+    expect(resolveTikTokOAuthEnvironment(undefined)).toBe("production");
   });
 });

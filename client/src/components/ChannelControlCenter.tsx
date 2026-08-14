@@ -136,9 +136,9 @@ export default function ChannelControlCenter() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-xl border border-white/8 bg-black/25 p-3 text-xs leading-6 text-zinc-400">
-              {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.tiktokClientConfigured ? <>بيانات تطبيق TikTok محمية على الخادم. عنوان العودة الذي يُسجّل في تطبيق TikTok: <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations.tiktokRedirectUri}</span><span className="mt-2 block text-amber-200">تظل مراجعة تطبيق TikTok شرطًا للنشر المباشر في الإنتاج.</span></> : "أكمل مفاتيح تطبيق TikTok في الأسرار المحمية أولًا."}
+              {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.tiktokSandboxClientConfigured ? <>بيئة TikTok Sandbox مهيأة لاختبار OAuth المقيد. عنوان العودة المسجل في التطبيق: <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations.tiktokRedirectUri}</span><span className="mt-2 block text-amber-200">لا يُفعّل الاختبار أي نشر إنتاجي، وتظل مراجعة التطبيق شرطًا للنشر المباشر.</span></> : integrations?.tiktokClientConfigured ? "يلزم إضافة مفاتيح TikTok Sandbox المنفصلة أولًا لتسجيل دليل OAuth حي قبل المراجعة." : "أكمل مفاتيح تطبيق TikTok في الأسرار المحمية أولًا."}
             </div>
-            {integrations?.tiktokClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/tiktok/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض TikTok الرسمي</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> إعداد TikTok غير مكتمل</Button>}
+            {integrations?.tiktokSandboxClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/tiktok/authorize?environment=sandbox"><LockKeyhole className="ml-2 h-4 w-4" /> اختبار OAuth في TikTok Sandbox</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> أضف مفاتيح Sandbox أولًا</Button>}
           </CardContent>
         </Card>
 

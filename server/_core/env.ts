@@ -16,4 +16,6 @@ export const ENV = {
   facebookPageAccessToken: process.env.FACEBOOK_PAGE_ACCESS_TOKEN ?? "",
   tiktokClientKey: process.env.TIKTOK_CLIENT_KEY ?? "",
   tiktokClientSecret: process.env.TIKTOK_CLIENT_SECRET ?? "",
+  tiktokSandboxClientKey: process.env.TIKTOK_SANDBOX_CLIENT_KEY ?? "",
+  tiktokSandboxClientSecret: process.env.TIKTOK_SANDBOX_CLIENT_SECRET ?? "",
 };
