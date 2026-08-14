@@ -6,6 +6,7 @@ import {
   contentAssets,
   contentSources,
   developmentProposals,
+  domainMonitors,
   InsertUser,
   notificationEvents,
   projectAssets,
@@ -376,6 +377,38 @@ export async function recordNotificationEvent(input: typeof notificationEvents.$
   const result = await db!.insert(notificationEvents).values(input);
   const id = Number(result[0].insertId);
   return (await db!.select().from(notificationEvents).where(eq(notificationEvents.id, id)).limit(1))[0];
+}
+
+export async function getDomainMonitor(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(domainMonitors).where(eq(domainMonitors.ownerId, ownerId)).limit(1))[0];
+}
+
+export async function getDomainMonitorByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(domainMonitors).where(eq(domainMonitors.scheduleCronTaskUid, taskUid)).limit(1))[0];
+}
+
+export async function upsertDomainMonitor(input: { ownerId: number; domain: string; scheduleCronTaskUid: string }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.insert(domainMonitors).values(input).onDuplicateKeyUpdate({ set: { domain: input.domain, scheduleCronTaskUid: input.scheduleCronTaskUid } });
+  return getDomainMonitor(input.ownerId);
+}
+
+export async function updateDomainMonitorCheck(id: number, input: { status: "pending" | "delegated"; detail: string }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(domainMonitors).set({ status: input.status, lastDetail: input.detail, lastCheckedAt: new Date() }).where(eq(domainMonitors.id, id));
+  return (await db!.select().from(domainMonitors).where(eq(domainMonitors.id, id)).limit(1))[0];
+}
+
+export async function markDomainMonitorNotified(id: number, status: "pending" | "delegated") {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(domainMonitors).set({ lastNotifiedStatus: status, lastNotificationAt: new Date() }).where(eq(domainMonitors.id, id));
 }
 
 export async function getDashboardData(ownerId: number) {

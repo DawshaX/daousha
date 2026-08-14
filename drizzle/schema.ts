@@ -193,5 +193,20 @@ export const notificationEvents = mysqlTable("notification_events", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+/** Durable state for the low-frequency EU.org delegation monitor. */
+export const domainMonitors = mysqlTable("domain_monitors", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull().unique(),
+  domain: varchar("domain", { length: 253 }).notNull(),
+  status: mysqlEnum("status", ["pending", "delegated"]).default("pending").notNull(),
+  lastNotifiedStatus: mysqlEnum("lastNotifiedStatus", ["pending", "delegated"]),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  lastCheckedAt: timestamp("lastCheckedAt"),
+  lastDetail: text("lastDetail"),
+  lastNotificationAt: timestamp("lastNotificationAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("domain_monitors_task_uid_idx").on(table.scheduleCronTaskUid)]);
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
