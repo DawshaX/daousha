@@ -12,6 +12,16 @@ Episode 1 — "دماغك يعمل على ثلث طاقته فقط! 3 حقائق
 | Instagram | https://www.instagram.com/reel/DcB9PhLiYxg/ | Yes — reel on @xdaw_nova via Manus Instagram connector |
 | Facebook | https://www.facebook.com/reel/29350563061210067/ | Yes — reel on page XDAW NOVA (page ID 1265727539958933) |
 
+## Second publish (2026-08-14) — Episode 2
+
+Episode 2 — "قلبك ينبض 2.5 مليار مرة! 3 حقائق ستصدمك" (produced and published fully automatically in the same session):
+
+| Platform | Public URL | Verified |
+|---|---|---|
+| YouTube | https://www.youtube.com/watch?v=YDWrSeMH4o8 | Yes — public, channel xDaw_NoVa |
+| Instagram | https://www.instagram.com/reel/DcCLwsYEWd5/ | Yes — reel on @xdaw_nova |
+| Facebook | https://www.facebook.com/1265727539958933/videos/122103892671434391 | Yes — reel on page XDAW NOVA |
+
 ## Connection notes
 
 YouTube publishing uses a refresh token obtained via the project OAuth client `276755111100-7ll905jqkefcbanqrqnvm1p4ogl5n229` (project `xdaw-nova`). Redirect URI `https://8899-ivfx0jnsfhm4lb21x07io-ae1265fb.sg1.manus.computer/callback` was registered on that client in 2026-08-14 and works; re-authorize there if the refresh token is ever revoked.
