@@ -1,6 +1,6 @@
 # Platform Link Status — XDAW NOVA
 
-Last verified: 2026-08-14. Secrets never live in this repo; they stay in the owner's local `.env.local` (owner must copy `secrets.txt` back after every credential rotation).
+Last verified: 2026-08-14. Facebook upgraded to permanent long-lived page token on the same date. Secrets never live in this repo; they stay in the owner's local `.env.local` (owner must copy `secrets.txt` back after every credential rotation).
 
 ## First multi-platform publish (2026-08-14)
 
@@ -18,7 +18,7 @@ YouTube publishing uses a refresh token obtained via the project OAuth client `2
 
 Instagram is connected through the Manus Instagram connector (account @xdaw_nova) and publishes reels without needing the Meta app to be in live mode.
 
-Facebook publishes via Meta Graph API with a page token generated from Graph API Explorer (app `XDAW NOVA Publisher`, App ID 2828503350861658). Target page is **XDAW NOVA, page ID 1265727539958933**, linked at https://www.facebook.com/1265727539958933 — owned by the owner's personal Facebook account ("محمد ضياء" profile); publishing always goes to the **page**, never to the personal profile. The token is short-lived relative to the user session: **regenerate from the Explorer when the user logs out/in** and paste the new value into the local secrets file.
+Facebook publishes via Meta Graph API with a **long-lived page token** (verified via debug_token: type PAGE, expires never, scopes include pages_manage_posts) generated from Graph API Explorer then exchanged through app `XDAW NOVA Publisher` (App ID 2828503350861658). Target page is **XDAW NOVA, page ID 1265727539958933**, linked at https://www.facebook.com/1265727539958933 — owned by the owner's personal Facebook account ("محمد ضياء" profile); publishing always goes to the **page**, never to the personal profile. The short-lived Explorer token (1265727539958933_61593031750114 profile.php display form is the same page in some contexts) was converted to long-lived with `fb_longlived2.py`/`fb_finalize.py` and stored in the local secrets file as `FACEBOOK_PAGE_ACCESS_TOKEN` — no expiry. If a future publish ever fails with an OAuth error, run the same exchange scripts with a fresh Explorer user token (rare, roughly every 60 days at worst).
 
 TikTok (App ID 7673768835363145748) remains sandbox-only; live-mode review pending at developers.tiktok.com.
 
