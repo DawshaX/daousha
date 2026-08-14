@@ -1,6 +1,6 @@
 import * as db from "./db";
 import { evaluatePublishGuard } from "./publishingGuards";
-import { sendTelegramOperationalNotification } from "./telegram";
+import { notifyOwnerOperationalEvent } from "./operationalNotifications";
 import { uploadVettedVideoToYouTube } from "./youtubePublisher";
 
 function automaticMetadata(project: { title: string; brief: string | null; scriptArabic: string | null; scriptEnglish: string | null; contentFormat: "short" | "long" }) {
@@ -20,6 +20,7 @@ export async function executeScheduledPublish(taskUid: string) {
   await db.markScheduleExecuted(schedule.ownerId, schedule.id);
   if (schedule.platform.toLowerCase() !== "youtube") {
     await db.setScheduleStatus(schedule.ownerId, schedule.id, "needs_approval");
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, eventType: "schedule_needs_review", title: "جدولة تحتاج مراجعة", detail: `المنصة ${schedule.platform} غير مفعلة للنشر الدوري. أوقفت الجدولة حتى مراجعتها.` });
     return { ok: true, skipped: "platform_not_connected" as const, scheduleId: schedule.id };
   }
 
@@ -33,6 +34,7 @@ export async function executeScheduledPublish(taskUid: string) {
   if (!linked) {
     await db.createPublishingRun({ ownerId: schedule.ownerId, projectId: schedule.projectId, platform: "youtube", status: "blocked", visibility: "private", decisionReason: "لا توجد مادة فيديو مرتبطة بالمشروع المجدول.", initiatedBy: "scheduled_job" });
     await db.setScheduleStatus(schedule.ownerId, schedule.id, "needs_approval");
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, eventType: "schedule_needs_review", title: "جدولة تحتاج مادة", detail: "أوقفت الجدولة لأن المشروع لا يملك فيديو مرتبطًا ومعتمدًا." });
     return { ok: true, skipped: "missing_video" as const, scheduleId: schedule.id };
   }
   if (runs.some(run => run.projectId === schedule.projectId && run.platform === "youtube" && run.status === "public_uploaded")) {
@@ -52,6 +54,8 @@ export async function executeScheduledPublish(taskUid: string) {
   if (!decision.allowed || !youtube?.credentialCiphertext || !linked.asset.storageKey) {
     const reason = !decision.allowed ? decision.reason : !youtube?.credentialCiphertext ? "قناة YouTube غير مرتبطة رسميًا." : "ملف الفيديو غير محفوظ داخل التخزين الآمن.";
     await db.createPublishingRun({ ownerId: schedule.ownerId, projectId: linked.project.id, platform: "youtube", status: "blocked", visibility: "private", decisionReason: reason, initiatedBy: "scheduled_job" });
+    await db.setScheduleStatus(schedule.ownerId, schedule.id, "needs_approval");
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, eventType: "schedule_needs_review", title: "حاجز النشر أوقف الجدولة", detail: reason });
     return { ok: true, skipped: "guard_blocked" as const, scheduleId: schedule.id, reason };
   }
 
@@ -63,15 +67,12 @@ export async function executeScheduledPublish(taskUid: string) {
     if (decision.visibility === "public") {
       await Promise.all([db.markPolicyPublished(schedule.ownerId), db.markProjectPublished(schedule.ownerId, linked.project.id), db.setScheduleStatus(schedule.ownerId, schedule.id, "paused")]);
     }
-    const telegram = connections.find(connection => connection.platform === "telegram" && connection.status === "authorized");
-    if (telegram?.externalAccountRef) {
-      const delivered = await sendTelegramOperationalNotification({ chatId: telegram.externalAccountRef, title: `دورة XDAW NOVA: رفع ${decision.visibility === "public" ? "عام" : "خاص"}`, detail: `${linked.project.title}\n${uploaded.url}` });
-      await db.recordNotificationEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, channel: "telegram", eventType: "scheduled_youtube_upload", deliveryStatus: delivered.delivered ? "sent" : "failed", detail: delivered.reason });
-    }
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: "scheduled_youtube_upload", title: `دورة XDAW NOVA: رفع ${decision.visibility === "public" ? "عام" : "خاص"}`, detail: `${linked.project.title}\n${uploaded.url}` });
     return { ok: true, published: true, scheduleId: schedule.id, run: completed, url: uploaded.url, visibility: decision.visibility };
   } catch (error) {
     await db.updatePublishingRun(schedule.ownerId, run.id, { status: "failed" });
     await db.setScheduleStatus(schedule.ownerId, schedule.id, "failed");
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: "scheduled_youtube_failed", title: "تعثر نشر مجدول", detail: `تعذر رفع مشروع «${linked.project.title}». أوقفت الجدولة ولم تبدأ إعادة محاولة تلقائية.` });
     throw error;
   }
 }

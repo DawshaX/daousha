@@ -52,6 +52,7 @@ import ContentMixPanel from "@/components/ContentMixPanel";
 import ProjectBriefStudio from "@/components/ProjectBriefStudio";
 import TrendRadar from "@/components/TrendRadar";
 import PerformanceInsights from "@/components/PerformanceInsights";
+import OperationalNotifications from "@/components/OperationalNotifications";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -391,6 +392,7 @@ function Automation() {
       </section>
       <ContentMixPanel />
       <ScheduleDeck />
+      <OperationalNotifications />
     </Frame>
   );
 }

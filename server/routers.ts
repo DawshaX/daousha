@@ -21,6 +21,7 @@ import { uploadTikTokSandboxDraft } from "./tiktokSandboxPublisher";
 import { hasApprovedSafeVideo, isAllowedWorkflowTransition, type WorkflowStatus } from "./workflowGuards";
 import { assessAssetIntake } from "./rightsSafetyGate";
 import { fetchGoogleTrendSignals } from "./trendRadar";
+import { notifyOwnerOperationalEvent } from "./operationalNotifications";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -70,6 +71,9 @@ export const appRouter = router({
         }
         const project = await db.updateProjectStatus(ctx.user.id, input.projectId, input.status);
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: `تغيير حالة المشروع: ${project.title}`, details: `الحالة الجديدة: ${input.status}`, actorType: "user" });
+        if (input.status === "review" || input.status === "blocked") {
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: input.status === "review" ? "project_review_required" : "project_blocked", title: input.status === "review" ? "مشروع بانتظار مراجعة" : "مشروع متوقف", detail: `المشروع «${project.title}» أصبح في حالة ${input.status}.` });
+        }
         return project;
       }),
     generateScript: protectedProcedure
@@ -90,12 +94,17 @@ export const appRouter = router({
         const generated = await generateImage({ model: models[0]?.model, prompt: `Create a fully original production still for this video project. No logos, watermarks, copyrighted characters, real identifiable people, or text. Project: ${project.title}. Creative brief: ${input.prompt}` });
         const assetInput = { title: `مشهد أصلي — ${project.title}`, assetKind: "image" as const, storageUrl: generated.url, licenseType: "مشهد مولّد أصليًا بواسطة دعوشة", attribution: "Daousha ImageService" };
         const asset = await db.createAsset({ ownerId: ctx.user.id, ...assetInput, ...assessAssetIntake(assetInput) });
+        await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "review_required", title: "مادة أصلية تحتاج مراجعة", detail: `المشهد «${asset.title}» ينتظر قرار الحقوق والسلامة.` });
         return { assetId: asset.id, url: generated.url };
       }),
     assets: protectedProcedure.query(({ ctx }) => db.listAssets(ctx.user.id)),
     registerAsset: protectedProcedure
       .input(z.object({ title: z.string().trim().min(2).max(255), assetKind: z.enum(["video", "audio", "image", "document", "other"]), licenseType: z.string().trim().min(2).max(160), sourceUrl: url.optional(), licenseUrl: url.optional(), attribution: z.string().trim().max(4000).optional() }))
-      .mutation(({ ctx, input }) => db.createAsset({ ownerId: ctx.user.id, ...input, ...assessAssetIntake(input) })),
+      .mutation(async ({ ctx, input }) => {
+        const asset = await db.createAsset({ ownerId: ctx.user.id, ...input, ...assessAssetIntake(input) });
+        await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "review_required", title: "مادة تحتاج مراجعة", detail: `المادة «${asset.title}» أضيفت إلى بوابة الحقوق والسلامة.` });
+        return asset;
+      }),
     uploadAsset: protectedProcedure
       .input(z.object({ title: z.string().trim().min(2).max(255), fileName: z.string().trim().min(1).max(255), contentType: z.string().trim().min(3).max(160), base64: z.string().min(4).max(14_000_000), assetKind: z.enum(["video", "audio", "image", "other"]), licenseType: z.string().trim().min(2).max(160), sourceUrl: url.optional(), attribution: z.string().trim().max(4000).optional() }))
       .mutation(async ({ ctx, input }) => {
@@ -104,7 +113,9 @@ export const appRouter = router({
         if (!bytes.length || bytes.length > 10 * 1024 * 1024) throw new Error("الملف غير صالح أو أكبر من الحد الأولي للرفع.");
         const uploaded = await storagePut(`daousha/${ctx.user.id}/raw/${safeName}`, bytes, input.contentType);
         const assetInput = { title: input.title, assetKind: input.assetKind, storageKey: uploaded.key, storageUrl: uploaded.url, sourceUrl: input.sourceUrl, licenseType: input.licenseType, attribution: input.attribution };
-        return db.createAsset({ ownerId: ctx.user.id, ...assetInput, ...assessAssetIntake(assetInput) });
+        const asset = await db.createAsset({ ownerId: ctx.user.id, ...assetInput, ...assessAssetIntake(assetInput) });
+        await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "review_required", title: "ملف يحتاج مراجعة", detail: `الملف «${asset.title}» رُفع وينتظر قرار الحقوق والسلامة.` });
+        return asset;
       }),
     reviewAsset: protectedProcedure
       .input(z.object({ assetId: z.number().int().positive(), licenseStatus: z.enum(["approved", "held", "rejected"]), safetyStatus: z.enum(["clear", "review", "blocked"]) }))
@@ -132,14 +143,27 @@ export const appRouter = router({
       .mutation(({ ctx, input }) => db.createProposal({ ownerId: ctx.user.id, ...input, state: "proposed" })),
     schedules: protectedProcedure.query(({ ctx }) => db.listSchedules(ctx.user.id)),
     createScheduleDraft: protectedProcedure
-      .input(z.object({ projectId: z.number().int().positive(), platform: z.string().trim().min(2).max(80), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
-      .mutation(({ ctx, input }) => db.createSchedule({ ownerId: ctx.user.id, ...input, status: "draft" })),
+      .input(z.object({ projectId: z.number().int().positive(), platform: z.enum(["youtube"]), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
+      .mutation(async ({ ctx, input }) => {
+        const [project, connections] = await Promise.all([db.getOwnedProject(ctx.user.id, input.projectId), db.listChannelConnections(ctx.user.id)]);
+        if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود." });
+        const youtube = connections.find(connection => connection.platform === "youtube" && connection.status === "authorized" && connection.credentialCiphertext);
+        if (!youtube) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن جدولة النشر إلا لقناة YouTube المفوضة رسميًا." });
+        return db.createSchedule({ ownerId: ctx.user.id, ...input, status: "draft" });
+      }),
     activateSchedule: protectedProcedure
       .input(z.object({ scheduleId: z.number().int().positive() }))
       .mutation(async ({ ctx, input }) => {
         const schedule = await db.getOwnedSchedule(ctx.user.id, input.scheduleId);
         if (!schedule) throw new TRPCError({ code: "NOT_FOUND", message: "مسودة الجدولة غير موجودة." });
         if (schedule.status === "active" && schedule.scheduleCronTaskUid) return schedule;
+        const connections = await db.listChannelConnections(ctx.user.id);
+        const youtube = connections.find(connection => connection.platform === "youtube" && connection.status === "authorized" && connection.credentialCiphertext);
+        if (schedule.platform.toLowerCase() !== "youtube" || !youtube) {
+          await db.setScheduleStatus(ctx.user.id, schedule.id, "needs_approval");
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "schedule_needs_review", title: "لا يمكن تفعيل الجدولة", detail: "الوجهة ليست قناة YouTube مفوضة قابلة للنشر الدوري." });
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن تفعيل جدولة إلا لقناة YouTube المفوضة رسميًا." });
+        }
         const task = await createHeartbeatJob({
           name: `xdaw-publish-${ctx.user.id}-${schedule.id}`,
           cron: schedule.cronExpression,
@@ -197,6 +221,7 @@ export const appRouter = router({
         } catch (error) {
           const message = error instanceof Error ? error.message : "فشل غير معروف في مسودة TikTok Sandbox.";
           await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "فشل مسودة TikTok Sandbox", details: message, actorType: "user" });
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "tiktok_sandbox_draft_failed", title: "تعثر مسودة TikTok Sandbox", detail: "تعذر إنشاء المسودة التجريبية. راجع سجل التكامل ثم أعد المحاولة يدويًا." });
           throw new TRPCError({ code: "BAD_GATEWAY", message });
         }
       }),
@@ -312,6 +337,7 @@ export const appRouter = router({
           return { published: true, requiresPublicConfirmation: false, run: completedRun, url: uploaded.url, visibility: decision.visibility };
         } catch {
           const failedRun = await db.updatePublishingRun(ctx.user.id, run.id, { status: "failed" });
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, publishingRunId: run.id, eventType: "youtube_upload_failed", title: "تعثر رفع YouTube", detail: `تعذر رفع «${input.title}». سُجل الفشل ولم تبدأ إعادة محاولة تلقائية.` });
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "تعذّر رفع الفيديو إلى YouTube. سُجّل الفشل ولم تتم إعادة المحاولة تلقائيًا.", cause: failedRun });
         }
       }),
@@ -362,6 +388,7 @@ export const appRouter = router({
           return { published: true, requiresPublicConfirmation: false, run: completedRun, url: uploaded.url, visibility: decision.visibility };
         } catch {
           const failedRun = await db.updatePublishingRun(ctx.user.id, run.id, { status: "failed" });
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, publishingRunId: run.id, eventType: "facebook_upload_failed", title: "تعثر رفع Facebook", detail: `تعذر رفع «${input.title}». سُجل الفشل ولم تبدأ إعادة محاولة تلقائية.` });
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "تعذّر رفع الفيديو إلى Facebook. سُجّل الفشل ولم تتم إعادة المحاولة تلقائيًا.", cause: failedRun });
         }
       }),
