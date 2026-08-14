@@ -13,8 +13,10 @@ import { discoverLatestTelegramChatId, sendTelegramOperationalNotification, tele
 import { evaluatePublishGuard } from "./publishingGuards";
 import { resolveDistributionReadiness } from "./publishingDestinations";
 import { uploadVettedVideoToYouTube } from "./youtubePublisher";
+import { uploadVettedVideoToFacebookPage } from "./facebookPublisher";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 import { FACEBOOK_OAUTH_DOMAIN, facebookOAuthDomainIsReady, getFacebookRedirectUri } from "./facebookOAuth";
+import { getTikTokRedirectUri } from "./tiktokOAuth";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -153,6 +155,8 @@ export const appRouter = router({
         facebookRedirectUri: getFacebookRedirectUri(ctx.req),
         facebookExpectedDomain: FACEBOOK_OAUTH_DOMAIN,
         facebookDomainReady: facebookOAuthDomainIsReady(ctx.req),
+        tiktokClientConfigured: Boolean(process.env.TIKTOK_CLIENT_KEY && process.env.TIKTOK_CLIENT_SECRET),
+        tiktokRedirectUri: getTikTokRedirectUri(ctx.req),
       };
     }),
     claimTelegramChat: protectedProcedure.mutation(async ({ ctx }) => {
@@ -268,6 +272,56 @@ export const appRouter = router({
         } catch {
           const failedRun = await db.updatePublishingRun(ctx.user.id, run.id, { status: "failed" });
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "تعذّر رفع الفيديو إلى YouTube. سُجّل الفشل ولم تتم إعادة المحاولة تلقائيًا.", cause: failedRun });
+        }
+      }),
+    uploadVettedFacebookVideo: protectedProcedure
+      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), title: z.string().trim().min(3).max(100), description: z.string().trim().min(10).max(5000), confirmPublic: z.boolean().default(false) }))
+      .mutation(async ({ ctx, input }) => {
+        const [linked, policy, connections, runs] = await Promise.all([
+          db.getOwnedProjectVideoAsset(ctx.user.id, input.projectId, input.assetId),
+          db.getPublishingPolicy(ctx.user.id),
+          db.listChannelConnections(ctx.user.id),
+          db.listPublishingRuns(ctx.user.id),
+        ]);
+        if (!linked) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط ملف الفيديو بالمشروع نفسه قبل طلب رفع Facebook." });
+        const { project, asset } = linked;
+        const facebook = connections.find(connection => connection.platform === "facebook" && connection.status === "authorized");
+        if (!facebook?.externalAccountRef) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط صفحة Facebook رسميًا قبل الرفع." });
+        if (!asset.storageKey || asset.assetKind !== "video") throw new TRPCError({ code: "PRECONDITION_FAILED", message: "أضف ملف فيديو محفوظًا في التخزين الآمن أولًا." });
+
+        const hasPrivateCanary = runs.some(run => run.projectId === project.id && run.platform === "facebook" && run.status === "private_uploaded");
+        const publicationsInLast24Hours = runs.filter(run => run.platform === "facebook" && run.status === "public_uploaded" && run.createdAt.getTime() >= Date.now() - 24 * 60 * 60 * 1000).length;
+        const decision = evaluatePublishGuard(policy, {
+          originalContent: /أصلي|original/i.test(asset.licenseType),
+          rightsClear: asset.licenseStatus === "approved",
+          safetyClear: asset.safetyStatus === "clear",
+          previewAcknowledged: Boolean(project.previewAcknowledgedAt),
+          hasPrivateCanary,
+          publicationsInLast24Hours,
+        });
+        if (!decision.allowed) {
+          const blockedRun = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "facebook", status: "blocked", visibility: "private", decisionReason: decision.reason, initiatedBy: "user" });
+          return { published: false, requiresPublicConfirmation: false, run: blockedRun, reason: decision.reason };
+        }
+        if (decision.visibility === "public" && !input.confirmPublic) {
+          return { published: false, requiresPublicConfirmation: true, reason: "الفيديو جاهز للنشر العام على Facebook. أرسل التأكيد العام المحدد لتنفيذ الرفع." };
+        }
+
+        const run = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "facebook", status: "queued", visibility: decision.visibility, decisionReason: decision.reason, initiatedBy: "user" });
+        try {
+          const uploaded = await uploadVettedVideoToFacebookPage(facebook, { storageKey: asset.storageKey, title: input.title, description: input.description, visibility: decision.visibility });
+          const status = decision.visibility === "public" ? "public_uploaded" : "private_uploaded";
+          const completedRun = await db.updatePublishingRun(ctx.user.id, run.id, { status, externalVideoId: uploaded.videoId, externalUrl: uploaded.url });
+          if (decision.visibility === "public") await db.markPolicyPublished(ctx.user.id);
+          const telegram = connections.find(connection => connection.platform === "telegram" && connection.status === "authorized");
+          if (telegram?.externalAccountRef) {
+            const delivered = await sendTelegramOperationalNotification({ chatId: telegram.externalAccountRef, title: `تم رفع فيديو Facebook ${decision.visibility === "public" ? "عام" : "خاص"}`, detail: `${input.title}\n${uploaded.url}` });
+            await db.recordNotificationEvent({ ownerId: ctx.user.id, publishingRunId: run.id, channel: "telegram", eventType: "facebook_upload", deliveryStatus: delivered.delivered ? "sent" : "failed", detail: delivered.reason });
+          }
+          return { published: true, requiresPublicConfirmation: false, run: completedRun, url: uploaded.url, visibility: decision.visibility };
+        } catch {
+          const failedRun = await db.updatePublishingRun(ctx.user.id, run.id, { status: "failed" });
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "تعذّر رفع الفيديو إلى Facebook. سُجّل الفشل ولم تتم إعادة المحاولة تلقائيًا.", cause: failedRun });
         }
       }),
     changeLog: protectedProcedure.query(({ ctx }) => db.listChangeLog(ctx.user.id)),

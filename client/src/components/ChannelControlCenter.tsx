@@ -87,6 +87,7 @@ export default function ChannelControlCenter() {
 
   const youtube = integrations?.connections.find(connection => connection.platform === "youtube");
   const facebook = integrations?.connections.find(connection => connection.platform === "facebook");
+  const tiktok = integrations?.connections.find(connection => connection.platform === "tiktok");
   const telegram = integrations?.connections.find(connection => connection.platform === "telegram");
   const policyBusy = policyLoading || updatePolicy.isPending;
 
@@ -122,6 +123,22 @@ export default function ChannelControlCenter() {
               {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.facebookClientConfigured ? integrations.facebookDomainReady ? <>بيانات تطبيق Meta مهيأة. بعد منح الموافقة ستختار صفحة XDAW NOVA الجديدة من قائمة الصفحات التي يديرها الحساب. <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations.facebookRedirectUri}</span></> : <>تفويض Facebook متوقف بأمان إلى أن يوافق EU.org على النطاق ويرتبط بالاستضافة: <span className="mt-1 block break-all font-mono text-[10px] text-amber-200" dir="ltr">https://{integrations.facebookExpectedDomain}/api/integrations/facebook/callback</span></> : "أضف معرّف تطبيق Meta ومفتاحه السري في الأسرار المحمية أولًا."}
             </div>
             {integrations?.facebookClientConfigured && integrations.facebookDomainReady ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/facebook/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض صفحة Facebook</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> {integrations?.facebookClientConfigured ? "بانتظار تفعيل نطاق EU.org" : "إعداد Meta غير مكتمل"}</Button>}
+          </CardContent>
+        </Card>
+
+        <Card className="border-white/8 bg-zinc-950/60">
+          <CardHeader className="flex-row items-start justify-between space-y-0">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-white"><Music2 className="h-5 w-5 text-red-400" /> TikTok الرسمي</CardTitle>
+              <CardDescription className="mt-2 leading-6 text-zinc-500">تفويض OAuth لحساب TikTok نفسه، مع مسودة افتراضية ونشر مباشر فقط بعد اعتماد TikTok وتأكيد المستخدم.</CardDescription>
+            </div>
+            <Badge variant="outline" className="border-white/10 text-zinc-300">{statusLabel(tiktok?.status)}</Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-xl border border-white/8 bg-black/25 p-3 text-xs leading-6 text-zinc-400">
+              {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.tiktokClientConfigured ? <>بيانات تطبيق TikTok محمية على الخادم. عنوان العودة الذي يُسجّل في تطبيق TikTok: <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations.tiktokRedirectUri}</span><span className="mt-2 block text-amber-200">تظل مراجعة تطبيق TikTok شرطًا للنشر المباشر في الإنتاج.</span></> : "أكمل مفاتيح تطبيق TikTok في الأسرار المحمية أولًا."}
+            </div>
+            {integrations?.tiktokClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/tiktok/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض TikTok الرسمي</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> إعداد TikTok غير مكتمل</Button>}
           </CardContent>
         </Card>
 

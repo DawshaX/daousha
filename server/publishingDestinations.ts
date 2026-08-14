@@ -42,6 +42,15 @@ export function resolveDistributionReadiness(connections: DistributionConnection
       };
     }
 
+    if (platform === "facebook" && connection?.status === "authorized") {
+      return {
+        platform,
+        mode: "confirmation_required",
+        eligible: true,
+        reason: "رمز صفحة Facebook مفوض وناشر الفيديو جاهز، لكن كل نشر عام يحتاج تأكيدًا صريحًا.",
+      };
+    }
+
     if (connection?.status === "authorized") {
       return {
         platform,
