@@ -1,0 +1,50 @@
+{
+  "source": {
+    "width": 2560,
+    "height": 1440
+  },
+  "proofs": [
+    {
+      "crop": "desktop-tv-16x9.jpg",
+      "safe_box_visible": [
+        512,
+        508,
+        1700,
+        931
+      ],
+      "safe_pixel_count": 502524,
+      "red_neon_pixels": 0,
+      "red_neon_ratio": 0.0,
+      "high_luminance_pixels": 0,
+      "high_luminance_ratio": 0.0
+    },
+    {
+      "crop": "desktop-4x3.jpg",
+      "safe_box_visible": [
+        192,
+        508,
+        1380,
+        931
+      ],
+      "safe_pixel_count": 502524,
+      "red_neon_pixels": 0,
+      "red_neon_ratio": 0.0,
+      "high_luminance_pixels": 0,
+      "high_luminance_ratio": 0.0
+    },
+    {
+      "crop": "mobile-9x16.jpg",
+      "safe_box_visible": [
+        0,
+        508,
+        810,
+        931
+      ],
+      "safe_pixel_count": 342630,
+      "red_neon_pixels": 0,
+      "red_neon_ratio": 0.0,
+      "high_luminance_pixels": 0,
+      "high_luminance_ratio": 0.0
+    }
+  ]
+}
