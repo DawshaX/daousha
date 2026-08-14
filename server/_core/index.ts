@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { registerYouTubeOAuthRoutes } from "../youtubeOAuth";
 import { registerFacebookOAuthRoutes } from "../facebookOAuth";
 import { registerTikTokOAuthRoutes } from "../tiktokOAuth";
+import { registerTikTokSiteVerificationRoute } from "../tiktokSiteVerification";
 import { registerScheduledRoutes } from "../scheduledRoutes";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -43,6 +44,7 @@ async function startServer() {
   registerYouTubeOAuthRoutes(app);
   registerFacebookOAuthRoutes(app);
   registerTikTokOAuthRoutes(app);
+  registerTikTokSiteVerificationRoute(app);
   registerScheduledRoutes(app);
   // tRPC API
   app.use(
