@@ -24,6 +24,7 @@ import { fetchGoogleTrendSignals } from "./trendRadar";
 import { notifyOwnerOperationalEvent } from "./operationalNotifications";
 import { derivePerformanceImprovementSuggestion } from "../shared/performanceImprovement";
 import { performanceExperimentAdvice, summarizePerformance } from "../shared/performanceSummary";
+import { describeUploadFailure } from "./uploadFailureDetail";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -362,9 +363,9 @@ export const appRouter = router({
             await db.recordNotificationEvent({ ownerId: ctx.user.id, publishingRunId: run.id, channel: "telegram", eventType: "youtube_upload", deliveryStatus: delivered.delivered ? "sent" : "failed", detail: delivered.reason });
           }
           return { published: true, requiresPublicConfirmation: false, run: completedRun, url: uploaded.url, visibility: decision.visibility };
-        } catch {
+        } catch (error) {
           const failedRun = await db.updatePublishingRun(ctx.user.id, run.id, { status: "failed" });
-          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, publishingRunId: run.id, eventType: "youtube_upload_failed", title: "تعثر رفع YouTube", detail: `تعذر رفع «${input.title}». سُجل الفشل ولم تبدأ إعادة محاولة تلقائية.` });
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, publishingRunId: run.id, eventType: "youtube_upload_failed", title: "تعثر رفع YouTube", detail: `تعذر رفع «${input.title}». سبب التعثر: ${describeUploadFailure(error)}. سُجل الفشل ولم تبدأ إعادة محاولة تلقائية.` });
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "تعذّر رفع الفيديو إلى YouTube. سُجّل الفشل ولم تتم إعادة المحاولة تلقائيًا.", cause: failedRun });
         }
       }),
@@ -413,9 +414,9 @@ export const appRouter = router({
             await db.recordNotificationEvent({ ownerId: ctx.user.id, publishingRunId: run.id, channel: "telegram", eventType: "facebook_upload", deliveryStatus: delivered.delivered ? "sent" : "failed", detail: delivered.reason });
           }
           return { published: true, requiresPublicConfirmation: false, run: completedRun, url: uploaded.url, visibility: decision.visibility };
-        } catch {
+        } catch (error) {
           const failedRun = await db.updatePublishingRun(ctx.user.id, run.id, { status: "failed" });
-          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, publishingRunId: run.id, eventType: "facebook_upload_failed", title: "تعثر رفع Facebook", detail: `تعذر رفع «${input.title}». سُجل الفشل ولم تبدأ إعادة محاولة تلقائية.` });
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, publishingRunId: run.id, eventType: "facebook_upload_failed", title: "تعثر رفع Facebook", detail: `تعذر رفع «${input.title}». سبب التعثر: ${describeUploadFailure(error)}. سُجل الفشل ولم تبدأ إعادة محاولة تلقائية.` });
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "تعذّر رفع الفيديو إلى Facebook. سُجّل الفشل ولم تتم إعادة المحاولة تلقائيًا.", cause: failedRun });
         }
       }),

@@ -1,6 +1,7 @@
 import * as db from "./db";
 import { evaluatePublishGuard } from "./publishingGuards";
 import { notifyOwnerOperationalEvent } from "./operationalNotifications";
+import { describeUploadFailure } from "./uploadFailureDetail";
 import { uploadVettedVideoToYouTube } from "./youtubePublisher";
 
 function automaticMetadata(project: { title: string; brief: string | null; scriptArabic: string | null; scriptEnglish: string | null; contentFormat: "short" | "long" }) {
@@ -67,12 +68,12 @@ export async function executeScheduledPublish(taskUid: string) {
     if (decision.visibility === "public") {
       await Promise.all([db.markPolicyPublished(schedule.ownerId), db.markProjectPublished(schedule.ownerId, linked.project.id), db.setScheduleStatus(schedule.ownerId, schedule.id, "paused")]);
     }
-    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: "scheduled_youtube_upload", title: `دورة XDAW NOVA: رفع ${decision.visibility === "public" ? "عام" : "خاص"}`, detail: `${linked.project.title}\n${uploaded.url}` });
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: "scheduled_youtube_upload", title: `دورة XDAW NOVA: رفع ${decision.visibility === "public" ? "عام" : "خاص"}`, detail: `${linked.project.title}\nمعرّف الفيديو: ${uploaded.videoId}\n${uploaded.url}` });
     return { ok: true, published: true, scheduleId: schedule.id, run: completed, url: uploaded.url, visibility: decision.visibility };
   } catch (error) {
     await db.updatePublishingRun(schedule.ownerId, run.id, { status: "failed" });
     await db.setScheduleStatus(schedule.ownerId, schedule.id, "failed");
-    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: "scheduled_youtube_failed", title: "تعثر نشر مجدول", detail: `تعذر رفع مشروع «${linked.project.title}». أوقفت الجدولة ولم تبدأ إعادة محاولة تلقائية.` });
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: "scheduled_youtube_failed", title: "تعثر نشر مجدول", detail: `تعذر رفع مشروع «${linked.project.title}». سبب التعثر: ${describeUploadFailure(error)}. أوقفت الجدولة ولم تبدأ إعادة محاولة تلقائية.` });
     throw error;
   }
 }
