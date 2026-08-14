@@ -65,8 +65,19 @@
 
 يحافظ المسار الخادمي على محتوى الملف الأصلي وعلى `Content-Type: text/plain` ويعطل التخزين المؤقت للاستجابة. لا ينبغي تغيير الاسم أو المحتوى أو وضع الملف تحت مسار فرعي عند إعادة محاولة Verify.
 
+## سجل TikTok Sandbox الحي
+
+في `2026-08-14` أنشئت بيئة مقيدة باسم **XDAW NOVA Review Sandbox** من مسودة Production الحالية، وأضيف الحساب `@xdaw_nova` بوصفه Target User. لا تنشر بيئة Sandbox محتوى عامًا، وتوضح وثائق TikTok أن إعداداتها لا تصبح نافذة قبل اختيار **Apply changes**. لذلك طُبقت التهيئة داخل Sandbox، بما في ذلك Login Kit وContent Posting API والنطاقات المطلوبة، من دون الضغط على `Submit for review` ودون أي نشر.
+
+أول محاولة OAuth قبل تطبيق تهيئة Sandbox وصلت إلى TikTok لكنها انتهت بـ`unauthorized_client`/`client_key`. أضيف في XDAW NOVA مسار صريح لاختبار Sandbox (`/api/integrations/tiktok/authorize?environment=sandbox`) يستخدم بيانات الاعتماد المنفصلة المحمية ولا يغير اتصال TikTok الإنتاجي أو يسجل رموز Sandbox في سجل النشر. نجح اختبار خادمي خفيف في التحقق من قبول بيانات اعتماد Sandbox لدى نقطة رموز TikTok، ويبقى اختبار صفحة التفويض الحية بعد انتشار إعدادات Sandbox هو الخطوة التالية. لا يُسجّل هذا كنجاح OAuth حتى تعود صفحة TikTok إلى عنوان callback بنجاح.
+
+اكتمل اختبار OAuth الحي في `2026-08-14`: عرض TikTok شاشة موافقة باسم **xDaW NoVa (Sandbox)** للحساب `@xdaw_nova` وبالنطاقات `user.info.basic` و`video.upload` و`video.publish`، ثم عاد بنجاح إلى `https://daousha-vide-nbqlahcj.manus.space/settings?tiktok=sandbox_connected`. لذلك أُغلق خطأ `unauthorized_client` الخاص بـ`client_key`. لا تزال حالة TikTok الإنتاجية داخل مركز القنوات **مهيأة فقط**؛ لا تُستخدم رموز Sandbox للنشر، ولم يُرفع أو يُنشر أي محتوى أثناء الاختبار.
+
+> توضح وثائق TikTok أن Sandbox بيئة مقيدة لا تتطلب مراجعة التطبيق، وأن Content Posting API فيها لا يقدم فيديوهات عامة؛ لذلك يقتصر الدليل الحي على OAuth وحالة رفع مسودة عند الجاهزية. [4]
+
 ## المراجع
 
 [1]: https://developers.tiktok.com/doc/content-posting-api-get-started "TikTok — Content Posting API: Get Started"
 [2]: https://developers.tiktok.com/doc/content-posting-api-reference-direct-post "TikTok — Direct Post API Reference"
 [3]: https://developers.tiktok.com/doc/content-posting-api-media-transfer-guide "TikTok — Content Posting API: Media Transfer Guide"
+[4]: https://developers.tiktok.com/doc/add-a-sandbox/ "TikTok — Add a Sandbox"

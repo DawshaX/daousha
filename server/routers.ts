@@ -16,7 +16,8 @@ import { uploadVettedVideoToYouTube } from "./youtubePublisher";
 import { uploadVettedVideoToFacebookPage } from "./facebookPublisher";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 import { FACEBOOK_OAUTH_DOMAIN, facebookOAuthDomainIsReady, getFacebookRedirectUri } from "./facebookOAuth";
-import { getTikTokRedirectUri } from "./tiktokOAuth";
+import { getTikTokRedirectUri, getTikTokSandboxAccessToken } from "./tiktokOAuth";
+import { uploadTikTokSandboxDraft } from "./tiktokSandboxPublisher";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -144,7 +145,7 @@ export const appRouter = router({
         return paused;
       }),
     integrations: protectedProcedure.query(async ({ ctx }) => {
-      const connections = await db.listChannelConnections(ctx.user.id);
+      const [connections, assets] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id)]);
       return {
         connections,
         distributionReadiness: resolveDistributionReadiness(connections),
@@ -157,9 +158,30 @@ export const appRouter = router({
         facebookDomainReady: facebookOAuthDomainIsReady(ctx.req),
         tiktokClientConfigured: Boolean(process.env.TIKTOK_CLIENT_KEY && process.env.TIKTOK_CLIENT_SECRET),
         tiktokSandboxClientConfigured: Boolean(process.env.TIKTOK_SANDBOX_CLIENT_KEY && process.env.TIKTOK_SANDBOX_CLIENT_SECRET),
+        tiktokSandboxSessionActive: Boolean(getTikTokSandboxAccessToken(ctx.req)),
+        tiktokSandboxCandidates: assets.filter(asset => asset.assetKind === "video" && asset.licenseStatus === "approved" && asset.safetyStatus === "clear" && asset.storageKey).map(asset => ({ id: asset.id, title: asset.title })),
         tiktokRedirectUri: getTikTokRedirectUri(ctx.req),
       };
     }),
+    uploadTikTokSandboxDraft: protectedProcedure
+      .input(z.object({ assetId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const accessToken = getTikTokSandboxAccessToken(ctx.req);
+        if (!accessToken) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "أعد تفويض TikTok Sandbox قبل إنشاء المسودة التجريبية." });
+        const asset = await db.getOwnedAsset(ctx.user.id, input.assetId);
+        if (!asset || asset.assetKind !== "video" || asset.licenseStatus !== "approved" || asset.safetyStatus !== "clear" || !asset.storageKey) {
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اختر أصل فيديو مملوكًا ومعتمد الحقوق وواضح السلامة فقط." });
+        }
+        try {
+          const result = await uploadTikTokSandboxDraft({ accessToken, storageKey: asset.storageKey });
+          await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "إنشاء مسودة TikTok Sandbox", details: `الأصل: ${asset.id} | publish_id: ${result.publishId} | الحجم: ${result.sizeBytes} بايت. لم يُنفذ نشر مباشر.`, actorType: "user" });
+          return result;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "فشل غير معروف في مسودة TikTok Sandbox.";
+          await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "فشل مسودة TikTok Sandbox", details: message, actorType: "user" });
+          throw new TRPCError({ code: "BAD_GATEWAY", message });
+        }
+      }),
     claimTelegramChat: protectedProcedure.mutation(async ({ ctx }) => {
       const chatId = await discoverLatestTelegramChatId();
       if (!chatId) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "أرسل start إلى البوت أولًا ثم أعد المحاولة." });

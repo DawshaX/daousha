@@ -7,6 +7,7 @@ import * as db from "./db";
 
 const OAUTH_STATE_COOKIE = "xdaw_tiktok_oauth_state";
 const OAUTH_ENVIRONMENT_COOKIE = "xdaw_tiktok_oauth_environment";
+const SANDBOX_TOKEN_COOKIE = "xdaw_tiktok_sandbox_token";
 const TIKTOK_SCOPES = ["user.info.basic", "video.upload", "video.publish"];
 
 export type TikTokOAuthEnvironment = "production" | "sandbox";
@@ -49,11 +50,30 @@ function credentialKey() {
   return createHash("sha256").update(ENV.cookieSecret).digest();
 }
 
-function encryptCredential(value: string) {
+export function encryptTikTokCredential(value: string) {
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", credentialKey(), iv);
   const ciphertext = Buffer.concat([cipher.update(value, "utf8"), cipher.final()]);
   return `${iv.toString("base64url")}.${cipher.getAuthTag().toString("base64url")}.${ciphertext.toString("base64url")}`;
+}
+
+export function decryptTikTokCredential(value: string) {
+  const [ivValue, authTagValue, ciphertextValue] = value.split(".");
+  if (!ivValue || !authTagValue || !ciphertextValue) throw new Error("رمز TikTok المشفر غير مكتمل.");
+  const decipher = createDecipheriv("aes-256-gcm", credentialKey(), Buffer.from(ivValue, "base64url"));
+  decipher.setAuthTag(Buffer.from(authTagValue, "base64url"));
+  return Buffer.concat([decipher.update(Buffer.from(ciphertextValue, "base64url")), decipher.final()]).toString("utf8");
+}
+
+export function getTikTokSandboxAccessToken(req: Pick<Request, "headers">) {
+  const tokenCookie = parseCookie(req.headers.cookie ?? "")[SANDBOX_TOKEN_COOKIE];
+  if (!tokenCookie) return null;
+  try {
+    const payload = JSON.parse(decryptTikTokCredential(tokenCookie)) as { accessToken?: string };
+    return payload.accessToken || null;
+  } catch {
+    return null;
+  }
 }
 
 async function getAuthenticatedUser(req: Request) {
@@ -121,11 +141,12 @@ export function registerTikTokOAuthRoutes(app: Express) {
       if (!tokenResponse.ok || !tokenPayload.access_token || !tokenPayload.open_id) throw new Error(tokenPayload.error_description || tokenPayload.error || "TOKEN_EXCHANGE_FAILED");
 
       if (environment === "sandbox") {
+        res.cookie(SANDBOX_TOKEN_COOKIE, encryptTikTokCredential(JSON.stringify({ accessToken: tokenPayload.access_token, openId: tokenPayload.open_id, scope: tokenPayload.scope ?? TIKTOK_SCOPES.join(",") })), cookieOptions(req));
         await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "نجح TikTok Sandbox OAuth", details: `حساب Sandbox: ${tokenPayload.open_id} | النطاقات: ${tokenPayload.scope ?? TIKTOK_SCOPES.join(", ")}. لم يُحفظ أي رمز ولم يُفعّل نشر الإنتاج.`, actorType: "user" });
         return res.redirect("/settings?tiktok=sandbox_connected");
       }
 
-      const encryptedTokenBundle = encryptCredential(JSON.stringify({
+      const encryptedTokenBundle = encryptTikTokCredential(JSON.stringify({
         accessToken: tokenPayload.access_token,
         refreshToken: tokenPayload.refresh_token ?? "",
         expiresIn: tokenPayload.expires_in ?? 0,

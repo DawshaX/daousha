@@ -37,6 +37,7 @@ export default function ChannelControlCenter() {
   const [maxPublicationsPerDay, setMaxPublicationsPerDay] = useState(6);
   const [dailyShortTarget, setDailyShortTarget] = useState(4);
   const [dailyLongTarget, setDailyLongTarget] = useState(2);
+  const [tiktokSandboxAssetId, setTikTokSandboxAssetId] = useState<number | "">("");
 
   useEffect(() => {
     if (!policy) return;
@@ -45,6 +46,10 @@ export default function ChannelControlCenter() {
     setDailyShortTarget(policy.dailyShortTarget);
     setDailyLongTarget(policy.dailyLongTarget);
   }, [policy]);
+
+  useEffect(() => {
+    if (!tiktokSandboxAssetId && integrations?.tiktokSandboxCandidates?.[0]) setTikTokSandboxAssetId(integrations.tiktokSandboxCandidates[0].id);
+  }, [integrations?.tiktokSandboxCandidates, tiktokSandboxAssetId]);
 
   const claimTelegram = trpc.daousha.claimTelegramChat.useMutation({
     onSuccess: () => {
@@ -67,6 +72,14 @@ export default function ChannelControlCenter() {
       toast.success("تم حفظ سياسة النشر وتسجيل التغيير.");
       utils.daousha.publishingPolicy.invalidate();
       utils.daousha.dashboard.invalidate();
+    },
+    onError: error => toast.error(error.message),
+  });
+
+  const uploadTikTokSandboxDraft = trpc.daousha.uploadTikTokSandboxDraft.useMutation({
+    onSuccess: result => {
+      toast.success(`أُنشئت مسودة Sandbox فقط (${result.publishId}). لم يُنشر أي محتوى.`);
+      utils.daousha.integrations.invalidate();
     },
     onError: error => toast.error(error.message),
   });
@@ -139,6 +152,7 @@ export default function ChannelControlCenter() {
               {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.tiktokSandboxClientConfigured ? <>بيئة TikTok Sandbox مهيأة لاختبار OAuth المقيد. عنوان العودة المسجل في التطبيق: <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations.tiktokRedirectUri}</span><span className="mt-2 block text-amber-200">لا يُفعّل الاختبار أي نشر إنتاجي، وتظل مراجعة التطبيق شرطًا للنشر المباشر.</span></> : integrations?.tiktokClientConfigured ? "يلزم إضافة مفاتيح TikTok Sandbox المنفصلة أولًا لتسجيل دليل OAuth حي قبل المراجعة." : "أكمل مفاتيح تطبيق TikTok في الأسرار المحمية أولًا."}
             </div>
             {integrations?.tiktokSandboxClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/tiktok/authorize?environment=sandbox"><LockKeyhole className="ml-2 h-4 w-4" /> اختبار OAuth في TikTok Sandbox</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> أضف مفاتيح Sandbox أولًا</Button>}
+            {integrations?.tiktokSandboxSessionActive ? <div className="space-y-2 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-3"><p className="text-xs leading-5 text-amber-100">OAuth Sandbox مفوّض مؤقتًا. ينشئ الزر التالي مسودة اختبار فقط ولا ينشر فيديو.</p><select value={tiktokSandboxAssetId} onChange={event => setTikTokSandboxAssetId(Number(event.target.value))} className="h-9 w-full rounded-md border border-white/10 bg-black/30 px-2 text-xs text-zinc-100"><option value="" disabled>اختر فيديو معتمدًا</option>{integrations.tiktokSandboxCandidates?.map(asset => <option key={asset.id} value={asset.id}>{asset.title}</option>)}</select><Button className="w-full bg-amber-500 text-black hover:bg-amber-400" disabled={!tiktokSandboxAssetId || uploadTikTokSandboxDraft.isPending} onClick={() => tiktokSandboxAssetId && uploadTikTokSandboxDraft.mutate({ assetId: tiktokSandboxAssetId })}>{uploadTikTokSandboxDraft.isPending ? "جارٍ إنشاء مسودة Sandbox…" : "إنشاء مسودة TikTok Sandbox فقط"}</Button></div> : null}
           </CardContent>
         </Card>
 
