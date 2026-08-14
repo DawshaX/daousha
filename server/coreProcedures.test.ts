@@ -13,9 +13,13 @@ const dbMock = {
 };
 const notificationMock = { notifyOwnerOperationalEvent: vi.fn() };
 const storageMock = { storagePut: vi.fn() };
+const imageMock = { listImageModels: vi.fn(), generateImage: vi.fn() };
+const scriptMock = { generateOriginalScript: vi.fn() };
 vi.mock("./db", () => dbMock);
 vi.mock("./operationalNotifications", () => notificationMock);
 vi.mock("./storage", () => storageMock);
+vi.mock("./_core/imageGeneration", () => imageMock);
+vi.mock("./contentBrain", () => scriptMock);
 const { appRouter } = await import("./routers");
 
 describe("core content procedures", () => {
@@ -32,6 +36,7 @@ describe("core content procedures", () => {
     dbMock.createSchedule.mockResolvedValue({ id: 15, projectId: 11, platform: "youtube", status: "draft" });
     notificationMock.notifyOwnerOperationalEvent.mockResolvedValue({ delivered: false });
     storageMock.storagePut.mockResolvedValue({ key: "daousha/7/raw/clip.mp4", url: "https://storage.example/clip.mp4" });
+    imageMock.listImageModels.mockResolvedValue({ models: [{ model: "image-model" }] });
   });
 
   it("creates a project and registers a source as proposed under the authenticated owner", async () => {
@@ -72,5 +77,16 @@ describe("core content procedures", () => {
     dbMock.getOwnedProject.mockResolvedValue({ id: 12, projectKind: "package_parent" });
     await expect(caller.daousha.createScheduleDraft({ projectId: 12, platform: "youtube", cronExpression: "0 0 9 * * *", timeZone: "Africa/Cairo" })).rejects.toMatchObject({ code: "NOT_FOUND" });
     expect(dbMock.createSchedule).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not create assets, scripts, or review notifications when an AI provider fails", async () => {
+    const caller = appRouter.createCaller({ user: { id: 7 } } as any);
+    imageMock.generateImage.mockRejectedValue(new Error("image provider unavailable"));
+    scriptMock.generateOriginalScript.mockRejectedValue(new Error("script provider unavailable"));
+
+    await expect(caller.daousha.generateVisual({ projectId: 11, prompt: "مشهد أصلي طويل ومناسب للمراجعة" })).rejects.toThrow("image provider unavailable");
+    await expect(caller.daousha.generateScript({ projectId: 11 })).rejects.toThrow("script provider unavailable");
+    expect(dbMock.createAsset).not.toHaveBeenCalled();
+    expect(notificationMock.notifyOwnerOperationalEvent).not.toHaveBeenCalled();
   });
 });
