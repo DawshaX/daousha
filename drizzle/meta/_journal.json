@@ -64,6 +64,20 @@
       "when": 1786666505389,
       "tag": "0008_slim_thaddeus_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1786702775383,
+      "tag": "0009_opposite_dreadnoughts",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1786703569801,
+      "tag": "0010_cold_pandemic",
+      "breakpoints": true
     }
   ]
 }

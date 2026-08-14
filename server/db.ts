@@ -111,7 +111,7 @@ export async function createAsset(input: typeof contentAssets.$inferInsert) {
   return (await db!.select().from(contentAssets).where(eq(contentAssets.id, id)).limit(1))[0];
 }
 
-export async function reviewAsset(ownerId: number, assetId: number, review: { licenseStatus: "approved" | "held" | "rejected"; safetyStatus: "clear" | "review" | "blocked" }) {
+export async function reviewAsset(ownerId: number, assetId: number, review: { licenseStatus: "approved" | "held" | "rejected"; safetyStatus: "clear" | "review" | "blocked"; reviewNotes?: string }) {
   const db = await getDb();
   if (!db) databaseUnavailable();
   await db!.update(contentAssets).set(review).where(and(eq(contentAssets.id, assetId), eq(contentAssets.ownerId, ownerId)));

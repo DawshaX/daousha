@@ -25,3 +25,9 @@ export function needsHumanReview(input: {
 }) {
   return input.licenseStatus !== "approved" || input.safetyStatus !== "clear";
 }
+
+export function describeProductionPackage(targetLanguage: "ar" | "en" | "both", contentFormat: "short" | "long") {
+  const languageLabel = targetLanguage === "both" ? "نسختان مستقلتان: عربية وإنجليزية" : targetLanguage === "ar" ? "نسخة عربية" : "نسخة إنجليزية";
+  const formatLabel = contentFormat === "short" ? "نسخة عمودية قصيرة" : "نسخة أفقية طويلة";
+  return { languageLabel, formatLabel, requiresHumanReview: true };
+}

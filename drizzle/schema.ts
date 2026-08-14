@@ -39,6 +39,7 @@ export const contentAssets = mysqlTable("content_assets", {
   attribution: text("attribution"),
   licenseStatus: mysqlEnum("licenseStatus", ["pending", "approved", "held", "rejected"]).default("pending").notNull(),
   safetyStatus: mysqlEnum("safetyStatus", ["clear", "review", "blocked"]).default("review").notNull(),
+  reviewNotes: text("reviewNotes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -126,6 +127,7 @@ export const analyticsSnapshots = mysqlTable("analytics_snapshots", {
   ownerId: int("ownerId").notNull(),
   projectId: int("projectId"),
   platform: varchar("platform", { length: 80 }).notNull(),
+  contentVariant: mysqlEnum("contentVariant", ["ar", "en", "both", "none"]).default("none").notNull(),
   views: int("views").default(0).notNull(),
   engagements: int("engagements").default(0).notNull(),
   retentionRate: int("retentionRate").default(0).notNull(),

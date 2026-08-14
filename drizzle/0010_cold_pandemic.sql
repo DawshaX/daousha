@@ -1,0 +1,1 @@
+ALTER TABLE `analytics_snapshots` ADD `contentVariant` enum('ar','en','both','none') DEFAULT 'none' NOT NULL;

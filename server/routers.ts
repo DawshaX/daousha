@@ -18,6 +18,9 @@ import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 import { FACEBOOK_OAUTH_DOMAIN, facebookOAuthDomainIsReady, getFacebookRedirectUri } from "./facebookOAuth";
 import { getTikTokRedirectUri, getTikTokSandboxAccessToken } from "./tiktokOAuth";
 import { uploadTikTokSandboxDraft } from "./tiktokSandboxPublisher";
+import { hasApprovedSafeVideo, isAllowedWorkflowTransition, type WorkflowStatus } from "./workflowGuards";
+import { assessAssetIntake } from "./rightsSafetyGate";
+import { fetchGoogleTrendSignals } from "./trendRadar";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -38,6 +41,9 @@ export const appRouter = router({
   }),
   daousha: router({
     references: publicProcedure.query(() => platformReferences),
+    trendSignals: protectedProcedure
+      .input(z.object({ geo: z.enum(["EG", "US"]) }))
+      .query(async ({ input }) => ({ signals: await fetchGoogleTrendSignals(input.geo), fetchedAt: new Date() })),
     dashboard: protectedProcedure.query(({ ctx }) => db.getDashboardData(ctx.user.id)),
     projects: protectedProcedure
       .input(z.object({ status: projectStatus.optional() }).optional())
@@ -51,8 +57,18 @@ export const appRouter = router({
     transitionProject: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive(), status: z.enum(["idea", "research", "script", "production", "review", "approved", "blocked"]) }))
       .mutation(async ({ ctx, input }) => {
+        const current = await db.getOwnedProject(ctx.user.id, input.projectId);
+        if (!current) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود." });
+        if (!isAllowedWorkflowTransition(current.status as WorkflowStatus, input.status as WorkflowStatus)) {
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: `لا يمكن نقل المشروع من ${current.status} إلى ${input.status} قبل إكمال المرحلة السابقة.` });
+        }
+        if (input.status === "approved") {
+          const linkedVideos = (await db.listOwnedProjectVideoAssets(ctx.user.id)).filter(item => item.project.id === input.projectId);
+          if (!hasApprovedSafeVideo(linkedVideos)) {
+            throw new TRPCError({ code: "PRECONDITION_FAILED", message: "يلزم ربط فيديو بالمشروع واعتماد حقوقه وسلامته قبل الاعتماد البشري." });
+          }
+        }
         const project = await db.updateProjectStatus(ctx.user.id, input.projectId, input.status);
-        if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود." });
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: `تغيير حالة المشروع: ${project.title}`, details: `الحالة الجديدة: ${input.status}`, actorType: "user" });
         return project;
       }),
@@ -72,13 +88,14 @@ export const appRouter = router({
         if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "المشروع غير موجود أو لا تملك صلاحية الوصول إليه." });
         const { models } = await listImageModels();
         const generated = await generateImage({ model: models[0]?.model, prompt: `Create a fully original production still for this video project. No logos, watermarks, copyrighted characters, real identifiable people, or text. Project: ${project.title}. Creative brief: ${input.prompt}` });
-        const asset = await db.createAsset({ ownerId: ctx.user.id, title: `مشهد أصلي — ${project.title}`, assetKind: "image", storageUrl: generated.url, licenseType: "مشهد مولّد أصليًا بواسطة دعوشة", attribution: "Daousha ImageService", licenseStatus: "pending", safetyStatus: "review" });
+        const assetInput = { title: `مشهد أصلي — ${project.title}`, assetKind: "image" as const, storageUrl: generated.url, licenseType: "مشهد مولّد أصليًا بواسطة دعوشة", attribution: "Daousha ImageService" };
+        const asset = await db.createAsset({ ownerId: ctx.user.id, ...assetInput, ...assessAssetIntake(assetInput) });
         return { assetId: asset.id, url: generated.url };
       }),
     assets: protectedProcedure.query(({ ctx }) => db.listAssets(ctx.user.id)),
     registerAsset: protectedProcedure
       .input(z.object({ title: z.string().trim().min(2).max(255), assetKind: z.enum(["video", "audio", "image", "document", "other"]), licenseType: z.string().trim().min(2).max(160), sourceUrl: url.optional(), licenseUrl: url.optional(), attribution: z.string().trim().max(4000).optional() }))
-      .mutation(({ ctx, input }) => db.createAsset({ ownerId: ctx.user.id, ...input, licenseStatus: "pending", safetyStatus: "review" })),
+      .mutation(({ ctx, input }) => db.createAsset({ ownerId: ctx.user.id, ...input, ...assessAssetIntake(input) })),
     uploadAsset: protectedProcedure
       .input(z.object({ title: z.string().trim().min(2).max(255), fileName: z.string().trim().min(1).max(255), contentType: z.string().trim().min(3).max(160), base64: z.string().min(4).max(14_000_000), assetKind: z.enum(["video", "audio", "image", "other"]), licenseType: z.string().trim().min(2).max(160), sourceUrl: url.optional(), attribution: z.string().trim().max(4000).optional() }))
       .mutation(async ({ ctx, input }) => {
@@ -86,12 +103,13 @@ export const appRouter = router({
         const bytes = Buffer.from(input.base64, "base64");
         if (!bytes.length || bytes.length > 10 * 1024 * 1024) throw new Error("الملف غير صالح أو أكبر من الحد الأولي للرفع.");
         const uploaded = await storagePut(`daousha/${ctx.user.id}/raw/${safeName}`, bytes, input.contentType);
-        return db.createAsset({ ownerId: ctx.user.id, title: input.title, assetKind: input.assetKind, storageKey: uploaded.key, storageUrl: uploaded.url, sourceUrl: input.sourceUrl, licenseType: input.licenseType, attribution: input.attribution, licenseStatus: "pending", safetyStatus: "review" });
+        const assetInput = { title: input.title, assetKind: input.assetKind, storageKey: uploaded.key, storageUrl: uploaded.url, sourceUrl: input.sourceUrl, licenseType: input.licenseType, attribution: input.attribution };
+        return db.createAsset({ ownerId: ctx.user.id, ...assetInput, ...assessAssetIntake(assetInput) });
       }),
     reviewAsset: protectedProcedure
       .input(z.object({ assetId: z.number().int().positive(), licenseStatus: z.enum(["approved", "held", "rejected"]), safetyStatus: z.enum(["clear", "review", "blocked"]) }))
       .mutation(async ({ ctx, input }) => {
-        const asset = await db.reviewAsset(ctx.user.id, input.assetId, { licenseStatus: input.licenseStatus, safetyStatus: input.safetyStatus });
+        const asset = await db.reviewAsset(ctx.user.id, input.assetId, { licenseStatus: input.licenseStatus, safetyStatus: input.safetyStatus, reviewNotes: `قرار مراجعة بشري: الحقوق ${input.licenseStatus}، السلامة ${input.safetyStatus}.` });
         if (!asset) throw new TRPCError({ code: "NOT_FOUND", message: "المادة غير موجودة." });
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "safety_rule", summary: `قرار مراجعة للمادة: ${asset.title}`, details: `الحقوق: ${input.licenseStatus} | السلامة: ${input.safetyStatus}`, actorType: "user" });
         return asset;
@@ -349,7 +367,7 @@ export const appRouter = router({
       }),
     changeLog: protectedProcedure.query(({ ctx }) => db.listChangeLog(ctx.user.id)),
     recordAnalytics: protectedProcedure
-      .input(z.object({ projectId: z.number().int().positive().optional(), platform: z.string().trim().min(2).max(80), views: z.number().int().min(0), engagements: z.number().int().min(0), retentionRate: z.number().int().min(0).max(100) }))
+      .input(z.object({ projectId: z.number().int().positive().optional(), platform: z.string().trim().min(2).max(80), contentVariant: z.enum(["ar", "en", "both", "none"]).default("none"), views: z.number().int().min(0), engagements: z.number().int().min(0), retentionRate: z.number().int().min(0).max(100) }))
       .mutation(({ ctx, input }) => db.recordAnalyticsSnapshot({ ownerId: ctx.user.id, ...input })),
   }),
 });

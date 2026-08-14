@@ -18,6 +18,7 @@ function Router() {
     <Route path="/" component={Home} />
     <Route path="/trends"><ToolRoute section="trends" /></Route>
     <Route path="/library"><ToolRoute section="library" /></Route>
+    <Route path="/assets"><ToolRoute section="library" /></Route>
     <Route path="/studio"><ToolRoute section="studio" /></Route>
     <Route path="/review"><ToolRoute section="review" /></Route>
     <Route path="/automation"><ToolRoute section="automation" /></Route>

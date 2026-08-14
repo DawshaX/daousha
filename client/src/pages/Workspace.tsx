@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -50,6 +49,9 @@ import ChangeLogPanel from "@/components/ChangeLogPanel";
 import AnalyticsBridge from "@/components/AnalyticsBridge";
 import ChannelControlCenter from "@/components/ChannelControlCenter";
 import ContentMixPanel from "@/components/ContentMixPanel";
+import ProjectBriefStudio from "@/components/ProjectBriefStudio";
+import TrendRadar from "@/components/TrendRadar";
+import PerformanceInsights from "@/components/PerformanceInsights";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -274,42 +276,7 @@ function Dashboard() {
 function Trends() {
   return (
     <Frame section="trends">
-      <section className="grid gap-5 xl:grid-cols-[1.1fr_.9fr]">
-        <Card className="border-white/8 bg-zinc-950/60">
-          <CardHeader>
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <CardTitle className="text-white">مسح الإشارات</CardTitle>
-                <CardDescription className="mt-2 leading-6 text-zinc-500">أضف مصادر الرصد من الإعدادات. لا تُفعل أي جهة جديدة دون اعتمادك.</CardDescription>
-              </div>
-              <Search className="h-5 w-5 text-red-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-xl border border-dashed border-red-500/25 bg-red-500/[0.03] p-7 text-center">
-              <Orbit className="mx-auto h-10 w-10 text-red-400/80" />
-              <h3 className="mt-4 font-bold text-white">الرادار جاهز، لكنه يحتاج مصادر معتمدة</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-500">اربط مصدرًا رسميًا أو أضف رابطًا موثوقًا، ثم اختر العربية والإنجليزية والنطاق الزمني قبل تشغيل أي مسح.</p>
-              <Button className="mt-5 bg-red-600 hover:bg-red-500" onClick={() => toast("أضف مصدر رصد من الإعدادات؛ سيظهر هنا بعد اعتماده.")}><Plus className="ml-2 h-4 w-4" /> إضافة مصدر رصد</Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-white/8 bg-zinc-950/60">
-          <CardHeader><CardTitle className="text-white">طريقة القراءة</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            {[
-              ["اكتشاف", "يجمع العناوين والموضوعات من المصادر المعتمدة فقط."],
-              ["ترتيب", "يرتب الفرص بحسب صلتها بمجال القناة، لا بوعد المشاهدات."],
-              ["تحويل", "يحوّل الفكرة إلى موجز أصلي قابل للإنتاج بالعربية والإنجليزية."],
-            ].map(([title, detail], index) => (
-              <div key={title} className="flex gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-red-500/25 bg-red-500/10 font-mono text-xs text-red-200">0{index + 1}</span>
-                <div><p className="text-sm font-semibold text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </section>
+      <TrendRadar />
       <SourceRegistry />
     </Frame>
   );
@@ -342,32 +309,7 @@ function Library() {
 function Studio() {
   return (
     <Frame section="studio">
-      <section className="grid gap-5 xl:grid-cols-[.9fr_1.1fr]">
-        <Card className="border-red-500/18 bg-zinc-950/60">
-          <CardHeader><CardTitle className="flex items-center gap-2 text-white"><WandSparkles className="h-5 w-5 text-red-400" /> موجز المشروع</CardTitle><CardDescription className="mt-2 leading-6 text-zinc-500">اكتب الفكرة، ثم دع المحرك يقترح هيكلًا أصليًا لا ينسخ المصدر.</CardDescription></CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea className="min-h-36 border-white/10 bg-black/30 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-red-500/60" placeholder="ما الفكرة أو السؤال الذي تريد تحويله إلى فيديو؟" />
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-300 hover:bg-white/[0.08] hover:text-white" onClick={() => toast("سيُنشأ السكربت من داخل بيئة الخادم عند تشغيل المحرك.")}><Sparkles className="ml-2 h-4 w-4" /> اقتراح سكربت</Button>
-              <Button className="bg-red-600 hover:bg-red-500" onClick={() => toast("أنشئ المشروع أولًا، ثم أضف أصولًا مرخّصة للمونتاج.")}><FolderKanban className="ml-2 h-4 w-4" /> إنشاء مشروع</Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-white/8 bg-zinc-950/60">
-          <CardHeader><CardTitle className="text-white">خط الفيديو الثنائي</CardTitle><CardDescription className="mt-2 text-zinc-500">كل مرحلة تنتج مخرجات قابلة للمراجعة قبل انتقالها إلى التالية.</CardDescription></CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-2">
-            {[
-              [FileVideo, "السكربت", "بنية قصة، خطاف، دعوة واضحة."],
-              [Layers3, "اللقطات", "مواد مرخّصة أو أصلية مع بيانات المصدر."],
-              [AudioLines, "الصوت والترجمة", "نسخة عربية وإنجليزية قابلة للتحرير."],
-              [Video, "التصدير", "نسخ مهيأة للمقاس والمنصة بعد المراجعة."],
-            ].map(([Icon, title, detail]) => {
-              const FeatureIcon = Icon as React.ElementType;
-              return <div key={String(title)} className="rounded-xl border border-white/8 bg-white/[0.02] p-4"><FeatureIcon className="h-5 w-5 text-red-400" /><p className="mt-4 text-sm font-semibold text-zinc-200">{title as string}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail as string}</p></div>;
-            })}
-          </CardContent>
-        </Card>
-      </section>
+      <ProjectBriefStudio />
       <ScriptForge />
       <VisualForge />
     </Frame>
@@ -456,8 +398,7 @@ function Automation() {
 function Insights() {
   return (
     <Frame section="insights">
-      <section className="grid gap-4 md:grid-cols-3"><MetricCard label="المشاهدات" value="0" description="بعد ربط القنوات الرسمية" icon={Play} /><MetricCard label="الاحتفاظ" value="—" description="لا توجد فيديوهات منشورة" icon={TrendingUp} /><MetricCard label="التفاعل" value="—" description="لا توجد بيانات متاحة" icon={CheckCheck} /></section>
-      <Card className="mt-5 border-white/8 bg-zinc-950/60"><CardHeader><CardTitle className="text-white">سجل الأداء</CardTitle><CardDescription className="mt-2 text-zinc-500">المخطط ينتظر أول بيانات موثقة من الحسابات المربوطة.</CardDescription></CardHeader><CardContent><div className="relative flex h-72 items-end gap-3 overflow-hidden rounded-xl border border-white/7 bg-[linear-gradient(180deg,rgba(239,68,68,.04),transparent_65%),repeating-linear-gradient(0deg,transparent,transparent_47px,rgba(255,255,255,.04)_48px)] px-8 pb-9"><div className="absolute inset-x-8 bottom-9 border-t border-dashed border-zinc-700" />{Array.from({ length: 8 }).map((_, i) => <div key={i} className="relative z-10 flex flex-1 flex-col items-center gap-2"><div className="w-full rounded-t bg-zinc-800/80" style={{ height: `${18 + (i % 3) * 7}px` }} /><span className="text-[10px] text-zinc-600">—</span></div>)}</div></CardContent></Card>
+      <PerformanceInsights />
       <AnalyticsBridge />
     </Frame>
   );
