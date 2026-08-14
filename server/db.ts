@@ -236,6 +236,12 @@ export async function listChannelConnections(ownerId: number) {
   return db!.select().from(channelConnections).where(eq(channelConnections.ownerId, ownerId)).orderBy(desc(channelConnections.updatedAt));
 }
 
+export async function getChannelConnection(ownerId: number, platform: typeof channelConnections.$inferSelect.platform) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(channelConnections).where(and(eq(channelConnections.ownerId, ownerId), eq(channelConnections.platform, platform))).limit(1))[0];
+}
+
 export async function upsertChannelConnection(input: typeof channelConnections.$inferInsert) {
   const db = await getDb();
   if (!db) databaseUnavailable();

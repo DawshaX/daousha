@@ -23,6 +23,15 @@ type TikTokTokenResponse = {
   error_description?: string;
 };
 
+export type TikTokProductionTokenBundle = {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  refreshExpiresIn: number;
+  openId: string;
+  scope: string;
+};
+
 function cookieOptions(req: Request) {
   const forwardedProtocol = req.header("x-forwarded-proto")?.split(",")[0];
   return { httpOnly: true, sameSite: "lax" as const, secure: req.secure || forwardedProtocol === "https", maxAge: 10 * 60 * 1000, path: "/" };
@@ -63,6 +72,63 @@ export function decryptTikTokCredential(value: string) {
   const decipher = createDecipheriv("aes-256-gcm", credentialKey(), Buffer.from(ivValue, "base64url"));
   decipher.setAuthTag(Buffer.from(authTagValue, "base64url"));
   return Buffer.concat([decipher.update(Buffer.from(ciphertextValue, "base64url")), decipher.final()]).toString("utf8");
+}
+
+export function getTikTokCredentialExpiryAt(expiresIn: number, now = new Date()) {
+  return new Date(now.getTime() + Math.max(0, expiresIn) * 1_000);
+}
+
+function parseTikTokProductionTokenBundle(ciphertext: string): TikTokProductionTokenBundle {
+  const payload = JSON.parse(decryptTikTokCredential(ciphertext)) as Partial<TikTokProductionTokenBundle>;
+  if (!payload.accessToken || !payload.refreshToken || !payload.openId) throw new Error("رموز TikTok الإنتاجية غير مكتملة.");
+  return {
+    accessToken: payload.accessToken,
+    refreshToken: payload.refreshToken,
+    expiresIn: payload.expiresIn ?? 0,
+    refreshExpiresIn: payload.refreshExpiresIn ?? 0,
+    openId: payload.openId,
+    scope: payload.scope ?? TIKTOK_SCOPES.join(","),
+  };
+}
+
+export async function getTikTokProductionAccessToken(ownerId: number, now = new Date()) {
+  const connection = await db.getChannelConnection(ownerId, "tiktok");
+  if (!connection?.credentialCiphertext || connection.status !== "authorized") throw new Error("TikTok الإنتاجي غير مفوض بعد.");
+  const current = parseTikTokProductionTokenBundle(connection.credentialCiphertext);
+  const hasUsableAccessToken = Boolean(connection.credentialExpiresAt && connection.credentialExpiresAt.getTime() > now.getTime() + 60_000);
+  if (hasUsableAccessToken) return current.accessToken;
+
+  const credentials = getTikTokOAuthCredentials("production");
+  if (!credentials.clientKey || !credentials.clientSecret) throw new Error("بيانات تطبيق TikTok الإنتاجية غير مهيأة.");
+  const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ client_key: credentials.clientKey, client_secret: credentials.clientSecret, grant_type: "refresh_token", refresh_token: current.refreshToken }),
+    signal: AbortSignal.timeout(20_000),
+  });
+  const refreshed = (await response.json()) as TikTokTokenResponse;
+  if (!response.ok || !refreshed.access_token) throw new Error(refreshed.error_description || refreshed.error || "تعذّر تجديد رمز TikTok الإنتاجي.");
+
+  const next: TikTokProductionTokenBundle = {
+    accessToken: refreshed.access_token,
+    refreshToken: refreshed.refresh_token || current.refreshToken,
+    expiresIn: refreshed.expires_in ?? current.expiresIn,
+    refreshExpiresIn: refreshed.refresh_expires_in ?? current.refreshExpiresIn,
+    openId: refreshed.open_id || current.openId,
+    scope: refreshed.scope || current.scope,
+  };
+  await db.upsertChannelConnection({
+    ownerId,
+    platform: "tiktok",
+    label: connection.label,
+    externalAccountRef: next.openId,
+    status: "authorized",
+    scopeSummary: next.scope,
+    credentialCiphertext: encryptTikTokCredential(JSON.stringify(next)),
+    credentialExpiresAt: getTikTokCredentialExpiryAt(next.expiresIn, now),
+    lastVerifiedAt: now,
+  });
+  return next.accessToken;
 }
 
 export function getTikTokSandboxAccessToken(req: Pick<Request, "headers">) {
@@ -162,6 +228,7 @@ export function registerTikTokOAuthRoutes(app: Express) {
         status: "authorized",
         scopeSummary: tokenPayload.scope ?? TIKTOK_SCOPES.join(", "),
         credentialCiphertext: encryptedTokenBundle,
+        credentialExpiresAt: getTikTokCredentialExpiryAt(tokenPayload.expires_in ?? 0),
         lastVerifiedAt: new Date(),
       });
       await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "تم تفويض TikTok", details: `النطاقات: ${tokenPayload.scope ?? TIKTOK_SCOPES.join(", ")}`, actorType: "user" });

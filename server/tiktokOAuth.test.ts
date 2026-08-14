@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getTikTokAuthorizeUrl, resolveTikTokOAuthEnvironment } from "./tiktokOAuth";
+import { getTikTokAuthorizeUrl, getTikTokCredentialExpiryAt, resolveTikTokOAuthEnvironment } from "./tiktokOAuth";
 
 describe("TikTok OAuth authorization URL", () => {
   it("requests the minimum identity, draft upload, and direct post scopes", () => {
@@ -17,5 +17,11 @@ describe("TikTok OAuth authorization URL", () => {
     expect(resolveTikTokOAuthEnvironment("sandbox")).toBe("sandbox");
     expect(resolveTikTokOAuthEnvironment("production")).toBe("production");
     expect(resolveTikTokOAuthEnvironment(undefined)).toBe("production");
+  });
+
+  it("records production-token expiry from the provider lifetime without relying on a browser session", () => {
+    const now = new Date("2026-08-14T10:00:00.000Z");
+    expect(getTikTokCredentialExpiryAt(7_200, now).toISOString()).toBe("2026-08-14T12:00:00.000Z");
+    expect(getTikTokCredentialExpiryAt(-5, now).toISOString()).toBe(now.toISOString());
   });
 });
