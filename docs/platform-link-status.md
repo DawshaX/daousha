@@ -33,3 +33,12 @@ Facebook publishes via Meta Graph API with a **long-lived page token** (verified
 TikTok: app **xDaW NoVa** (App ID 7673768835363145748, production client key `awa32n4co6o1vqbm`, sandbox key `sbawlacpenz2vl9ygx`) is fully configured with Login Kit + Content Posting API and scopes `user.info.basic`, `video.publish`, `video.upload`; Direct Post is enabled (publish straight to the profile via `push_by_file`). Category Education, website and redirect URI point at `https://daousha-vide-nbqlahcj.manus.space/` (callback `/api/integrations/tiktok/callback`), with privacy-policy and ToS pages on the same domain. **Live-mode review submitted on 2026-08-14** at https://developers.tiktok.com/app/7673768835363145748/pending with the end-to-end demo video `xdawnova-tiktok-review-demo-sandbox-live.mp4` and the reason "Submitting for Live Mode review to enable automated publishing of our educational bilingual content via the Content Posting API." Status: Production / **In review**; once approved, re-authorize the owner's real TikTok account through the OAuth flow and publishing becomes fully automatic. Until approval, sandbox publishing remains available with the sandbox client key.
 
 Meta Ads account act_1502752946625950 is disabled; not required for organic launch.
+
+
+## النشر التلقائي — 2026-08-15 (الحلقات 3 و4)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 3 | عينك تكذب عليك كل يوم | https://www.youtube.com/watch?v=opuu9zPgN-w | https://www.instagram.com/reel/DcCW2HdEanZ/ | 1265727539958933_122103941919434391 |
+| 4 | 3 أكاذيب عن ذاكرتك | https://www.youtube.com/watch?v=fm7Y0h1YBVg | https://www.instagram.com/reel/DcCYJ1TDuvK/ | 1265727539958933_122103948783434391 |
+
+ملاحظة: حلقة 5 (النوم) جاهزة السيناريو والتعليق الصوتي — بقيت الصور بسبب نفاد حصة توليد الصور اليوم، ستُنتج في التشغيل الدوري القادم تلقائيًا.
