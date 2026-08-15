@@ -57,3 +57,12 @@
 - fb_page_token.txt يجب أن يكون دائمًا مفتاح secrets FACEBOOK_PAGE_ACCESS_TOKEN (التوكن القديم منتهي)
 - جلسة 2026-08-15: الحلقة 5 أُنتجت ونُشرت IG؛ YT/FB/Telegram متوقفة بسبب غياب /home/ubuntu/secrets.txt في الجلسة الجديدة — طلب من المستخدم استعادة الملف
 - الأسلوب البصري: 9:16 dark navy + amber glow، نص عربي عريض أبيض، عناوين «3 حقائق/أسرار/أكاذيب»
+
+## دورة 2026-08-15 (مساءً — تشغيل مجدول)
+| الحلقة | الموضوع | YT | IG | FB |
+|---|---|---|---|---|
+| 6 | أحلامك ليست عشوائية! 3 أسرار علمية ستصدمك | pending (secrets) | pending (حُفظت للنشر الكامل مع YT/FB) | pending (secrets) |
+- الحلقة 6: produced كامل (1080x1920، 36.4s، narration 37.8s) في docs/episode6/ وtest_run/. topic_library.json محدثة: ep6 = produced.
+- الحلقة 5: YT/FB/Telegram ما زالت pending — تتطلب استعادة /home/ubuntu/secrets.txt.
+- TikTok: In review (صفحة المطورين تتطلب تسجيل دخول — لم تُفتح). عند القبول: ربط OAuth ونشر فوري.
+- المطلوب من المستخدم: إعادة رفع secrets.txt في جلسة جديدة أو لصقه، ثم يكمل النشر تلقائيًا دون إعادة إنتاج.
