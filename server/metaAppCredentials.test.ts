@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-describe("Meta app credentials", () => {
+const runLivePlatformTests = process.env.RUN_LIVE_PLATFORM_TESTS === "true";
+
+describe.skipIf(!runLivePlatformTests)("Meta app credentials", () => {
   it("are accepted by Graph API for the configured application", async () => {
     const appId = process.env.META_APP_ID;
     const appSecret = process.env.META_APP_SECRET;
