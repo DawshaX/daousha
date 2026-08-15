@@ -40,6 +40,6 @@ describe("Facebook Page publisher", () => {
     await expect(uploadVettedVideoToFacebookPage(
       { externalAccountRef: "1265727539958933", status: "authorized" },
       { storageKey: "assets/reel.mp4", title: "XDAW NOVA", description: "Original bilingual content", visibility: "private" },
-    )).rejects.toThrow("لا يطابق صفحة XDAW NOVA");
+    )).rejects.toThrow("لا يملك التفويض المطلوب لصفحة XDAW NOVA");
   });
 });

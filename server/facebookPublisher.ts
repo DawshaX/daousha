@@ -1,4 +1,5 @@
 import { ENV } from "./_core/env";
+import { classifyFacebookTokenFailure, facebookTokenStateMessage } from "./facebookTokenStatus";
 import { storageGetSignedUrl } from "./storage";
 
 type AuthorizedFacebookConnection = {
@@ -13,7 +14,7 @@ type FacebookUploadInput = {
   visibility: "private" | "public";
 };
 
-type MetaIdentity = { id?: string; name?: string; error?: { message?: string } };
+type MetaIdentity = { id?: string; name?: string; error?: { message?: string; code?: number; error_subcode?: number } };
 type MetaVideoResponse = { id?: string; error?: { message?: string } };
 
 async function verifyPageIdentity(pageId: string) {
@@ -22,8 +23,12 @@ async function verifyPageIdentity(pageId: string) {
     signal: AbortSignal.timeout(15_000),
   });
   const payload = await response.json() as MetaIdentity;
-  if (!response.ok || !payload.id || payload.id !== pageId) {
-    throw new Error("رمز Facebook لا يطابق صفحة XDAW NOVA المفوضة.");
+  if (!response.ok) {
+    const state = classifyFacebookTokenFailure({ httpStatus: response.status, errorCode: payload.error?.code, errorSubcode: payload.error?.error_subcode });
+    throw new Error(facebookTokenStateMessage(state));
+  }
+  if (!payload.id || payload.id !== pageId) {
+    throw new Error(facebookTokenStateMessage("mismatch"));
   }
   return payload;
 }

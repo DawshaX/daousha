@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { describeProductionPackage } from "@shared/daousha";
-import { Clapperboard, FileText, FolderPlus, Globe2, Loader2, ShieldCheck } from "lucide-react";
+import { githubTopicIdeas, githubTopicLibrarySource, topicIdeaBrief } from "@shared/githubTopicLibrary";
+import { Clapperboard, FileText, FolderPlus, Globe2, Import, Loader2, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +18,9 @@ export default function ProjectBriefStudio() {
   const [targetLanguage, setTargetLanguage] = useState<"ar" | "en" | "both">("both");
   const [contentFormat, setContentFormat] = useState<"short" | "long">("short");
   const [lastCreatedTitle, setLastCreatedTitle] = useState<string | null>(null);
+  const [topicFilter, setTopicFilter] = useState("");
   const packagePlan = useMemo(() => describeProductionPackage(targetLanguage, contentFormat), [targetLanguage, contentFormat]);
+  const importedIdeas = useMemo(() => githubTopicIdeas.filter(idea => `${idea.topic} ${idea.angle}`.includes(topicFilter.trim())), [topicFilter]);
   const createProject = trpc.daousha.createProject.useMutation({
     onSuccess: project => {
       setLastCreatedTitle(project.title);
@@ -37,6 +40,11 @@ export default function ProjectBriefStudio() {
     createProject.mutate({ title: title.trim(), brief: brief.trim() || undefined, targetLanguage, contentFormat });
   };
   const submitPackage = () => { if (title.trim().length < 3) { toast.error("اكتب عنوانًا واضحًا من ثلاثة أحرف على الأقل."); return; } createPackage.mutate({ title: title.trim(), brief: brief.trim() || undefined, targetLanguage }); };
+  const useImportedIdea = (idea: typeof githubTopicIdeas[number]) => {
+    setTitle(idea.topic);
+    setBrief(topicIdeaBrief(idea));
+    toast("نُقلت الفكرة إلى الموجز فقط. راجعها ثم أنشئ المشروع يدويًا.");
+  };
 
   return <section className="grid gap-5 xl:grid-cols-[1.1fr_.9fr]">
     <Card className="border-red-500/18 bg-zinc-950/60">
@@ -51,5 +59,6 @@ export default function ProjectBriefStudio() {
       </CardContent>
     </Card>
       <Card className="border-white/8 bg-zinc-950/60"><CardHeader><CardTitle className="flex items-center gap-2 text-white"><Clapperboard className="h-5 w-5 text-red-400" /> مشاريع الاستوديو</CardTitle><CardDescription className="mt-2 text-zinc-500">الفكرة الأم حاوية فقط؛ الإنتاج والمراجعة والنشر يقتصرون على النسخ التابعة.</CardDescription></CardHeader><CardContent className="space-y-3">{recentProjects.length ? recentProjects.map(project => <div key={project.id} className="rounded-xl border border-white/8 bg-white/[0.02] p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate text-sm font-semibold text-zinc-200">{project.title}</p><p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-600">{project.brief || "بانتظار موجز تفصيلي."}</p></div><Badge variant="outline" className="shrink-0 border-white/10 text-[10px] text-zinc-400">{project.projectKind === "package_parent" ? "فكرة أم" : project.status}</Badge></div><div className="mt-3 flex gap-2 text-[10px] text-zinc-500"><span className="inline-flex items-center gap-1"><FileText className="h-3 w-3" />{project.targetLanguage.toUpperCase()}</span><span>·</span><span>{project.projectKind === "package_parent" ? "حاوية محايدة" : project.orientation === "vertical" ? "Short / Vertical" : project.orientation === "horizontal" ? "Long / Horizontal" : project.contentFormat === "short" ? "Short" : "Long"}</span>{project.parentProjectId ? <><span>·</span><span className="text-red-200/70">تابع للفكرة #{project.parentProjectId}</span></> : null}</div></div>) : <div className="rounded-xl border border-dashed border-white/10 bg-black/20 p-6 text-center text-sm text-zinc-600">أنشئ أول مشروع من الموجز لتظهر حزمته هنا.</div>}</CardContent></Card>
+      <Card className="border-amber-500/20 bg-[linear-gradient(145deg,rgba(69,39,10,.18),rgba(9,9,11,.8))] xl:col-span-2"><CardHeader><CardTitle className="flex items-center gap-2 text-white"><Import className="h-5 w-5 text-amber-300" /> مكتبة موضوعات مستوردة للمراجعة</CardTitle><CardDescription className="mt-2 leading-6 text-zinc-500">لقطة موثقة من مستودع GitHub. اختيار الفكرة يملأ الموجز فقط؛ لا ينشئ مشروعًا أو جدولة أو نشرًا.</CardDescription></CardHeader><CardContent className="space-y-3"><div className="flex flex-wrap items-center justify-between gap-3"><Input value={topicFilter} onChange={event => setTopicFilter(event.target.value)} placeholder="ابحث في العناوين أو الزوايا" className="max-w-md border-white/10 bg-black/30 text-zinc-100 placeholder:text-zinc-700" /><a href={githubTopicLibrarySource} target="_blank" rel="noreferrer" className="text-xs text-amber-200 underline-offset-4 hover:underline">فتح المصدر المرجعي</a></div><div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{importedIdeas.map(idea => <button key={idea.id} type="button" onClick={() => useImportedIdea(idea)} className="rounded-xl border border-white/8 bg-black/20 p-3 text-right transition hover:border-amber-400/35 hover:bg-amber-300/[0.04]"><div className="flex items-center justify-between gap-2"><p className="text-sm font-semibold text-zinc-100">{idea.topic}</p><Badge variant="outline" className="border-amber-500/20 text-[10px] text-amber-100">{idea.sourceStatus === "queued" ? "في طابور المصدر" : "بانتظار تعليق"}</Badge></div><p className="mt-2 line-clamp-2 text-xs leading-5 text-zinc-500">{idea.angle}</p><p className="mt-3 text-[10px] text-amber-100/70">انقل إلى الموجز للمراجعة</p></button>)}</div>{!importedIdeas.length ? <p className="rounded-lg border border-dashed border-white/10 p-4 text-center text-sm text-zinc-500">لا توجد فكرة مطابقة للبحث.</p> : null}</CardContent></Card>
   </section>;
 }
