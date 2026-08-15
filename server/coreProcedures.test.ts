@@ -71,14 +71,18 @@ describe("core content procedures", () => {
     expect(dbMock.createAsset).not.toHaveBeenCalled();
   });
 
-  it("creates a schedule draft only for an operational project on officially authorized YouTube", async () => {
+  it("creates a schedule draft for every officially authorized automatic destination", async () => {
     const caller = appRouter.createCaller({ user: { id: 7 } } as any);
     await expect(caller.daousha.createScheduleDraft({ projectId: 11, platform: "youtube", cronExpression: "0 0 9 * * *", timeZone: "Africa/Cairo" })).resolves.toMatchObject({ id: 15, status: "draft" });
     expect(dbMock.createSchedule).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, projectId: 11, platform: "youtube" }));
 
+    dbMock.listChannelConnections.mockResolvedValue([{ platform: "facebook", status: "authorized", credentialCiphertext: "cipher", externalAccountRef: "page-1" }]);
+    await expect(caller.daousha.createScheduleDraft({ projectId: 11, platform: "facebook", cronExpression: "0 0 9 * * *", timeZone: "Africa/Cairo" })).resolves.toMatchObject({ id: 15, status: "draft" });
+    expect(dbMock.createSchedule).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, projectId: 11, platform: "facebook" }));
+
     dbMock.getOwnedProject.mockResolvedValue({ id: 12, projectKind: "package_parent" });
     await expect(caller.daousha.createScheduleDraft({ projectId: 12, platform: "youtube", cronExpression: "0 0 9 * * *", timeZone: "Africa/Cairo" })).rejects.toMatchObject({ code: "NOT_FOUND" });
-    expect(dbMock.createSchedule).toHaveBeenCalledTimes(1);
+    expect(dbMock.createSchedule).toHaveBeenCalledTimes(2);
   });
 
   it("notifies the owner when an operational project enters human review", async () => {

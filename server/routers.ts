@@ -174,12 +174,14 @@ export const appRouter = router({
       }),
     schedules: protectedProcedure.query(({ ctx }) => db.listSchedules(ctx.user.id)),
     createScheduleDraft: protectedProcedure
-      .input(z.object({ projectId: z.number().int().positive(), platform: z.enum(["youtube"]), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
+      .input(z.object({ projectId: z.number().int().positive(), platform: z.enum(["youtube", "instagram", "facebook"]), cronExpression: z.string().trim().regex(/^\S+(\s+\S+){5}$/, "يجب أن يكون التعبير الزمني من 6 حقول"), timeZone: z.string().trim().min(2).max(80).default("UTC") }))
       .mutation(async ({ ctx, input }) => {
         const [project, connections] = await Promise.all([db.getOwnedProject(ctx.user.id, input.projectId), db.listChannelConnections(ctx.user.id)]);
         if (!project || project.projectKind === "package_parent") throw new TRPCError({ code: "NOT_FOUND", message: "لا يمكن جدولة الفكرة الأم؛ اختر نسخة قصيرة أو طويلة." });
         const youtube = connections.find(connection => connection.platform === "youtube" && connection.status === "authorized" && connection.credentialCiphertext);
-        if (!youtube) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن جدولة النشر إلا لقناة YouTube المفوضة رسميًا." });
+        const instagram = connections.find(connection => connection.platform === "instagram" && connection.status === "authorized" && connection.credentialCiphertext && connection.scopeSummary?.includes("instagram_business_content_publish"));
+        const facebook = connections.find(connection => connection.platform === "facebook" && connection.status === "authorized" && connection.credentialCiphertext && connection.externalAccountRef);
+        if (!((input.platform === "youtube" && youtube) || (input.platform === "instagram" && instagram) || (input.platform === "facebook" && facebook))) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن جدولة النشر إلا لقناة YouTube أو Instagram API أو صفحة Facebook المفوضة رسميًا." });
         return db.createSchedule({ ownerId: ctx.user.id, ...input, status: "draft" });
       }),
     activateSchedule: protectedProcedure
@@ -192,10 +194,11 @@ export const appRouter = router({
         const platform = schedule.platform.toLowerCase();
         const youtube = connections.find(connection => connection.platform === "youtube" && connection.status === "authorized" && connection.credentialCiphertext);
         const instagram = connections.find(connection => connection.platform === "instagram" && connection.status === "authorized" && connection.credentialCiphertext && connection.scopeSummary?.includes("instagram_business_content_publish"));
-        if (!((platform === "youtube" && youtube) || (platform === "instagram" && instagram))) {
+        const facebook = connections.find(connection => connection.platform === "facebook" && connection.status === "authorized" && connection.credentialCiphertext && connection.externalAccountRef);
+        if (!((platform === "youtube" && youtube) || (platform === "instagram" && instagram) || (platform === "facebook" && facebook))) {
           await db.setScheduleStatus(ctx.user.id, schedule.id, "needs_approval");
-          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "schedule_needs_review", title: "لا يمكن تفعيل الجدولة", detail: "الوجهة ليست قناة YouTube مفوضة قابلة للنشر الدوري." });
-          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن تفعيل جدولة إلا لوجهة YouTube أو Instagram API مفوضة رسميًا." });
+          await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "schedule_needs_review", title: "لا يمكن تفعيل الجدولة", detail: "الوجهة ليست قناة مفوضة قابلة للنشر الدوري." });
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن تفعيل الجدولة إلا لوجهة YouTube أو Instagram API أو صفحة Facebook مفوضة رسميًا." });
         }
         const task = await createHeartbeatJob({
           name: `xdaw-publish-${ctx.user.id}-${schedule.id}`,
@@ -391,7 +394,7 @@ export const appRouter = router({
         return { decision, previewAcknowledgedAt: project.previewAcknowledgedAt };
       }),
     uploadVettedYouTubeVideo: protectedProcedure
-      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), title: z.string().trim().min(3).max(100), description: z.string().trim().min(10).max(5000), tags: z.array(z.string().trim().min(1).max(80)).max(15), confirmPublic: z.boolean().default(false) }))
+      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), title: z.string().trim().min(3).max(100), description: z.string().trim().min(10).max(5000), tags: z.array(z.string().trim().min(1).max(80)).max(15) }))
       .mutation(async ({ ctx, input }) => {
         const [linked, policy, connections, runs] = await Promise.all([
           db.getOwnedProjectVideoAsset(ctx.user.id, input.projectId, input.assetId),
@@ -413,9 +416,6 @@ export const appRouter = router({
           const blockedRun = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "youtube", status: "blocked", visibility: "private", decisionReason: decision.reason, initiatedBy: "user" });
           return { published: false, requiresPublicConfirmation: false, run: blockedRun, reason: decision.reason };
         }
-        if (decision.visibility === "public" && !input.confirmPublic) {
-          return { published: false, requiresPublicConfirmation: true, reason: "الفيديو جاهز للنشر العام. أرسل التأكيد العام المحدد لتنفيذ الرفع." };
-        }
         const run = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "youtube", status: "queued", visibility: decision.visibility, decisionReason: decision.reason, initiatedBy: "user" });
         try {
           const uploaded = await uploadVettedVideoToYouTube(youtube, { storageKey: asset.storageKey, title: input.title, description: input.description, tags: input.tags, visibility: decision.visibility });
@@ -435,7 +435,7 @@ export const appRouter = router({
         }
       }),
     uploadVettedFacebookVideo: protectedProcedure
-      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), title: z.string().trim().min(3).max(100), description: z.string().trim().min(10).max(5000), confirmPublic: z.boolean().default(false) }))
+      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), title: z.string().trim().min(3).max(100), description: z.string().trim().min(10).max(5000) }))
       .mutation(async ({ ctx, input }) => {
         const [linked, policy, connections, runs] = await Promise.all([
           db.getOwnedProjectVideoAsset(ctx.user.id, input.projectId, input.assetId),
@@ -463,10 +463,6 @@ export const appRouter = router({
           const blockedRun = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "facebook", status: "blocked", visibility: "private", decisionReason: decision.reason, initiatedBy: "user" });
           return { published: false, requiresPublicConfirmation: false, run: blockedRun, reason: decision.reason };
         }
-        if (decision.visibility === "public" && !input.confirmPublic) {
-          return { published: false, requiresPublicConfirmation: true, reason: "الفيديو جاهز للنشر العام على Facebook. أرسل التأكيد العام المحدد لتنفيذ الرفع." };
-        }
-
         const run = await db.createPublishingRun({ ownerId: ctx.user.id, projectId: project.id, platform: "facebook", status: "queued", visibility: decision.visibility, decisionReason: decision.reason, initiatedBy: "user" });
         try {
           const uploaded = await uploadVettedVideoToFacebookPage(facebook, { storageKey: asset.storageKey, title: input.title, description: input.description, visibility: decision.visibility });

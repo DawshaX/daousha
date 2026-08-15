@@ -1,10 +1,12 @@
 import { ENV } from "./_core/env";
 import { classifyFacebookTokenFailure, facebookTokenStateMessage } from "./facebookTokenStatus";
 import { storageGetSignedUrl } from "./storage";
+import { decryptFacebookPageAccessToken } from "./facebookOAuth";
 
 type AuthorizedFacebookConnection = {
   externalAccountRef: string | null;
   status: string;
+  credentialCiphertext?: string | null;
 };
 
 type FacebookUploadInput = {
@@ -17,9 +19,14 @@ type FacebookUploadInput = {
 type MetaIdentity = { id?: string; name?: string; error?: { message?: string; code?: number; error_subcode?: number } };
 type MetaVideoResponse = { id?: string; error?: { message?: string } };
 
-async function verifyPageIdentity(pageId: string) {
-  if (!ENV.facebookPageAccessToken) throw new Error("رمز وصول صفحة Facebook غير مهيأ.");
-  const response = await fetch(`https://graph.facebook.com/v26.0/me?fields=id,name&access_token=${encodeURIComponent(ENV.facebookPageAccessToken)}`, {
+function selectedPageToken(connection: AuthorizedFacebookConnection) {
+  if (connection.credentialCiphertext) return decryptFacebookPageAccessToken(connection.credentialCiphertext);
+  if (ENV.facebookPageAccessToken) return ENV.facebookPageAccessToken;
+  throw new Error("رمز وصول صفحة Facebook غير مهيأ.");
+}
+
+async function verifyPageIdentity(pageId: string, accessToken: string) {
+  const response = await fetch(`https://graph.facebook.com/v26.0/me?fields=id,name&access_token=${encodeURIComponent(accessToken)}`, {
     signal: AbortSignal.timeout(15_000),
   });
   const payload = await response.json() as MetaIdentity;
@@ -35,14 +42,15 @@ async function verifyPageIdentity(pageId: string) {
 
 /**
  * Uploads one vetted video to the selected Facebook Page.
- * The caller must complete rights, safety, preview and public-confirmation guards first.
+ * The caller must complete rights, safety, preview, and pre-schedule approval guards first.
  */
 export async function uploadVettedVideoToFacebookPage(connection: AuthorizedFacebookConnection, input: FacebookUploadInput) {
   if (connection.status !== "authorized" || !connection.externalAccountRef) {
     throw new Error("صفحة Facebook غير مفوضة للنشر.");
   }
 
-  await verifyPageIdentity(connection.externalAccountRef);
+  const accessToken = selectedPageToken(connection);
+  await verifyPageIdentity(connection.externalAccountRef, accessToken);
   const signedUrl = await storageGetSignedUrl(input.storageKey);
   const videoResponse = await fetch(signedUrl, { signal: AbortSignal.timeout(90_000) });
   if (!videoResponse.ok) throw new Error("تعذّر قراءة ملف الفيديو من التخزين الآمن.");
@@ -54,7 +62,7 @@ export async function uploadVettedVideoToFacebookPage(connection: AuthorizedFace
   form.set("title", input.title);
   form.set("description", input.description);
   form.set("published", input.visibility === "public" ? "true" : "false");
-  form.set("access_token", ENV.facebookPageAccessToken);
+  form.set("access_token", accessToken);
 
   const uploadResponse = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(connection.externalAccountRef)}/videos`, {
     method: "POST",

@@ -46,12 +46,12 @@ export function resolveDistributionReadiness(connections: DistributionConnection
       return { platform, mode: "confirmation_required", eligible: true, reason: "حساب Instagram مفوض عبر الموصل، لكن لا يوجد بعد رمز Instagram API مخول بالنشر الخلفي." };
     }
 
-    if (platform === "facebook" && connection?.status === "authorized") {
+    if (platform === "facebook" && connection?.status === "authorized" && connection.credentialCiphertext) {
       return {
         platform,
-        mode: "confirmation_required",
+        mode: "automatic_api",
         eligible: true,
-        reason: "رمز صفحة Facebook مفوض وناشر الفيديو جاهز، لكن كل نشر عام يحتاج تأكيدًا صريحًا.",
+        reason: "رمز صفحة Facebook مفوض وناشر الفيديو الخلفي جاهز؛ تنفذ الحزم المعتمدة مسبقًا عبر الجدولة مع حواجز الحقوق والسلامة.",
       };
     }
 

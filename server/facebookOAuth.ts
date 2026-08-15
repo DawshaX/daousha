@@ -44,6 +44,11 @@ function decrypt(value: string) {
   return Buffer.concat([decipher.update(Buffer.from(ciphertextRaw, "base64url")), decipher.final()]).toString("utf8");
 }
 
+/** Server-only helper for the selected Page token persisted by the Facebook OAuth callback. */
+export function decryptFacebookPageAccessToken(value: string) {
+  return decrypt(value);
+}
+
 async function getAuthenticatedUser(req: Request) {
   try {
     return await sdk.authenticateRequest(req);
