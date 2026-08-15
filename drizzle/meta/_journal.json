@@ -85,6 +85,13 @@
       "when": 1786704753135,
       "tag": "0011_previous_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1786782126811,
+      "tag": "0012_empty_jack_power",
+      "breakpoints": true
     }
   ]
 }

@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { canConfirmPublicPublish, publicPublishConfirmationPhrase } from "@/lib/publishReviewFlow";
-import { CheckCheck, Play, Send, ShieldAlert } from "lucide-react";
-import { useEffect, useState } from "react";
+import { CheckCheck, Play, Save, Send, ShieldAlert } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function ReviewPublishDesk() {
@@ -23,6 +23,8 @@ export default function ReviewPublishDesk() {
   const selectedPair = projectVideoAssets?.find(item => `${item.project.id}:${item.asset.id}` === selectedKey) ?? projectVideoAssets?.find(item => item.project.status !== "published") ?? projectVideoAssets?.[0];
   const project = selectedPair?.project;
   const videoAsset = selectedPair?.asset;
+  const draftInput = useMemo(() => project && videoAsset ? { projectId: project.id, assetId: videoAsset.id } : null, [project?.id, videoAsset?.id]);
+  const savedDraft = trpc.daousha.uploadMetadataDraft.useQuery(draftInput ?? { projectId: 1, assetId: 1 }, { enabled: Boolean(draftInput) });
 
   useEffect(() => {
     if (!project || !videoAsset) return;
@@ -33,6 +35,18 @@ export default function ReviewPublishDesk() {
     setConfirmation("");
     setSelectedKey(`${project.id}:${videoAsset.id}`);
   }, [project?.id, videoAsset?.id]);
+
+  useEffect(() => {
+    if (!savedDraft.data) return;
+    setTitle(savedDraft.data.title);
+    setDescription(savedDraft.data.description);
+    try {
+      const tags = JSON.parse(savedDraft.data.tagsJson);
+      if (Array.isArray(tags) && tags.every(tag => typeof tag === "string")) setTagsText(tags.join(", "));
+    } catch {
+      // Keep the editable field unchanged if a legacy draft contained malformed metadata.
+    }
+  }, [savedDraft.data?.id]);
 
   const preflight = trpc.daousha.preflightVettedYouTubeVideo.useMutation({
     onSuccess: result => {
@@ -66,9 +80,18 @@ export default function ReviewPublishDesk() {
     onError: error => toast.error(error.message),
   });
 
+  const saveDraft = trpc.daousha.savePrivateUploadMetadataDraft.useMutation({
+    onSuccess: () => {
+      savedDraft.refetch();
+      toast.success("حُفظت مسودة بيانات رفع خاصة. لم يبدأ رفع أو نشر.");
+    },
+    onError: error => toast.error(error.message),
+  });
+
   const data = project && videoAsset ? { projectId: project.id, assetId: videoAsset.id, title: title.trim(), description: description.trim(), tags: tagsText.split(",").map(tag => tag.trim()).filter(Boolean) } : null;
   const previewSaved = Boolean(project?.previewAcknowledgedAt);
   const baseDisabled = !data || !previewSaved || !data.title || data.description.length < 10;
+  const draftDisabled = !data || !data.title || data.description.length < 10;
 
   return (
     <Card className="border-red-500/20 bg-[linear-gradient(145deg,rgba(69,10,10,.28),rgba(9,9,11,.9))]">
@@ -83,7 +106,8 @@ export default function ReviewPublishDesk() {
           <Input value={title} onChange={event => setTitle(event.target.value)} className="border-white/10 bg-black/30 text-zinc-100" placeholder="عنوان الفيديو" />
           <Textarea value={description} onChange={event => setDescription(event.target.value)} className="min-h-28 border-white/10 bg-black/30 text-zinc-100" placeholder="وصف الفيديو" />
           <Input value={tagsText} onChange={event => setTagsText(event.target.value)} className="border-white/10 bg-black/30 text-zinc-100" placeholder="وسوم مفصولة بفاصلة" />
-          <div className="flex flex-wrap gap-3"><Button className="bg-red-600 hover:bg-red-500" disabled={baseDisabled || preflight.isPending} onClick={() => data && preflight.mutate({ projectId: data.projectId, assetId: data.assetId })}><ShieldAlert className="ml-2 h-4 w-4" /> {preflight.isPending ? "جارٍ الفحص…" : "فحص الحواجز"}</Button>{privateRequired ? <Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white" disabled={baseDisabled || upload.isPending} onClick={() => data && upload.mutate({ ...data, confirmPublic: false })}><Play className="ml-2 h-4 w-4" /> رفع نسخة خاصة</Button> : null}</div>
+          <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.04] p-3 text-xs leading-6 text-sky-100/75">مسودة البيانات تحفظ العنوان والوصف والوسوم بخصوصية <b>خاص</b> للمراجعة فقط. لا تفحص الحواجز ولا ترفع ملفًا ولا تنشر محتوى.</div>
+          <div className="flex flex-wrap gap-3"><Button variant="outline" className="border-sky-500/30 bg-sky-500/[0.06] text-sky-100 hover:bg-sky-500/15 hover:text-white" disabled={draftDisabled || saveDraft.isPending} onClick={() => data && saveDraft.mutate(data)}><Save className="ml-2 h-4 w-4" /> {saveDraft.isPending ? "جارٍ حفظ المسودة…" : "حفظ مسودة خاصة"}</Button><Button className="bg-red-600 hover:bg-red-500" disabled={baseDisabled || preflight.isPending} onClick={() => data && preflight.mutate({ projectId: data.projectId, assetId: data.assetId })}><ShieldAlert className="ml-2 h-4 w-4" /> {preflight.isPending ? "جارٍ الفحص…" : "فحص الحواجز"}</Button>{privateRequired ? <Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white" disabled={baseDisabled || upload.isPending} onClick={() => data && upload.mutate({ ...data, confirmPublic: false })}><Play className="ml-2 h-4 w-4" /> رفع نسخة خاصة</Button> : null}</div>
           {publicReady ? <div className="space-y-3 rounded-xl border border-amber-500/25 bg-amber-500/[0.05] p-4"><p className="text-sm leading-6 text-amber-100">اكتب العبارة التالية كما هي لتأكيد نشر هذا الفيديو علنًا: <b>{publicPublishConfirmationPhrase}</b></p><Input value={confirmation} onChange={event => setConfirmation(event.target.value)} className="border-amber-500/20 bg-black/30 text-zinc-100" placeholder={publicPublishConfirmationPhrase} /><Button className="w-full bg-red-600 hover:bg-red-500" disabled={!canConfirmPublicPublish({ previewAcknowledged: previewSaved, preflightVisibility: publicReady ? "public" : null, confirmation }) || upload.isPending} onClick={() => data && upload.mutate({ ...data, confirmPublic: true })}><CheckCheck className="ml-2 h-4 w-4" /> {upload.isPending ? "جارٍ النشر…" : "تأكيد النشر العام"}</Button></div> : null}
           <Badge className={previewSaved ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-100 hover:bg-emerald-500/10" : "border border-amber-500/25 bg-amber-500/10 text-amber-100 hover:bg-amber-500/10"}>{previewSaved ? "المعاينة شرط محفوظ" : "احفظ إقرار المعاينة أولًا"}</Badge>
         </>}

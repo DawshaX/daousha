@@ -14,6 +14,7 @@ import {
   publishingRuns,
   publishingSchedules,
   systemChangeLog,
+  uploadMetadataDrafts,
   users,
   videoProjects,
   workflowTasks,
@@ -335,6 +336,44 @@ export async function updatePublishingRun(ownerId: number, runId: number, patch:
   if (!db) databaseUnavailable();
   await db!.update(publishingRuns).set(patch).where(and(eq(publishingRuns.id, runId), eq(publishingRuns.ownerId, ownerId)));
   return (await db!.select().from(publishingRuns).where(and(eq(publishingRuns.id, runId), eq(publishingRuns.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function getUploadMetadataDraft(ownerId: number, projectId: number, assetId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(uploadMetadataDrafts).where(and(
+    eq(uploadMetadataDrafts.ownerId, ownerId),
+    eq(uploadMetadataDrafts.projectId, projectId),
+    eq(uploadMetadataDrafts.assetId, assetId),
+  )).limit(1))[0];
+}
+
+export async function upsertPrivateUploadMetadataDraft(input: {
+  ownerId: number;
+  projectId: number;
+  assetId: number;
+  title: string;
+  description: string;
+  tags: string[];
+}) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const values = {
+    ownerId: input.ownerId,
+    projectId: input.projectId,
+    assetId: input.assetId,
+    platform: "youtube" as const,
+    visibility: "private" as const,
+    title: input.title,
+    description: input.description,
+    tagsJson: JSON.stringify(input.tags),
+  };
+  await db!.insert(uploadMetadataDrafts).values(values).onDuplicateKeyUpdate({ set: {
+    title: values.title,
+    description: values.description,
+    tagsJson: values.tagsJson,
+  } });
+  return getUploadMetadataDraft(input.ownerId, input.projectId, input.assetId);
 }
 
 export async function getOwnedAsset(ownerId: number, assetId: number) {

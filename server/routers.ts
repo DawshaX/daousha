@@ -295,6 +295,24 @@ export const appRouter = router({
     publishingRuns: protectedProcedure.query(({ ctx }) => db.listPublishingRuns(ctx.user.id)),
     notificationEvents: protectedProcedure.query(({ ctx }) => db.listNotificationEvents(ctx.user.id)),
     projectVideoAssets: protectedProcedure.query(({ ctx }) => db.listOwnedProjectVideoAssets(ctx.user.id)),
+    uploadMetadataDraft: protectedProcedure
+      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive() }))
+      .query(({ ctx, input }) => db.getUploadMetadataDraft(ctx.user.id, input.projectId, input.assetId)),
+    savePrivateUploadMetadataDraft: protectedProcedure
+      .input(z.object({
+        projectId: z.number().int().positive(),
+        assetId: z.number().int().positive(),
+        title: z.string().trim().min(3).max(100),
+        description: z.string().trim().min(10).max(5000),
+        tags: z.array(z.string().trim().min(1).max(80)).max(15),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const linked = await db.getOwnedProjectVideoAsset(ctx.user.id, input.projectId, input.assetId);
+        if (!linked) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط ملف الفيديو بالمشروع نفسه قبل حفظ مسودة الرفع." });
+        const draft = await db.upsertPrivateUploadMetadataDraft({ ownerId: ctx.user.id, ...input });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: "حفظ مسودة رفع خاصة", details: `YouTube خاص — ${linked.project.title} — لا يوجد رفع أو نشر.`, actorType: "user" });
+        return draft;
+      }),
     linkProjectAsset: protectedProcedure
       .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), clipRole: z.enum(["primary", "broll", "audio", "reference"]).default("primary") }))
       .mutation(async ({ ctx, input }) => {

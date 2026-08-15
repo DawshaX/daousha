@@ -185,6 +185,21 @@ export const publishingRuns = mysqlTable("publishing_runs", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+/** A saved upload brief is review-only metadata; it never performs an upload or changes a publishing run. */
+export const uploadMetadataDrafts = mysqlTable("upload_metadata_drafts", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  projectId: int("projectId").notNull(),
+  assetId: int("assetId").notNull(),
+  platform: mysqlEnum("platform", ["youtube"]).default("youtube").notNull(),
+  visibility: mysqlEnum("visibility", ["private"]).default("private").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  tagsJson: text("tagsJson").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [uniqueIndex("upload_metadata_drafts_owner_project_asset_idx").on(table.ownerId, table.projectId, table.assetId)]);
+
 /** Delivery history for private operational notifications such as Telegram status updates. */
 export const notificationEvents = mysqlTable("notification_events", {
   id: int("id").autoincrement().primaryKey(),
