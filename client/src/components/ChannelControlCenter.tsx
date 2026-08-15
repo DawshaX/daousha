@@ -92,6 +92,14 @@ export default function ChannelControlCenter() {
     onError: error => toast.error(error.message),
   });
 
+  const activateInstagramHealthMonitor = trpc.daousha.activateInstagramHealthMonitor.useMutation({
+    onSuccess: () => {
+      toast.success("فُعّلت مراقبة Instagram كل 6 ساعات. لا ينفذ هذا الفحص إنشاء أو نشر Reel.");
+      utils.daousha.integrations.invalidate();
+    },
+    onError: error => toast.error(error.message),
+  });
+
   const patchPolicy = (patch: Partial<{ mode: "human_review" | "guarded_auto"; publicPublishingEnabled: boolean; killSwitchEnabled: boolean; requirePrivateCanary: boolean; minIntervalMinutes: number; maxPublicationsPerDay: number; dailyShortTarget: number; dailyLongTarget: number }>) => {
     if (!policy) return;
     updatePolicy.mutate({
@@ -108,6 +116,8 @@ export default function ChannelControlCenter() {
 
   const youtube = integrations?.connections.find(connection => connection.platform === "youtube");
   const youtubeHealthMonitor = integrations?.youtubeHealthMonitor;
+  const instagram = integrations?.connections.find(connection => connection.platform === "instagram");
+  const instagramHealthMonitor = integrations?.instagramHealthMonitor;
   const facebook = integrations?.connections.find(connection => connection.platform === "facebook");
   const tiktok = integrations?.connections.find(connection => connection.platform === "tiktok");
   const telegram = integrations?.connections.find(connection => connection.platform === "telegram");
@@ -131,6 +141,18 @@ export default function ChannelControlCenter() {
             <a href="/manus-storage/xdaw-nova-youtube-banner-approved_41a79b1b.png" target="_blank" rel="noreferrer" className="flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.05] p-3 text-xs text-zinc-200 transition-colors hover:bg-red-500/[0.1]"><span><b className="text-red-200">غلاف XDAW NOVA</b><span className="mt-1 block text-zinc-500">أصل YouTube العريض؛ راجع القصاصات داخل YouTube Studio قبل تطبيقه.</span></span><ExternalLink className="h-4 w-4 shrink-0 text-red-300" /></a>
             {integrations?.youtubeClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/youtube/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض YouTube الرسمي</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> أضف بيانات OAuth أولًا</Button>}
             {youtube?.status === "authorized" ? <div className="space-y-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.04] p-3"><p className="text-xs leading-5 text-emerald-100">{youtubeHealthMonitor?.lastCheckedAt ? `آخر فحص: ${new Date(youtubeHealthMonitor.lastCheckedAt).toLocaleString("ar-EG")} — ${youtubeHealthMonitor.lastDetail ?? "لا تفاصيل إضافية."}` : "فعّل مراقبة الاتصال لتجديد رمز الوصول وفحص القناة قراءةً فقط كل 6 ساعات."}</p><Button className="w-full bg-emerald-600 hover:bg-emerald-500" disabled={activateYouTubeHealthMonitor.isPending} onClick={() => activateYouTubeHealthMonitor.mutate()}><RadioTower className="ml-2 h-4 w-4" /> {activateYouTubeHealthMonitor.isPending ? "جارٍ تفعيل مراقبة YouTube…" : youtubeHealthMonitor?.scheduleCronTaskUid ? "استئناف مراقبة اتصال YouTube" : "تفعيل مراقبة اتصال YouTube"}</Button></div> : null}
+          </CardContent>
+        </Card>
+
+        <Card className="border-fuchsia-400/20 bg-[radial-gradient(circle_at_90%_10%,rgba(217,70,239,.12),transparent_34%),rgba(9,9,11,.72)]">
+          <CardHeader className="flex-row items-start justify-between space-y-0">
+            <div><CardTitle className="flex items-center gap-2 text-white"><Instagram className="h-5 w-5 text-fuchsia-300" /> Instagram API الرسمي</CardTitle><CardDescription className="mt-2 leading-6 text-zinc-500">تفويض مستقل للحساب الاحترافي، وتجديد رمز وفحص هوية من الخادم فقط.</CardDescription></div>
+            <Badge variant="outline" className="border-white/10 text-zinc-300">{statusLabel(instagram?.status)}</Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-xl border border-white/8 bg-black/25 p-3 text-xs leading-6 text-zinc-400">{integrations?.instagramClientConfigured ? <>عنوان عودة Instagram API المسجل: <span className="mt-1 block break-all font-mono text-[10px] text-fuchsia-200" dir="ltr">{integrations.instagramRedirectUri}</span></> : "بيانات تطبيق Instagram API غير مهيأة بعد."}</div>
+            {integrations?.instagramClientConfigured ? <Button asChild className="w-full bg-fuchsia-700 hover:bg-fuchsia-600"><a href="/api/integrations/instagram/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض Instagram API</a></Button> : null}
+            {instagram?.status === "authorized" && instagram.scopeSummary?.includes("instagram_business_content_publish") ? <div className="space-y-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.04] p-3"><p className="text-xs leading-5 text-emerald-100">{instagramHealthMonitor?.lastCheckedAt ? `آخر فحص: ${new Date(instagramHealthMonitor.lastCheckedAt).toLocaleString("ar-EG")} — ${instagramHealthMonitor.lastDetail ?? "لا تفاصيل إضافية."}` : "فعّل مراقبة الاتصال لتجديد الرمز وفحص الحساب كل 6 ساعات؛ لا ينشئ أو ينشر أي Reel."}</p><Button className="w-full bg-emerald-600 hover:bg-emerald-500" disabled={activateInstagramHealthMonitor.isPending} onClick={() => activateInstagramHealthMonitor.mutate()}><RadioTower className="ml-2 h-4 w-4" /> {activateInstagramHealthMonitor.isPending ? "جارٍ تفعيل مراقبة Instagram…" : instagramHealthMonitor?.scheduleCronTaskUid ? "استئناف مراقبة اتصال Instagram" : "تفعيل مراقبة اتصال Instagram"}</Button></div> : null}
           </CardContent>
         </Card>
 

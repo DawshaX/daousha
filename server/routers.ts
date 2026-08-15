@@ -23,6 +23,7 @@ import { assessAssetIntake } from "./rightsSafetyGate";
 import { fetchGoogleTrendSignals } from "./trendRadar";
 import { notifyOwnerOperationalEvent } from "./operationalNotifications";
 import { executeYouTubeHealthMonitor } from "./youtubeHealthMonitoring";
+import { executeInstagramHealthMonitor } from "./instagramHealthMonitoring";
 import { derivePerformanceImprovementSuggestion } from "../shared/performanceImprovement";
 import { performanceExperimentAdvice, summarizePerformance } from "../shared/performanceSummary";
 import { describeUploadFailure } from "./uploadFailureDetail";
@@ -188,11 +189,13 @@ export const appRouter = router({
         if (!schedule) throw new TRPCError({ code: "NOT_FOUND", message: "مسودة الجدولة غير موجودة." });
         if (schedule.status === "active" && schedule.scheduleCronTaskUid) return schedule;
         const connections = await db.listChannelConnections(ctx.user.id);
+        const platform = schedule.platform.toLowerCase();
         const youtube = connections.find(connection => connection.platform === "youtube" && connection.status === "authorized" && connection.credentialCiphertext);
-        if (schedule.platform.toLowerCase() !== "youtube" || !youtube) {
+        const instagram = connections.find(connection => connection.platform === "instagram" && connection.status === "authorized" && connection.credentialCiphertext && connection.scopeSummary?.includes("instagram_business_content_publish"));
+        if (!((platform === "youtube" && youtube) || (platform === "instagram" && instagram))) {
           await db.setScheduleStatus(ctx.user.id, schedule.id, "needs_approval");
           await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "schedule_needs_review", title: "لا يمكن تفعيل الجدولة", detail: "الوجهة ليست قناة YouTube مفوضة قابلة للنشر الدوري." });
-          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن تفعيل جدولة إلا لقناة YouTube المفوضة رسميًا." });
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا يمكن تفعيل جدولة إلا لوجهة YouTube أو Instagram API مفوضة رسميًا." });
         }
         const task = await createHeartbeatJob({
           name: `xdaw-publish-${ctx.user.id}-${schedule.id}`,
@@ -235,15 +238,37 @@ export const appRouter = router({
       await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "تفعيل مراقبة اتصال YouTube", details: "فحص صحة كل 6 ساعات وتجديد قراءة فقط؛ لا رفع ولا نشر.", actorType: "user" });
       return { monitor: saved, nextExecutionAt };
     }),
+    instagramHealthMonitor: protectedProcedure.query(({ ctx }) => db.getConnectionHealthMonitor(ctx.user.id, "instagram")),
+    activateInstagramHealthMonitor: protectedProcedure.mutation(async ({ ctx }) => {
+      const connection = await db.getChannelConnection(ctx.user.id, "instagram");
+      if (!connection || connection.status !== "authorized" || !connection.credentialCiphertext || !connection.scopeSummary?.includes("instagram_business_content_publish")) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط Instagram API رسميًا بصلاحية نشر المحتوى قبل تفعيل مراقبة الاتصال." });
+      const monitor = await db.getConnectionHealthMonitor(ctx.user.id, "instagram");
+      let taskUid = monitor?.scheduleCronTaskUid;
+      let nextExecutionAt: string | null | undefined;
+      if (taskUid) {
+        const task = await updateHeartbeatJob(taskUid, { enable: true }, readSessionToken(ctx.req.headers.cookie));
+        nextExecutionAt = task.nextExecutionAt;
+      } else {
+        const task = await createHeartbeatJob({ name: `xdaw-instagram-health-${ctx.user.id}`, cron: "0 15 */6 * * *", path: "/api/scheduled/instagram-health-monitor", description: "XDAW NOVA non-publishing Instagram token health monitor" }, readSessionToken(ctx.req.headers.cookie));
+        taskUid = task.taskUid;
+        nextExecutionAt = task.nextExecutionAt;
+      }
+      const saved = await db.upsertConnectionHealthMonitor({ ownerId: ctx.user.id, platform: "instagram", scheduleCronTaskUid: taskUid });
+      await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "تفعيل مراقبة اتصال Instagram", details: "فحص هوية وتجديد رمز Instagram كل 6 ساعات؛ لا ينشئ أو ينشر أي Reel.", actorType: "user" });
+      return { monitor: saved, nextExecutionAt };
+    }),
     integrations: protectedProcedure.query(async ({ ctx }) => {
-      const [connections, assets, youtubeHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube")]);
+      const [connections, assets, youtubeHealthMonitor, instagramHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube"), db.getConnectionHealthMonitor(ctx.user.id, "instagram")]);
       return {
         connections,
         youtubeHealthMonitor,
+        instagramHealthMonitor,
         distributionReadiness: resolveDistributionReadiness(connections),
         telegramConfigured: telegramIsConfigured(),
         youtubeClientConfigured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET),
         youtubeRedirectUri: `${ctx.req.header("x-forwarded-proto")?.split(",")[0] ?? ctx.req.protocol}://${ctx.req.header("x-forwarded-host") ?? ctx.req.header("host")}/api/integrations/youtube/callback`,
+        instagramClientConfigured: Boolean(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
+        instagramRedirectUri: `${ctx.req.header("x-forwarded-proto")?.split(",")[0] ?? ctx.req.protocol}://${ctx.req.header("x-forwarded-host") ?? ctx.req.header("host")}/api/integrations/instagram/callback`,
         facebookClientConfigured: Boolean(process.env.META_APP_ID && process.env.META_APP_SECRET),
         facebookRedirectUri: getFacebookRedirectUri(ctx.req),
         facebookExpectedDomains: FACEBOOK_OAUTH_DOMAINS,

@@ -33,13 +33,17 @@ export function resolveDistributionReadiness(connections: DistributionConnection
       };
     }
 
-    if (platform === "instagram" && connection?.status === "authorized") {
+    if (platform === "instagram" && connection?.status === "authorized" && connection.credentialCiphertext && connection.scopeSummary?.includes("instagram_business_content_publish")) {
       return {
         platform,
-        mode: "confirmation_required",
+        mode: "automatic_api",
         eligible: true,
-        reason: "حساب Instagram مفوض، لكن موصل النشر يطلب تأكيدًا خاصًا بكل Reel قبل الإرسال العام.",
+        reason: "Instagram API with Instagram Login مفوض للنشر الخلفي؛ تظل حواجز الحقوق والسلامة والمعاينة والسياسة ومفتاح الإيقاف نافذة.",
       };
+    }
+
+    if (platform === "instagram" && connection?.status === "authorized") {
+      return { platform, mode: "confirmation_required", eligible: true, reason: "حساب Instagram مفوض عبر الموصل، لكن لا يوجد بعد رمز Instagram API مخول بالنشر الخلفي." };
     }
 
     if (platform === "facebook" && connection?.status === "authorized") {

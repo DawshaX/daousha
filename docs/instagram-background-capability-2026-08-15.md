@@ -30,3 +30,9 @@
 [2] [Meta — Exchange Instagram Access Token](https://developers.facebook.com/documentation/instagram-platform/reference/access_token)
 
 [3] [Meta — Refresh Long-Lived Instagram Access Token](https://developers.facebook.com/documentation/instagram-platform/reference/refresh_access_token)
+
+## مرجع Business Login for Instagram
+
+يبدأ التفويض الرسمي من `https://www.instagram.com/oauth/authorize` باستخدام `response_type=code`، وعنوان عودة مسجل مطابق حرفيًا، ونطاقات `instagram_business_basic` و`instagram_business_content_publish`. الرمز الناتج صالح لساعة واحدة ولمرة واحدة، ثم يُبدل خادميًا إلى رمز قصير ومنه إلى رمز طويل. ويُجدد الرمز الطويل فقط بعد 24 ساعة وقبل انتهاء الستين يومًا.[4]
+
+[4] [Meta — Business Login for Instagram](https://developers.facebook.com/documentation/instagram-platform/instagram-api-with-instagram-login/business-login)

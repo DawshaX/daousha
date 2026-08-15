@@ -29,4 +29,10 @@ describe("ChannelControlCenter distribution panel", () => {
     expect(source).toContain("activateYouTubeHealthMonitor");
     expect(source).toContain("لا ينفذ هذا الفحص رفعًا أو نشرًا");
   });
+
+  it("offers an explicitly non-publishing Instagram token health monitor", async () => {
+    const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain("activateInstagramHealthMonitor");
+    expect(source).toContain("لا ينفذ هذا الفحص إنشاء أو نشر Reel");
+  });
 });

@@ -4,7 +4,7 @@ import { parse as parseCookie } from "cookie";
 import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
 import * as db from "./db";
-import { encryptYouTubeCredential } from "./youtubeOAuth";
+import { decryptYouTubeCredential, encryptYouTubeCredential } from "./youtubeOAuth";
 
 const OAUTH_STATE_COOKIE = "xdaw_instagram_oauth_state";
 export const INSTAGRAM_BACKGROUND_SCOPES = ["instagram_business_basic", "instagram_business_content_publish"] as const;
@@ -43,6 +43,46 @@ export function buildInstagramAuthorizationUrl(appId: string, redirectUri: strin
     state,
   }).toString();
   return authorizationUrl.toString();
+}
+
+export type AuthorizedInstagramConnection = {
+  credentialCiphertext: string | null;
+  credentialExpiresAt?: Date | null;
+};
+
+export async function refreshInstagramLongLivedAccessToken(connection: AuthorizedInstagramConnection) {
+  if (!connection.credentialCiphertext) throw new Error("تفويض Instagram غير مكتمل.");
+  const accessToken = decryptYouTubeCredential(connection.credentialCiphertext);
+  const refreshUrl = new URL("https://graph.instagram.com/refresh_access_token");
+  refreshUrl.search = new URLSearchParams({ grant_type: "ig_refresh_token", access_token: accessToken }).toString();
+  const response = await fetch(refreshUrl, { signal: AbortSignal.timeout(20_000) });
+  const payload = await response.json() as LongTokenPayload;
+  if (!response.ok || !payload.access_token || !payload.expires_in) throw new Error(payload.error?.message ?? "تعذّر تجديد رمز Instagram طويل الأجل.");
+  return { accessToken: payload.access_token, expiresAt: new Date(Date.now() + payload.expires_in * 1000) };
+}
+
+export function instagramTokenNeedsRefresh(expiresAt?: Date | null, now = Date.now()) {
+  return Boolean(expiresAt && expiresAt.getTime() - now <= 14 * 24 * 60 * 60 * 1000);
+}
+
+export async function getAuthenticatedInstagramProfile(connection: AuthorizedInstagramConnection) {
+  if (!connection.credentialCiphertext) throw new Error("تفويض Instagram غير مكتمل.");
+  if (connection.credentialExpiresAt && connection.credentialExpiresAt.getTime() <= Date.now()) throw new Error("انتهى رمز Instagram ولا يمكن تجديده؛ أعد OAuth الرسمي.");
+  let accessToken = decryptYouTubeCredential(connection.credentialCiphertext);
+  let credentialCiphertext = connection.credentialCiphertext;
+  let credentialExpiresAt = connection.credentialExpiresAt ?? null;
+  if (instagramTokenNeedsRefresh(connection.credentialExpiresAt)) {
+    const refreshed = await refreshInstagramLongLivedAccessToken(connection);
+    accessToken = refreshed.accessToken;
+    credentialCiphertext = encryptYouTubeCredential(refreshed.accessToken);
+    credentialExpiresAt = refreshed.expiresAt;
+  }
+  const profileUrl = new URL("https://graph.instagram.com/v24.0/me");
+  profileUrl.search = new URLSearchParams({ fields: "id,username", access_token: accessToken }).toString();
+  const response = await fetch(profileUrl, { signal: AbortSignal.timeout(20_000) });
+  const profile = await response.json() as InstagramProfilePayload;
+  if (!response.ok || !profile.id) throw new Error(profile.error?.message ?? "تعذّر التحقق من حساب Instagram المفوض.");
+  return { id: profile.id, username: profile.username || "Instagram Professional Account", accessToken, credentialCiphertext, credentialExpiresAt };
 }
 
 async function getAuthenticatedUser(req: Request) {
