@@ -23,4 +23,10 @@ describe("ChannelControlCenter distribution panel", () => {
     expect(source).toContain("تهيئة تطبيق Meta لا تثبت صلاحية رمز الصفحة");
     expect(source).toContain("يظل رفع Facebook محجوبًا");
   });
+
+  it("offers an explicit YouTube health monitor that cannot publish content", async () => {
+    const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain("activateYouTubeHealthMonitor");
+    expect(source).toContain("لا ينفذ هذا الفحص رفعًا أو نشرًا");
+  });
 });

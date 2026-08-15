@@ -22,6 +22,7 @@ import { hasApprovedSafeVideo, isAllowedWorkflowTransition, type WorkflowStatus 
 import { assessAssetIntake } from "./rightsSafetyGate";
 import { fetchGoogleTrendSignals } from "./trendRadar";
 import { notifyOwnerOperationalEvent } from "./operationalNotifications";
+import { executeYouTubeHealthMonitor } from "./youtubeHealthMonitoring";
 import { derivePerformanceImprovementSuggestion } from "../shared/performanceImprovement";
 import { performanceExperimentAdvice, summarizePerformance } from "../shared/performanceSummary";
 import { describeUploadFailure } from "./uploadFailureDetail";
@@ -215,10 +216,30 @@ export const appRouter = router({
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "schedule", summary: "إيقاف دورة نشر دورية", details: `المشروع ${schedule.projectId} | ${schedule.platform}`, actorType: "user" });
         return paused;
       }),
+    youtubeHealthMonitor: protectedProcedure.query(({ ctx }) => db.getConnectionHealthMonitor(ctx.user.id, "youtube")),
+    activateYouTubeHealthMonitor: protectedProcedure.mutation(async ({ ctx }) => {
+      const connection = await db.getChannelConnection(ctx.user.id, "youtube");
+      if (!connection || connection.status !== "authorized" || !connection.credentialCiphertext) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط قناة YouTube رسميًا قبل تفعيل مراقبة الاتصال." });
+      const monitor = await db.getConnectionHealthMonitor(ctx.user.id, "youtube");
+      let taskUid = monitor?.scheduleCronTaskUid;
+      let nextExecutionAt: string | null | undefined;
+      if (taskUid) {
+        const task = await updateHeartbeatJob(taskUid, { enable: true }, readSessionToken(ctx.req.headers.cookie));
+        nextExecutionAt = task.nextExecutionAt;
+      } else {
+        const task = await createHeartbeatJob({ name: `xdaw-youtube-health-${ctx.user.id}`, cron: "0 0 */6 * * *", path: "/api/scheduled/youtube-health-monitor", description: "XDAW NOVA non-publishing YouTube OAuth health monitor" }, readSessionToken(ctx.req.headers.cookie));
+        taskUid = task.taskUid;
+        nextExecutionAt = task.nextExecutionAt;
+      }
+      const saved = await db.upsertConnectionHealthMonitor({ ownerId: ctx.user.id, platform: "youtube", scheduleCronTaskUid: taskUid });
+      await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "تفعيل مراقبة اتصال YouTube", details: "فحص صحة كل 6 ساعات وتجديد قراءة فقط؛ لا رفع ولا نشر.", actorType: "user" });
+      return { monitor: saved, nextExecutionAt };
+    }),
     integrations: protectedProcedure.query(async ({ ctx }) => {
-      const [connections, assets] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id)]);
+      const [connections, assets, youtubeHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube")]);
       return {
         connections,
+        youtubeHealthMonitor,
         distributionReadiness: resolveDistributionReadiness(connections),
         telegramConfigured: telegramIsConfigured(),
         youtubeClientConfigured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET),

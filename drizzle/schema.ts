@@ -153,6 +153,24 @@ export const channelConnections = mysqlTable("channel_connections", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [uniqueIndex("channel_connections_owner_platform_idx").on(table.ownerId, table.platform)]);
 
+/** Durable, non-publishing health state for an authorized platform connection. */
+export const connectionHealthMonitors = mysqlTable("connection_health_monitors", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  platform: mysqlEnum("platform", ["youtube", "facebook", "instagram", "tiktok"]).notNull(),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  status: mysqlEnum("status", ["healthy", "degraded", "disconnected"]).default("degraded").notNull(),
+  lastNotifiedStatus: mysqlEnum("lastNotifiedStatus", ["healthy", "degraded", "disconnected"]),
+  lastCheckedAt: timestamp("lastCheckedAt"),
+  lastNotificationAt: timestamp("lastNotificationAt"),
+  lastDetail: text("lastDetail"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  uniqueIndex("connection_health_monitors_owner_platform_idx").on(table.ownerId, table.platform),
+  index("connection_health_monitors_task_uid_idx").on(table.scheduleCronTaskUid),
+]);
+
 /** Guardrails for autonomous publishing. A kill switch always takes precedence over the selected mode. */
 export const publishingPolicies = mysqlTable("publishing_policies", {
   id: int("id").autoincrement().primaryKey(),

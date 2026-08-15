@@ -15,8 +15,9 @@ type YouTubeUploadInput = {
 
 type GoogleRefreshResponse = { access_token?: string; expires_in?: number };
 type YouTubeUploadResponse = { id?: string; error?: unknown };
+type YouTubeChannelResponse = { items?: Array<{ id?: string; snippet?: { title?: string } }> };
 
-async function getAccessToken(connection: AuthorizedYouTubeConnection) {
+export async function refreshYouTubeAccessToken(connection: AuthorizedYouTubeConnection) {
   if (!connection.credentialCiphertext || !process.env.YOUTUBE_CLIENT_ID || !process.env.YOUTUBE_CLIENT_SECRET) {
     throw new Error("تفويض YouTube غير مكتمل.");
   }
@@ -37,6 +38,18 @@ async function getAccessToken(connection: AuthorizedYouTubeConnection) {
   return payload.access_token;
 }
 
+export async function getAuthenticatedYouTubeChannel(connection: AuthorizedYouTubeConnection) {
+  const accessToken = await refreshYouTubeAccessToken(connection);
+  const response = await fetch("https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true", {
+    headers: { authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(20_000),
+  });
+  const payload = (await response.json()) as YouTubeChannelResponse;
+  const channel = payload.items?.[0];
+  if (!response.ok || !channel?.id) throw new Error("تعذّر التحقق من قناة YouTube المفوضة.");
+  return { id: channel.id, title: channel.snippet?.title || "YouTube Channel" };
+}
+
 function createMultipartRelatedBody(input: YouTubeUploadInput, videoBytes: Uint8Array, contentType: string) {
   const boundary = `xdaw-${crypto.randomUUID()}`;
   const metadata = JSON.stringify({
@@ -50,7 +63,7 @@ function createMultipartRelatedBody(input: YouTubeUploadInput, videoBytes: Uint8
 
 /** Uploads exactly one vetted video. Callers must run publishing guards before invoking this function. */
 export async function uploadVettedVideoToYouTube(connection: AuthorizedYouTubeConnection, input: YouTubeUploadInput) {
-  const accessToken = await getAccessToken(connection);
+  const accessToken = await refreshYouTubeAccessToken(connection);
   const signedUrl = await storageGetSignedUrl(input.storageKey);
   const videoResponse = await fetch(signedUrl, { signal: AbortSignal.timeout(90_000) });
   if (!videoResponse.ok) throw new Error("تعذّر قراءة ملف الفيديو من التخزين الآمن.");

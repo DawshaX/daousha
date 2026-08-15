@@ -84,6 +84,14 @@ export default function ChannelControlCenter() {
     onError: error => toast.error(error.message),
   });
 
+  const activateYouTubeHealthMonitor = trpc.daousha.activateYouTubeHealthMonitor.useMutation({
+    onSuccess: () => {
+      toast.success("فُعّلت مراقبة اتصال YouTube كل 6 ساعات. لا ينفذ هذا الفحص رفعًا أو نشرًا.");
+      utils.daousha.integrations.invalidate();
+    },
+    onError: error => toast.error(error.message),
+  });
+
   const patchPolicy = (patch: Partial<{ mode: "human_review" | "guarded_auto"; publicPublishingEnabled: boolean; killSwitchEnabled: boolean; requirePrivateCanary: boolean; minIntervalMinutes: number; maxPublicationsPerDay: number; dailyShortTarget: number; dailyLongTarget: number }>) => {
     if (!policy) return;
     updatePolicy.mutate({
@@ -99,6 +107,7 @@ export default function ChannelControlCenter() {
   };
 
   const youtube = integrations?.connections.find(connection => connection.platform === "youtube");
+  const youtubeHealthMonitor = integrations?.youtubeHealthMonitor;
   const facebook = integrations?.connections.find(connection => connection.platform === "facebook");
   const tiktok = integrations?.connections.find(connection => connection.platform === "tiktok");
   const telegram = integrations?.connections.find(connection => connection.platform === "telegram");
@@ -121,6 +130,7 @@ export default function ChannelControlCenter() {
             </div>
             <a href="/manus-storage/xdaw-nova-youtube-banner-approved_41a79b1b.png" target="_blank" rel="noreferrer" className="flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.05] p-3 text-xs text-zinc-200 transition-colors hover:bg-red-500/[0.1]"><span><b className="text-red-200">غلاف XDAW NOVA</b><span className="mt-1 block text-zinc-500">أصل YouTube العريض؛ راجع القصاصات داخل YouTube Studio قبل تطبيقه.</span></span><ExternalLink className="h-4 w-4 shrink-0 text-red-300" /></a>
             {integrations?.youtubeClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/youtube/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض YouTube الرسمي</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> أضف بيانات OAuth أولًا</Button>}
+            {youtube?.status === "authorized" ? <div className="space-y-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.04] p-3"><p className="text-xs leading-5 text-emerald-100">{youtubeHealthMonitor?.lastCheckedAt ? `آخر فحص: ${new Date(youtubeHealthMonitor.lastCheckedAt).toLocaleString("ar-EG")} — ${youtubeHealthMonitor.lastDetail ?? "لا تفاصيل إضافية."}` : "فعّل مراقبة الاتصال لتجديد رمز الوصول وفحص القناة قراءةً فقط كل 6 ساعات."}</p><Button className="w-full bg-emerald-600 hover:bg-emerald-500" disabled={activateYouTubeHealthMonitor.isPending} onClick={() => activateYouTubeHealthMonitor.mutate()}><RadioTower className="ml-2 h-4 w-4" /> {activateYouTubeHealthMonitor.isPending ? "جارٍ تفعيل مراقبة YouTube…" : youtubeHealthMonitor?.scheduleCronTaskUid ? "استئناف مراقبة اتصال YouTube" : "تفعيل مراقبة اتصال YouTube"}</Button></div> : null}
           </CardContent>
         </Card>
 

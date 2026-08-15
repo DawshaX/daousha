@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import {
   analyticsSnapshots,
   channelConnections,
+  connectionHealthMonitors,
   contentAssets,
   contentSources,
   developmentProposals,
@@ -478,6 +479,38 @@ export async function markDomainMonitorNotified(id: number, status: "pending" | 
   const db = await getDb();
   if (!db) databaseUnavailable();
   await db!.update(domainMonitors).set({ lastNotifiedStatus: status, lastNotificationAt: new Date() }).where(eq(domainMonitors.id, id));
+}
+
+export async function getConnectionHealthMonitor(ownerId: number, platform: "youtube" | "facebook" | "instagram" | "tiktok") {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(connectionHealthMonitors).where(and(eq(connectionHealthMonitors.ownerId, ownerId), eq(connectionHealthMonitors.platform, platform))).limit(1))[0];
+}
+
+export async function getConnectionHealthMonitorByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(connectionHealthMonitors).where(eq(connectionHealthMonitors.scheduleCronTaskUid, taskUid)).limit(1))[0];
+}
+
+export async function upsertConnectionHealthMonitor(input: { ownerId: number; platform: "youtube" | "facebook" | "instagram" | "tiktok"; scheduleCronTaskUid: string }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.insert(connectionHealthMonitors).values(input).onDuplicateKeyUpdate({ set: { scheduleCronTaskUid: input.scheduleCronTaskUid } });
+  return getConnectionHealthMonitor(input.ownerId, input.platform);
+}
+
+export async function updateConnectionHealthMonitorCheck(id: number, input: { status: "healthy" | "degraded" | "disconnected"; detail: string }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(connectionHealthMonitors).set({ status: input.status, lastDetail: input.detail, lastCheckedAt: new Date() }).where(eq(connectionHealthMonitors.id, id));
+  return (await db!.select().from(connectionHealthMonitors).where(eq(connectionHealthMonitors.id, id)).limit(1))[0];
+}
+
+export async function markConnectionHealthMonitorNotified(id: number, status: "healthy" | "degraded" | "disconnected") {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(connectionHealthMonitors).set({ lastNotifiedStatus: status, lastNotificationAt: new Date() }).where(eq(connectionHealthMonitors.id, id));
 }
 
 export async function getDashboardData(ownerId: number) {
