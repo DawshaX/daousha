@@ -19,6 +19,7 @@ describe("ChannelControlCenter distribution panel", () => {
 
   it("distinguishes Meta app setup from an active Facebook Page token", async () => {
     const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain('if (status === "error") return "يحتاج مراجعة"');
     expect(source).toContain("تهيئة تطبيق Meta لا تثبت صلاحية رمز الصفحة");
     expect(source).toContain("يظل رفع Facebook محجوبًا");
   });
