@@ -7,7 +7,7 @@
 3. نظام نشر publish_all.py + notify_telegram.py
 4. توثيق شامل GitHub (README + حالة) — أي شات جديد يفهم من المستودع فقط
 5. تحديث الجدول الدوري (10ص و4م Cairo) بنظام كامل: إنتاج + نشر + تلجرام + فحص TikTok
-6. حلقة 5: سيناريو + narration جاهزين — بقيت 4 صور (حصة الصور اليومية اكتملت اليوم، تتولد غدًا)
+6. حلقة 5 (أسرار النوم): أُنتجت كاملة في 2026-08-15 — سيناريو + narration (Charon, 44.1s) + 4 صور + video 1080x1920 42.6s، ونُشرت على Instagram
 
 ## روابط المنشورات حتى الآن (كلها منشورة علنًا)
 | ep | YT | IG | FB |
@@ -16,7 +16,7 @@
 | 2 | YDWrSeMH4o8 | DcCLwsYEWd5 | 122103892671434391 |
 | 3 | opuu9zPgN-w | DcCW2HdEanZ | 122103941919434391 |
 | 4 | fm7Y0h1YBVg | DcCYJ1TDuvK | 122103948783434391 |
-| 5 | — pending (نار/صور) | — | — |
+| 5 | — pending (secrets غير متوفرة في جلسة 2026-08-15) | DcDij0miryG | — pending (نفس السبب) |
 
 ## الأسرار (في /home/ubuntu/secrets.txt — لا تُعرض)
 - YOUTUBE_CLIENT_ID/SECRET (77905jqkefcbanqrqnvm1p4ogl5n229) + YOUTUBE_REFRESH_TOKEN دائم
@@ -36,7 +36,7 @@
 - publish_all.py <ep> — YT+FB تلقائي + تلجرام (IG عبر shell منفصل)
 - produce_next_episode.py — يختار ep التالي من topic_library.json ويبنيه
 - topic_library.json — ep5 pending-narration (تم إنتاج narration الآن)، ep6-25 queued
-- ep3-5-scripts.md، episode{3,4,5}-script.md
+- ep3-5-scripts.md، episode{3,4,5}-script.md، narration5.wav، ep5-scene*.png، episode5-final.mp4 (يجب نسخها للمستودع)
 
 ## TikTok
 - التطبيق In Review (In review منذ 2026-08-14). الجدول الدوري يفحص (10ص/4م) وينشر لحظة القبول + تلجرام.
@@ -44,8 +44,8 @@
 
 ## GitHub (داشداش داوسها داوسها — user DawshaX)
 - Repo: DawshaX/daousha (private, main)
-- آخر commits: 9a5e9fc (docs ep3+4), 49118b6 (scripts/), 8e4f77f (TikTok review)
-- يجب: README رئيسي شامل + docs/platform-link-status.md محدثة + docs/publishing-ladder-state.md
+- آخر commits قبل هذه الجلسة: 000a226 (SEO + جدول 4x/يوم), d2cb058 (نظام v2), 9a5e9fc (ep3+4)
+- بعد جلسة 2026-08-15: commit جديد يشمل episode5 + topic_library محدثة + docs محدثة
 - gh CLI مسجل وناجح الآن
 
 ## الجدول التلقائي (manus-config schedule)
@@ -55,5 +55,5 @@
 
 ## ملاحظات تشغيل
 - fb_page_token.txt يجب أن يكون دائمًا مفتاح secrets FACEBOOK_PAGE_ACCESS_TOKEN (التوكن القديم منتهي)
-- حصة توليد الصور: 20/يوم على الخطة المجانية — صور ep5 ستُنتج غدًا في التشغيل الدوري
+- جلسة 2026-08-15: الحلقة 5 أُنتجت ونُشرت IG؛ YT/FB/Telegram متوقفة بسبب غياب /home/ubuntu/secrets.txt في الجلسة الجديدة — طلب من المستخدم استعادة الملف
 - الأسلوب البصري: 9:16 dark navy + amber glow، نص عربي عريض أبيض، عناوين «3 حقائق/أسرار/أكاذيب»

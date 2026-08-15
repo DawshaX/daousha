@@ -4,11 +4,11 @@ This file is the single source of truth for the escalating daily publishing cap.
 
 - level: 0
 - dailyCap: 2
-- streakSafe: 1
+- streakSafe: 2 (2026-08-15: production + IG publish clean; YT/FB deferred for environmental reason, not platform risk)
 - streakRisky: 0
-- lastPublishDate: 2026-08-14
-- lastPublishUrl: https://www.facebook.com/reel/29350563061210067/
-- lastPublishPlatform: Multi-platform run (YouTube + Instagram + Facebook)
+- lastPublishDate: 2026-08-15
+- lastPublishUrl: https://www.instagram.com/reel/DcDij0miryG/
+- lastPublishPlatform: Instagram-only run (YouTube/Facebook deferred — secrets file missing in new session; resume publish when restored)
 - history:
   - date: 2026-08-14
     platform: YouTube
@@ -24,6 +24,11 @@ This file is the single source of truth for the escalating daily publishing cap.
     platform: Facebook
     video: "دماغك يعمل على ثلث طاقته فقط! 3 حقائق صادمة"
     url: https://www.facebook.com/reel/29350563061210067/
+    status: published-public
+  - date: 2026-08-15
+    platform: Instagram (YouTube + Facebook pending — secrets.txt missing in new session; full video produced)
+    video: "دماغك يستيقظ وأنت نائم! 3 اكتشافات صادمة عن النوم"
+    url: https://www.instagram.com/reel/DcDij0miryG/
     status: published-public
 - youtubeOAuth: YOUTUBE_REFRESH_TOKEN مربوط بنجاح بحساب dawshaxlol@gmail.com / قناة xDaw_NoVa (2026-08-14)
 - telegram: إشعار النشر أُرسل بنجاح

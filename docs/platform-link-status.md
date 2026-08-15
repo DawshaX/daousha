@@ -41,4 +41,12 @@ Meta Ads account act_1502752946625950 is disabled; not required for organic laun
 | 3 | عينك تكذب عليك كل يوم | https://www.youtube.com/watch?v=opuu9zPgN-w | https://www.instagram.com/reel/DcCW2HdEanZ/ | 1265727539958933_122103941919434391 |
 | 4 | 3 أكاذيب عن ذاكرتك | https://www.youtube.com/watch?v=fm7Y0h1YBVg | https://www.instagram.com/reel/DcCYJ1TDuvK/ | 1265727539958933_122103948783434391 |
 
-ملاحظة: حلقة 5 (النوم) جاهزة السيناريو والتعليق الصوتي — بقيت الصور بسبب نفاد حصة توليد الصور اليوم، ستُنتج في التشغيل الدوري القادم تلقائيًا.
+## النشر — 2026-08-15 (الحلقة 5)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 5 | دماغك يستيقظ وأنت نائم! 3 اكتشافات صادمة عن النوم | — pending (secrets غير متوفرة في جلسة 2026-08-15 — يتطلب استعادة secrets.txt أو إعادة تفويض) | https://www.instagram.com/reel/DcDij0miryG/ | — pending (نفس سبب YouTube) |
+
+ملاحظة تشغيلية: جلسة 2026-08-15 بدأت في sandbox جديد لا يحتوي `/home/ubuntu/secrets.txt`، لذلك تعذّر النشر على YouTube/Facebook وإشعار Telegram. الحلقات ep5 كاملة (فيديو 1080x1920، 42.6 ثانية، تعليق Charon + 4 صور). عند استعادة الملف يستكمل النشر فورًا دون إعادة إنتاج.
+
+## TikTok — فحص 2026-08-15 (11:05 القاهرة)
+الحالة لا تزال **Production / In review** (نفس حالة 2026-08-14). رسالة TikTok: تأخير محتمل بسبب كثرة الطلبات. لا إعادة تقديم ولا تغيير إعدادات. بعد القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة.
