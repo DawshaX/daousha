@@ -9,6 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { registerYouTubeOAuthRoutes } from "../youtubeOAuth";
+import { registerInstagramOAuthRoutes } from "../instagramOAuth";
 import { registerFacebookOAuthRoutes } from "../facebookOAuth";
 import { registerTikTokOAuthRoutes } from "../tiktokOAuth";
 import { registerTikTokSiteVerificationRoute } from "../tiktokSiteVerification";
@@ -42,6 +43,7 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerYouTubeOAuthRoutes(app);
+  registerInstagramOAuthRoutes(app);
   registerFacebookOAuthRoutes(app);
   registerTikTokOAuthRoutes(app);
   registerTikTokSiteVerificationRoute(app);
