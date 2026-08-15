@@ -119,6 +119,7 @@ export default function ChannelControlCenter() {
             <div className="rounded-xl border border-white/8 bg-black/25 p-3 text-xs leading-6 text-zinc-400">
               {integrationsLoading ? "جارٍ قراءة حالة الاتصال…" : integrations?.youtubeClientConfigured ? "بيانات تطبيق OAuth مهيأة. سيطلب Google موافقة مالك القناة على نطاق الرفع والقراءة فقط." : <>أضف هذا العنوان كـ Redirect URI عند إنشاء OAuth في Google Cloud: <span className="mt-1 block break-all font-mono text-[10px] text-red-200" dir="ltr">{integrations?.youtubeRedirectUri}</span></>}
             </div>
+            <a href="/manus-storage/xdaw-nova-youtube-banner-approved_41a79b1b.png" target="_blank" rel="noreferrer" className="flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.05] p-3 text-xs text-zinc-200 transition-colors hover:bg-red-500/[0.1]"><span><b className="text-red-200">غلاف XDAW NOVA</b><span className="mt-1 block text-zinc-500">أصل YouTube العريض؛ راجع القصاصات داخل YouTube Studio قبل تطبيقه.</span></span><ExternalLink className="h-4 w-4 shrink-0 text-red-300" /></a>
             {integrations?.youtubeClientConfigured ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/youtube/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض YouTube الرسمي</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> أضف بيانات OAuth أولًا</Button>}
           </CardContent>
         </Card>

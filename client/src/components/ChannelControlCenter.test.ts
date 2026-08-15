@@ -10,4 +10,10 @@ describe("ChannelControlCenter distribution panel", () => {
     expect(source).toContain('mode === "automatic_api"');
     expect(source).toContain('mode === "confirmation_required"');
   });
+
+  it("links the YouTube banner asset without applying it to the external channel", async () => {
+    const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain("xdaw-nova-youtube-banner-approved_41a79b1b.png");
+    expect(source).toContain("راجع القصاصات داخل YouTube Studio قبل تطبيقه");
+  });
 });
