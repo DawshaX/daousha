@@ -16,4 +16,10 @@ describe("ChannelControlCenter distribution panel", () => {
     expect(source).toContain("xdaw-nova-youtube-banner-approved_41a79b1b.png");
     expect(source).toContain("راجع القصاصات داخل YouTube Studio قبل تطبيقه");
   });
+
+  it("distinguishes Meta app setup from an active Facebook Page token", async () => {
+    const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain("تهيئة تطبيق Meta لا تثبت صلاحية رمز الصفحة");
+    expect(source).toContain("يظل رفع Facebook محجوبًا");
+  });
 });
