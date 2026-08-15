@@ -59,3 +59,12 @@ Meta Ads account act_1502752946625950 is disabled; not required for organic laun
 |---|---|---|
 | 6 | أحلامك ليست عشوائية! 3 أسرار علمية ستصدمك | produced — فيديو 1080x1920، 36.4s، التعليق 37.8s، 4 صور |
 النشر يتوقف على استعادة /home/ubuntu/secrets.txt (YouTube + Facebook + Telegram غير متاحة في هذه الجلسة). Instagram لا يزال متاحًا عبر connector.
+
+## النشر — 2026-08-15 (مساءً — تشغيل مجدول، الحلقة 7)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 7 | الجاذبية ليست قوة! 3 أسرار ستقلب فهمك رأسًا على عقب | — pending (secrets غير متوفرة في جلسة الجدولة) | https://www.instagram.com/reel/DcE1eNEDLX5/ | — pending (نفس سبب YouTube) |
+
+الحلقة 7: produced كامل (1080x1920، 42.1s، narration 43.6s، 4 صور) في docs/episode7/ وtest_run/. topic_library.json محدثة: ep7 = produced.
+YT/FB/Telegram: معطّلة في هذه الجلسة — غياب /home/ubuntu/secrets.txt من جلسة الجدولة. الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5 وep6 وep7.
+TikTok — فحص 2026-08-15 (مساءً مجدولة): صفحة المطورين تظهر "No access / تسجيل دخول مطلوب" في متصفح المستخدم؛ الحالة المسجلة تبقى **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.

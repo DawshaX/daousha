@@ -2,10 +2,10 @@
 This file is the single source of truth for the escalating daily publishing cap. Update after every publish run.
 - level: 1
 - dailyCap: 4
-- streakSafe: 3 (2026-08-15 evening: episode 6 fully produced, no publish/platform errors; YT/FB/Telegram deferred for environmental reason only — secrets file missing in new session)
+- streakSafe: 4 (2026-08-15 evening scheduled run: episode 7 fully produced and published to Instagram, no publish/platform errors; YT/FB/Telegram deferred for environmental reason only — secrets file missing in scheduled session)
 - streakRisky: 0
 - lastPublishDate: 2026-08-15
-- lastPublishUrl: https://www.instagram.com/reel/DcDij0miryG/ (episode 5, IG-only run 2026-08-15)
+- lastPublishUrl: https://www.instagram.com/reel/DcE1eNEDLX5/ (episode 7, IG-only run 2026-08-15 evening scheduled)
 - history:
   - date: 2026-08-14
     platform: YouTube
@@ -77,3 +77,8 @@ This file is the single source of truth for the escalating daily publishing cap.
     video: "أحلامك ليست عشوائية! 3 أسرار علمية ستصدمك"
     url: none yet
     status: produced
+  - date: 2026-08-15
+    platform: Instagram (YT/FB/Telegram deferred — secrets file missing in scheduled session)
+    video: "الجاذبية ليست قوة! 3 أسرار ستقلب فهمك رأسًا على عقب"
+    url: https://www.instagram.com/reel/DcE1eNEDLX5/
+    status: published-public
