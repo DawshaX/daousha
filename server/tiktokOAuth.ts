@@ -8,7 +8,8 @@ import * as db from "./db";
 const OAUTH_STATE_COOKIE = "xdaw_tiktok_oauth_state";
 const OAUTH_ENVIRONMENT_COOKIE = "xdaw_tiktok_oauth_environment";
 const SANDBOX_TOKEN_COOKIE = "xdaw_tiktok_sandbox_token";
-const TIKTOK_SCOPES = ["user.info.basic", "video.upload", "video.publish"];
+export const TIKTOK_PRODUCTION_SCOPES = ["user.info.basic", "video.upload", "video.publish"] as const;
+export const TIKTOK_SANDBOX_SCOPES = ["user.info.basic", "video.upload"] as const;
 
 export type TikTokOAuthEnvironment = "production" | "sandbox";
 
@@ -39,6 +40,10 @@ function cookieOptions(req: Request) {
 
 export function resolveTikTokOAuthEnvironment(value: unknown): TikTokOAuthEnvironment {
   return value === "sandbox" ? "sandbox" : "production";
+}
+
+export function getTikTokOAuthScopes(environment: TikTokOAuthEnvironment) {
+  return environment === "sandbox" ? TIKTOK_SANDBOX_SCOPES : TIKTOK_PRODUCTION_SCOPES;
 }
 
 export function getTikTokOAuthCredentials(environment: TikTokOAuthEnvironment) {
@@ -87,7 +92,7 @@ function parseTikTokProductionTokenBundle(ciphertext: string): TikTokProductionT
     expiresIn: payload.expiresIn ?? 0,
     refreshExpiresIn: payload.refreshExpiresIn ?? 0,
     openId: payload.openId,
-    scope: payload.scope ?? TIKTOK_SCOPES.join(","),
+    scope: payload.scope ?? TIKTOK_PRODUCTION_SCOPES.join(","),
   };
 }
 
@@ -157,12 +162,12 @@ export function getTikTokRedirectUri(req: Pick<Request, "header" | "protocol">) 
   return `${protocol}://${host}/api/integrations/tiktok/callback`;
 }
 
-export function getTikTokAuthorizeUrl({ clientKey, redirectUri, state }: { clientKey: string; redirectUri: string; state: string }) {
+export function getTikTokAuthorizeUrl({ clientKey, redirectUri, state, scopes = TIKTOK_PRODUCTION_SCOPES }: { clientKey: string; redirectUri: string; state: string; scopes?: readonly string[] }) {
   const authorizationUrl = new URL("https://www.tiktok.com/v2/auth/authorize/");
   authorizationUrl.search = new URLSearchParams({
     client_key: clientKey,
     response_type: "code",
-    scope: TIKTOK_SCOPES.join(","),
+    scope: scopes.join(","),
     redirect_uri: redirectUri,
     state,
   }).toString();
@@ -175,12 +180,13 @@ export function registerTikTokOAuthRoutes(app: Express) {
     if (!user) return res.status(401).send("سجّل الدخول إلى XDAW NOVA أولًا ثم أعد محاولة ربط TikTok.");
     const environment = resolveTikTokOAuthEnvironment(req.query.environment);
     const credentials = getTikTokOAuthCredentials(environment);
+    const scopes = getTikTokOAuthScopes(environment);
     if (!credentials.clientKey || !credentials.clientSecret) return res.status(503).send(environment === "sandbox" ? "بيانات TikTok Sandbox غير مهيأة بعد." : "بيانات تطبيق TikTok غير مهيأة بعد.");
 
     const state = randomBytes(32).toString("base64url");
     res.cookie(OAUTH_STATE_COOKIE, state, cookieOptions(req));
     res.cookie(OAUTH_ENVIRONMENT_COOKIE, environment, cookieOptions(req));
-    return res.redirect(getTikTokAuthorizeUrl({ clientKey: credentials.clientKey, redirectUri: getTikTokRedirectUri(req), state }));
+    return res.redirect(getTikTokAuthorizeUrl({ clientKey: credentials.clientKey, redirectUri: getTikTokRedirectUri(req), state, scopes }));
   });
 
   app.get("/api/integrations/tiktok/callback", async (req, res) => {
@@ -207,8 +213,8 @@ export function registerTikTokOAuthRoutes(app: Express) {
       if (!tokenResponse.ok || !tokenPayload.access_token || !tokenPayload.open_id) throw new Error(tokenPayload.error_description || tokenPayload.error || "TOKEN_EXCHANGE_FAILED");
 
       if (environment === "sandbox") {
-        res.cookie(SANDBOX_TOKEN_COOKIE, encryptTikTokCredential(JSON.stringify({ accessToken: tokenPayload.access_token, openId: tokenPayload.open_id, scope: tokenPayload.scope ?? TIKTOK_SCOPES.join(",") })), cookieOptions(req));
-        await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "نجح TikTok Sandbox OAuth", details: `حساب Sandbox: ${tokenPayload.open_id} | النطاقات: ${tokenPayload.scope ?? TIKTOK_SCOPES.join(", ")}. لم يُحفظ أي رمز ولم يُفعّل نشر الإنتاج.`, actorType: "user" });
+        res.cookie(SANDBOX_TOKEN_COOKIE, encryptTikTokCredential(JSON.stringify({ accessToken: tokenPayload.access_token, openId: tokenPayload.open_id, scope: tokenPayload.scope ?? TIKTOK_SANDBOX_SCOPES.join(",") })), cookieOptions(req));
+        await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "نجح TikTok Sandbox OAuth", details: `حساب Sandbox: ${tokenPayload.open_id} | النطاقات: ${tokenPayload.scope ?? TIKTOK_SANDBOX_SCOPES.join(", ")}. لم يُحفظ أي رمز ولم يُفعّل نشر الإنتاج.`, actorType: "user" });
         return res.redirect("/settings?tiktok=sandbox_connected");
       }
 
@@ -218,7 +224,7 @@ export function registerTikTokOAuthRoutes(app: Express) {
         expiresIn: tokenPayload.expires_in ?? 0,
         refreshExpiresIn: tokenPayload.refresh_expires_in ?? 0,
         openId: tokenPayload.open_id,
-        scope: tokenPayload.scope ?? TIKTOK_SCOPES.join(","),
+        scope: tokenPayload.scope ?? TIKTOK_PRODUCTION_SCOPES.join(","),
       }));
       await db.upsertChannelConnection({
         ownerId: user.id,
@@ -226,12 +232,12 @@ export function registerTikTokOAuthRoutes(app: Express) {
         label: "XDAW NOVA TikTok",
         externalAccountRef: tokenPayload.open_id,
         status: "authorized",
-        scopeSummary: tokenPayload.scope ?? TIKTOK_SCOPES.join(", "),
+        scopeSummary: tokenPayload.scope ?? TIKTOK_PRODUCTION_SCOPES.join(", "),
         credentialCiphertext: encryptedTokenBundle,
         credentialExpiresAt: getTikTokCredentialExpiryAt(tokenPayload.expires_in ?? 0),
         lastVerifiedAt: new Date(),
       });
-      await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "تم تفويض TikTok", details: `النطاقات: ${tokenPayload.scope ?? TIKTOK_SCOPES.join(", ")}`, actorType: "user" });
+      await db.createChangeLogEntry({ ownerId: user.id, category: "integration", summary: "تم تفويض TikTok", details: `النطاقات: ${tokenPayload.scope ?? TIKTOK_PRODUCTION_SCOPES.join(", ")}`, actorType: "user" });
       return res.redirect("/settings?tiktok=connected");
     } catch {
       if (environment === "sandbox") {

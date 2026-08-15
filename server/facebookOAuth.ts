@@ -12,10 +12,8 @@ const FACEBOOK_SCOPES = [
   "pages_show_list",
   "pages_read_engagement",
   "pages_manage_posts",
-  "pages_manage_engagement",
-  "pages_manage_metadata",
-  "read_insights",
-];
+  "publish_video",
+] as const;
 
 type MetaTokenResponse = { access_token?: string; expires_in?: number; error?: { message?: string } };
 type MetaPage = { id?: string; name?: string; access_token?: string };
