@@ -15,7 +15,7 @@ import { resolveDistributionReadiness } from "./publishingDestinations";
 import { uploadVettedVideoToYouTube } from "./youtubePublisher";
 import { uploadVettedVideoToFacebookPage } from "./facebookPublisher";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
-import { FACEBOOK_OAUTH_DOMAIN, facebookOAuthDomainIsReady, getFacebookRedirectUri } from "./facebookOAuth";
+import { FACEBOOK_OAUTH_DOMAINS, facebookOAuthDomainIsReady, getFacebookRedirectUri } from "./facebookOAuth";
 import { getTikTokRedirectUri, getTikTokSandboxAccessToken } from "./tiktokOAuth";
 import { uploadTikTokSandboxDraft } from "./tiktokSandboxPublisher";
 import { hasApprovedSafeVideo, isAllowedWorkflowTransition, type WorkflowStatus } from "./workflowGuards";
@@ -225,7 +225,7 @@ export const appRouter = router({
         youtubeRedirectUri: `${ctx.req.header("x-forwarded-proto")?.split(",")[0] ?? ctx.req.protocol}://${ctx.req.header("x-forwarded-host") ?? ctx.req.header("host")}/api/integrations/youtube/callback`,
         facebookClientConfigured: Boolean(process.env.META_APP_ID && process.env.META_APP_SECRET),
         facebookRedirectUri: getFacebookRedirectUri(ctx.req),
-        facebookExpectedDomain: FACEBOOK_OAUTH_DOMAIN,
+        facebookExpectedDomains: FACEBOOK_OAUTH_DOMAINS,
         facebookDomainReady: facebookOAuthDomainIsReady(ctx.req),
         tiktokClientConfigured: Boolean(process.env.TIKTOK_CLIENT_KEY && process.env.TIKTOK_CLIENT_SECRET),
         tiktokSandboxClientConfigured: Boolean(process.env.TIKTOK_SANDBOX_CLIENT_KEY && process.env.TIKTOK_SANDBOX_CLIENT_SECRET),

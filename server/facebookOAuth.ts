@@ -7,7 +7,7 @@ import * as db from "./db";
 
 const OAUTH_STATE_COOKIE = "xdaw_facebook_oauth_state";
 const PAGE_PICKER_COOKIE = "xdaw_facebook_page_picker";
-export const FACEBOOK_OAUTH_DOMAIN = "xdawnova.int.eu.org";
+export const FACEBOOK_OAUTH_DOMAINS = ["xdawnova.int.eu.org", "daousha-vide-nbqlahcj.manus.space"] as const;
 const FACEBOOK_SCOPES = [
   "pages_show_list",
   "pages_read_engagement",
@@ -67,7 +67,7 @@ export function getFacebookAppDomain(req: Pick<Request, "header">) {
 }
 
 export function facebookOAuthDomainIsReady(req: Pick<Request, "header">) {
-  return getFacebookAppDomain(req) === FACEBOOK_OAUTH_DOMAIN;
+  return FACEBOOK_OAUTH_DOMAINS.includes(getFacebookAppDomain(req) as typeof FACEBOOK_OAUTH_DOMAINS[number]);
 }
 
 export function facebookScopes() {
@@ -108,7 +108,7 @@ export function registerFacebookOAuthRoutes(app: Express) {
     const user = await getAuthenticatedUser(req);
     if (!user) return res.status(401).send("سجّل الدخول إلى XDAW NOVA أولًا ثم أعد محاولة ربط Facebook.");
     if (!ENV.metaAppId || !ENV.metaAppSecret) return res.status(503).send("بيانات تطبيق Meta غير مهيأة بعد.");
-    if (!facebookOAuthDomainIsReady(req)) return res.status(503).send(`تفويض Facebook معلّق حتى يصبح النطاق ${FACEBOOK_OAUTH_DOMAIN} فعّالًا ومربوطًا بالاستضافة.`);
+    if (!facebookOAuthDomainIsReady(req)) return res.status(503).send("تفويض Facebook معلّق حتى تستخدم إحدى نطاقات XDAW NOVA المعتمدة والمربوطة بالاستضافة.");
 
     try {
       await ensureFacebookAppDomain(req);
