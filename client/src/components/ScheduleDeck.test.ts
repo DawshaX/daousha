@@ -10,4 +10,10 @@ describe("ScheduleDeck guarded scheduling UI", () => {
     expect(source).toContain("لا يمكن إنشاء مسودة لمنصة غير جاهزة");
     expect(source).toContain("حواجز الحقوق والسلامة والمعاينة نفسها");
   });
+
+  it("stacks the schedule composer on phones before using multi-column layouts", async () => {
+    const source = await readFile(new URL("./ScheduleDeck.tsx", import.meta.url), "utf8");
+    expect(source).toContain("sm:grid-cols-2 xl:grid-cols-4");
+    expect(source).not.toContain("md:grid-cols-4");
+  });
 });
