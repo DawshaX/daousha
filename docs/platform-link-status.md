@@ -68,3 +68,15 @@ Meta Ads account act_1502752946625950 is disabled; not required for organic laun
 الحلقة 7: produced كامل (1080x1920، 42.1s، narration 43.6s، 4 صور) في docs/episode7/ وtest_run/. topic_library.json محدثة: ep7 = produced.
 YT/FB/Telegram: معطّلة في هذه الجلسة — غياب /home/ubuntu/secrets.txt من جلسة الجدولة. الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5 وep6 وep7.
 TikTok — فحص 2026-08-15 (مساءً مجدولة): صفحة المطورين تظهر "No access / تسجيل دخول مطلوب" في متصفح المستخدم؛ الحالة المسجلة تبقى **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+
+## النشر — 2026-08-16 (تشيغيل مجدول، الحلقات 6 و8)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 6 | أحلامك ليست عشوائية! 3 أسرار علمية ستصدمك | — pending (secrets غير متوفرة في جلسة الجدولة) | https://www.instagram.com/reel/DcFdUQGjgnC/ | — pending (نفس سبب YouTube) |
+| 8 | المحيطات تخفي أسرارًا مرعبة! 3 حقائق لن تصدقها | — pending (نفس السبب) | https://www.instagram.com/reel/DcFeX05jNsp/ | — pending (نفس السبب) |
+
+ملاحظة تشغيلية (مكررة منذ 2026-08-15): جلسات الجدولة الآلية تبدأ في sandbox جديد لا يحتوي `/home/ubuntu/secrets.txt`، لذلك يستمر تعذّر النشر على YouTube/Facebook وإشعار Telegram. الحلقات ep5 وep6 وep7 وep8 كاملة؛ عند استعادة الملف يُستكمل نشر ep5-7 فورًا دون إعادة إنتاج. Instagram يعمل دائمًا عبر Manus connector.
+
+## TikTok — فحص 2026-08-16 (03:05 UTC / 06:05 القاهرة)
+صفحة المطورين تعرض «No access — تسجيل دخول مطلوب» في متصفح المستخدم (لم يُفتح المتصفح بتسجيل دخول المطور). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
