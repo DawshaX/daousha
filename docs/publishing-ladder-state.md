@@ -2,10 +2,10 @@
 This file is the single source of truth for the escalating daily publishing cap. Update after every publish run.
 - level: 2 (streakSafe reached 5 on 2026-08-16 run — ladder rule promotes dailyCap 4→6)
 - dailyCap: 6
-- streakSafe: 5 (2026-08-16 scheduled run: episodes 6 + 8 fully produced and published to Instagram, no publish/platform errors; YT/FB/Telegram deferred for environmental reason only — secrets file missing in scheduled session, same as 2026-08-15)
+- streakSafe: 6 (2026-08-16 runs: episodes 6 + 8 + 9 fully produced and published to Instagram, no publish/platform errors; YT/FB/Telegram deferred for environmental reason only — secrets file missing in scheduled sessions, same as 2026-08-15)
 - streakRisky: 0
 - lastPublishDate: 2026-08-16
-- lastPublishUrl: https://www.instagram.com/reel/DcFeX05jNsp/ (episode 8, IG run 2026-08-16 scheduled)
+- lastPublishUrl: https://www.instagram.com/reel/DcGHbbVgOG0/ (episode 9, IG run 2026-08-16 scheduled, 09:10 UTC)
 - history:
   - date: 2026-08-14
     platform: YouTube
@@ -86,6 +86,11 @@ This file is the single source of truth for the escalating daily publishing cap.
     platform: Instagram (YT/FB/Telegram deferred — secrets file missing in scheduled session)
     video: "المحيطات تخفي أسرارًا مرعبة! 3 حقائق لن تصدقها"
     url: https://www.instagram.com/reel/DcFeX05jNsp/
+    status: published-public
+  - date: 2026-08-16
+    platform: Instagram (YT/FB/Telegram deferred — secrets file missing in scheduled session)
+    video: "شمسنا ليست ما تظن! 3 حقائق صادمة ستغير نظرتك إليها"
+    url: https://www.instagram.com/reel/DcGHbbVgOG0/
     status: published-public
   - date: 2026-08-15
     platform: Instagram (YT/FB/Telegram deferred — secrets file missing in scheduled session)
