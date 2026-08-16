@@ -2,6 +2,11 @@ import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   analyticsSnapshots,
+  assistantActionPlans,
+  assistantActionSteps,
+  assistantAuditEvents,
+  assistantMessages,
+  assistantSessions,
   channelConnections,
   connectionHealthMonitors,
   contentAssets,
@@ -511,6 +516,141 @@ export async function markConnectionHealthMonitorNotified(id: number, status: "h
   const db = await getDb();
   if (!db) databaseUnavailable();
   await db!.update(connectionHealthMonitors).set({ lastNotifiedStatus: status, lastNotificationAt: new Date() }).where(eq(connectionHealthMonitors.id, id));
+}
+
+export async function createAssistantSession(input: { ownerId: number; title: string; origin?: "web" | "telegram" }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(assistantSessions).values({ ownerId: input.ownerId, title: input.title, origin: input.origin ?? "web" });
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(assistantSessions).where(and(eq(assistantSessions.id, id), eq(assistantSessions.ownerId, input.ownerId))).limit(1))[0];
+}
+
+export async function listAssistantSessions(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(assistantSessions).where(eq(assistantSessions.ownerId, ownerId)).orderBy(desc(assistantSessions.updatedAt));
+}
+
+export async function getOwnedAssistantSession(ownerId: number, sessionId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(assistantSessions).where(and(eq(assistantSessions.id, sessionId), eq(assistantSessions.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function archiveAssistantSession(ownerId: number, sessionId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(assistantSessions).set({ status: "archived" }).where(and(eq(assistantSessions.id, sessionId), eq(assistantSessions.ownerId, ownerId)));
+  return getOwnedAssistantSession(ownerId, sessionId);
+}
+
+export async function listAssistantMessages(ownerId: number, sessionId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(assistantMessages).where(and(eq(assistantMessages.ownerId, ownerId), eq(assistantMessages.sessionId, sessionId))).orderBy(assistantMessages.createdAt);
+}
+
+export async function createAssistantMessage(input: {
+  ownerId: number;
+  sessionId: number;
+  role: "user" | "assistant" | "system";
+  content: string;
+  displayKind?: "message" | "plan" | "tool_result" | "notice";
+}) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(assistantMessages).values({ ...input, displayKind: input.displayKind ?? "message" });
+  const id = Number(result[0].insertId);
+  await db!.update(assistantSessions).set({ lastMessageAt: new Date() }).where(and(eq(assistantSessions.id, input.sessionId), eq(assistantSessions.ownerId, input.ownerId)));
+  return (await db!.select().from(assistantMessages).where(eq(assistantMessages.id, id)).limit(1))[0];
+}
+
+export async function createAssistantActionPlan(input: {
+  ownerId: number;
+  sessionId: number;
+  summary: string;
+  impact: "read" | "draft" | "guarded" | "high";
+  requiresApproval: boolean;
+  status?: "proposed" | "approved" | "executing" | "completed" | "blocked" | "failed";
+}) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(assistantActionPlans).values({ ...input, status: input.status ?? "proposed" });
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(assistantActionPlans).where(and(eq(assistantActionPlans.id, id), eq(assistantActionPlans.ownerId, input.ownerId))).limit(1))[0];
+}
+
+export async function getOwnedAssistantActionPlan(ownerId: number, planId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(assistantActionPlans).where(and(eq(assistantActionPlans.id, planId), eq(assistantActionPlans.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function listAssistantActionPlans(ownerId: number, sessionId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(assistantActionPlans).where(and(eq(assistantActionPlans.ownerId, ownerId), eq(assistantActionPlans.sessionId, sessionId))).orderBy(desc(assistantActionPlans.createdAt));
+}
+
+export async function updateAssistantActionPlan(ownerId: number, planId: number, patch: { status: "proposed" | "approved" | "executing" | "completed" | "blocked" | "failed"; approvedAt?: Date | null }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(assistantActionPlans).set(patch).where(and(eq(assistantActionPlans.id, planId), eq(assistantActionPlans.ownerId, ownerId)));
+  return getOwnedAssistantActionPlan(ownerId, planId);
+}
+
+export async function listAssistantActionSteps(ownerId: number, planId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(assistantActionSteps).where(and(eq(assistantActionSteps.ownerId, ownerId), eq(assistantActionSteps.planId, planId))).orderBy(assistantActionSteps.stepOrder);
+}
+
+export async function createAssistantActionStep(input: {
+  ownerId: number;
+  planId: number;
+  stepOrder: number;
+  title: string;
+  toolName: string;
+  inputSummary?: string;
+  status?: "pending" | "running" | "completed" | "blocked" | "failed" | "skipped";
+}) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(assistantActionSteps).values({ ...input, status: input.status ?? "pending" });
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(assistantActionSteps).where(eq(assistantActionSteps.id, id)).limit(1))[0];
+}
+
+export async function updateAssistantActionStep(ownerId: number, stepId: number, patch: { status: "pending" | "running" | "completed" | "blocked" | "failed" | "skipped"; resultSummary?: string | null }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(assistantActionSteps).set(patch).where(and(eq(assistantActionSteps.id, stepId), eq(assistantActionSteps.ownerId, ownerId)));
+  return (await db!.select().from(assistantActionSteps).where(and(eq(assistantActionSteps.id, stepId), eq(assistantActionSteps.ownerId, ownerId))).limit(1))[0];
+}
+
+export async function createAssistantAuditEvent(input: {
+  ownerId: number;
+  sessionId?: number;
+  planId?: number;
+  stepId?: number;
+  actor: "user" | "assistant" | "system";
+  action: string;
+  target?: string;
+  decision: "allowed" | "approved" | "blocked" | "completed" | "failed";
+  detail?: string;
+}) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const result = await db!.insert(assistantAuditEvents).values(input);
+  const id = Number(result[0].insertId);
+  return (await db!.select().from(assistantAuditEvents).where(eq(assistantAuditEvents.id, id)).limit(1))[0];
+}
+
+export async function listAssistantAuditEvents(ownerId: number, limit = 80) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return db!.select().from(assistantAuditEvents).where(eq(assistantAuditEvents.ownerId, ownerId)).orderBy(desc(assistantAuditEvents.createdAt)).limit(limit);
 }
 
 export async function getDashboardData(ownerId: number) {

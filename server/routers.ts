@@ -27,6 +27,7 @@ import { executeInstagramHealthMonitor } from "./instagramHealthMonitoring";
 import { derivePerformanceImprovementSuggestion } from "../shared/performanceImprovement";
 import { performanceExperimentAdvice, summarizePerformance } from "../shared/performanceSummary";
 import { describeUploadFailure } from "./uploadFailureDetail";
+import { createNOVASession, getNOVAWorkspace, runNOVATurn } from "./novaAssistant";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -44,6 +45,25 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...getSessionCookieOptions(ctx.req), maxAge: -1 });
       return { success: true } as const;
     }),
+  }),
+  nova: router({
+    sessions: protectedProcedure.query(({ ctx }) => db.listAssistantSessions(ctx.user.id)),
+    workspace: protectedProcedure
+      .input(z.object({ sessionId: z.number().int().positive().optional() }).optional())
+      .query(({ ctx, input }) => getNOVAWorkspace(ctx.user.id, input?.sessionId)),
+    createSession: protectedProcedure
+      .input(z.object({ title: z.string().trim().min(1).max(180).optional() }).optional())
+      .mutation(({ ctx, input }) => createNOVASession(ctx.user.id, input?.title)),
+    archiveSession: protectedProcedure
+      .input(z.object({ sessionId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const session = await db.archiveAssistantSession(ctx.user.id, input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "جلسة NOVA غير موجودة." });
+        return session;
+      }),
+    sendMessage: protectedProcedure
+      .input(z.object({ sessionId: z.number().int().positive().optional(), content: z.string().trim().min(1).max(8_000) }))
+      .mutation(({ ctx, input }) => runNOVATurn({ ownerId: ctx.user.id, sessionId: input.sessionId, content: input.content, origin: "web" })),
   }),
   daousha: router({
     references: publicProcedure.query(() => platformReferences),

@@ -22,6 +22,7 @@ function Router() {
     <Route path="/studio"><ToolRoute section="studio" /></Route>
     <Route path="/review"><ToolRoute section="review" /></Route>
     <Route path="/automation"><ToolRoute section="automation" /></Route>
+    <Route path="/assistant"><ToolRoute section="assistant" /></Route>
     <Route path="/insights"><ToolRoute section="insights" /></Route>
     <Route path="/analytics"><ToolRoute section="insights" /></Route>
     <Route path="/evolution"><ToolRoute section="evolution" /></Route>

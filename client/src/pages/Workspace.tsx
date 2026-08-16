@@ -54,6 +54,7 @@ import TrendRadar from "@/components/TrendRadar";
 import PerformanceInsights from "@/components/PerformanceInsights";
 import OperationalNotifications from "@/components/OperationalNotifications";
 import PerformanceImprovementLoop from "@/components/PerformanceImprovementLoop";
+import NOVAConsole from "@/components/NOVAConsole";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -64,6 +65,7 @@ type Section =
   | "studio"
   | "review"
   | "automation"
+  | "assistant"
   | "insights"
   | "evolution"
   | "settings";
@@ -98,6 +100,11 @@ const sectionMeta: Record<Section, { eyebrow: string; title: string; description
     eyebrow: "PULSE ENGINE",
     title: "الأتمتة والجدولة",
     description: "شغّل المحرك ضمن قواعد حقوق وسلامة وسقف نشر واضح وسجل لا يضيع.",
+  },
+  assistant: {
+    eyebrow: "NOVA / GOVERNED ASSISTANT",
+    title: "NOVA Assistant",
+    description: "مساعد موحد يفهم طلبك، يوثق خطته، ويعمل داخل أدوات XDAW NOVA المحكومة.",
   },
   insights: {
     eyebrow: "SIGNAL INTELLIGENCE",
@@ -398,6 +405,10 @@ function Automation() {
   );
 }
 
+function Assistant() {
+  return <Frame section="assistant"><NOVAConsole /></Frame>;
+}
+
 function Insights() {
   return (
     <Frame section="insights">
@@ -439,6 +450,7 @@ export default function Workspace({ section }: { section: Section }) {
     studio: <Studio />,
     review: <Review />,
     automation: <Automation />,
+    assistant: <Assistant />,
     insights: <Insights />,
     evolution: <Evolution />,
     settings: <Settings />,

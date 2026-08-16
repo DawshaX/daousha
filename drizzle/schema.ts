@@ -245,5 +245,86 @@ export const domainMonitors = mysqlTable("domain_monitors", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("domain_monitors_task_uid_idx").on(table.scheduleCronTaskUid)]);
 
+/** Persistent, owner-scoped conversations for the governed NOVA Assistant. */
+export const assistantSessions = mysqlTable("assistant_sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  title: varchar("title", { length: 180 }).notNull(),
+  origin: mysqlEnum("origin", ["web", "telegram"]).default("web").notNull(),
+  status: mysqlEnum("status", ["active", "archived"]).default("active").notNull(),
+  lastMessageAt: timestamp("lastMessageAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  index("assistant_sessions_owner_updated_idx").on(table.ownerId, table.updatedAt),
+]);
+
+/** Human-facing conversation messages. Raw model reasoning is deliberately never stored. */
+export const assistantMessages = mysqlTable("assistant_messages", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  ownerId: int("ownerId").notNull(),
+  role: mysqlEnum("role", ["user", "assistant", "system"]).notNull(),
+  content: text("content").notNull(),
+  displayKind: mysqlEnum("displayKind", ["message", "plan", "tool_result", "notice"]).default("message").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [
+  index("assistant_messages_session_created_idx").on(table.sessionId, table.createdAt),
+  index("assistant_messages_owner_created_idx").on(table.ownerId, table.createdAt),
+]);
+
+/** A concise action plan exposed to the owner before or during governed execution. */
+export const assistantActionPlans = mysqlTable("assistant_action_plans", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  sessionId: int("sessionId").notNull(),
+  summary: text("summary").notNull(),
+  impact: mysqlEnum("impact", ["read", "draft", "guarded", "high"]).notNull(),
+  requiresApproval: boolean("requiresApproval").default(false).notNull(),
+  status: mysqlEnum("status", ["proposed", "approved", "executing", "completed", "blocked", "failed"]).default("proposed").notNull(),
+  approvedAt: timestamp("approvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  index("assistant_action_plans_session_created_idx").on(table.sessionId, table.createdAt),
+  index("assistant_action_plans_owner_status_idx").on(table.ownerId, table.status),
+]);
+
+/** Each plan only invokes an allow-listed XDAW tool and stores a scrubbed input/result summary. */
+export const assistantActionSteps = mysqlTable("assistant_action_steps", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  planId: int("planId").notNull(),
+  stepOrder: int("stepOrder").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  toolName: varchar("toolName", { length: 120 }).notNull(),
+  inputSummary: text("inputSummary"),
+  resultSummary: text("resultSummary"),
+  status: mysqlEnum("status", ["pending", "running", "completed", "blocked", "failed", "skipped"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  index("assistant_action_steps_plan_order_idx").on(table.planId, table.stepOrder),
+  index("assistant_action_steps_owner_status_idx").on(table.ownerId, table.status),
+]);
+
+/** Append-only assistant audit trail; secrets and OAuth tokens are never written here. */
+export const assistantAuditEvents = mysqlTable("assistant_audit_events", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  sessionId: int("sessionId"),
+  planId: int("planId"),
+  stepId: int("stepId"),
+  actor: mysqlEnum("actor", ["user", "assistant", "system"]).notNull(),
+  action: varchar("action", { length: 160 }).notNull(),
+  target: varchar("target", { length: 255 }),
+  decision: mysqlEnum("decision", ["allowed", "approved", "blocked", "completed", "failed"]).notNull(),
+  detail: text("detail"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [
+  index("assistant_audit_events_owner_created_idx").on(table.ownerId, table.createdAt),
+  index("assistant_audit_events_session_created_idx").on(table.sessionId, table.createdAt),
+]);
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;

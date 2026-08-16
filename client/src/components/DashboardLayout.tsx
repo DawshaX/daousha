@@ -16,6 +16,7 @@ const menuItems = [
   { icon: Sparkles, label: "استوديو الإنتاج", path: "/studio" },
   { icon: CircleCheckBig, label: "بوابة المراجعة", path: "/review" },
   { icon: CalendarClock, label: "الأتمتة والجدولة", path: "/automation" },
+  { icon: Bot, label: "NOVA Assistant", path: "/assistant" },
   { icon: BarChart3, label: "التحليلات", path: "/insights" },
   { icon: Bot, label: "سجل التطوير", path: "/evolution" },
   { icon: Settings2, label: "الإعدادات", path: "/settings" },
