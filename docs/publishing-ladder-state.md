@@ -2,11 +2,21 @@
 This file is the single source of truth for the escalating daily publishing cap. Update after every publish run.
 - level: 2 (streakSafe reached 5 on 2026-08-16 run — ladder rule promotes dailyCap 4→6)
 - dailyCap: 6
-- streakSafe: 6 (2026-08-16 runs: episodes 6 + 8 + 9 fully produced and published to Instagram, no publish/platform errors; YT/FB/Telegram deferred for environmental reason only — secrets file missing in scheduled sessions, same as 2026-08-15)
+- streakSafe: 7 (2026-08-16 runs: episodes 6 + 8 + 9 + 10 + 11 fully produced and published to Instagram, no publish/platform errors; YT/FB/Telegram deferred for environmental reason only — secrets file missing in scheduled sessions, same as 2026-08-15)
 - streakRisky: 0
 - lastPublishDate: 2026-08-16
-- lastPublishUrl: https://www.instagram.com/reel/DcGHbbVgOG0/ (episode 9, IG run 2026-08-16 scheduled, 09:10 UTC)
+- lastPublishUrl: https://www.instagram.com/reel/DcHahryiU2D/ (episode 11, IG run 2026-08-16 scheduled evening, 18:00 Cairo)
 - history:
+  - date: 2026-08-16
+    platform: Instagram
+    video: "تحت قدميك إمبراطورية كاملة! 3 حقائق صادمة عن عالم النمل"
+    url: https://www.instagram.com/reel/DcHahryiU2D/
+    status: published-public
+  - date: 2026-08-16
+    platform: Instagram
+    video: "داخل جسمك شيفرة كونية! 3 أسرار في حمضك النووي ستدهشك"
+    url: https://www.instagram.com/reel/DcHanMzlU8A/
+    status: published-public
   - date: 2026-08-14
     platform: YouTube
     video: "دماغك يعمل على ثلث طاقته فقط! 3 حقائق صادمة"
