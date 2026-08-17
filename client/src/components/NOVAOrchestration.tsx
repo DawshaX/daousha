@@ -102,6 +102,10 @@ export default function NOVAOrchestration() {
           <Textarea value={researchFinding} onChange={event => setResearchFinding(event.target.value)} placeholder="ماذا أثبت المصدر؟ اكتب ملخصًا قصيرًا قابلًا للمراجعة." className="mt-2 min-h-20 border-white/10 bg-black/20 text-xs text-zinc-100" />
           <Button size="sm" variant="outline" className="mt-2 h-8 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={researchTitle.trim().length < 2 || researchFinding.trim().length < 5 || !/^https:\/\//i.test(researchSourceUrl.trim()) || addResearchNote.isPending} onClick={() => addResearchNote.mutate({ category: "rights", title: researchTitle.trim(), content: researchFinding.trim(), sourceUrl: researchSourceUrl.trim() })}>{addResearchNote.isPending ? "جارٍ الحفظ…" : "حفظ نتيجة القراءة"}</Button>
         </div>
+        <div className="rounded-lg border border-sky-500/15 bg-sky-500/[0.025] p-3">
+          <p className="text-xs font-semibold text-sky-100">مسار بحث يدوي موثق</p>
+          <p className="mt-1 text-[11px] leading-5 text-zinc-500">افتح مصدرًا مصرحًا في متصفحك، راجع شروطه والرابط الأصلي، ثم احفظ خلاصة قصيرة في نتيجة القراءة أعلاه. لا يحوّل NOVA جلسات المواقع أو محادثاتها إلى أتمتة خلفية ولا يستورد المادة تلقائيًا.</p>
+        </div>
         {(sources.data ?? []).filter(source => source.sourceKind === "asset" || source.sourceKind === "audio").slice(0, 5).map(source => (
           <div key={source.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">
             <div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-zinc-200">{source.name}</p><span className={source.trustStatus === "approved" ? "text-[10px] text-emerald-300" : "text-[10px] text-amber-300"}>{source.trustStatus === "approved" ? "معتمد" : "بانتظار المراجعة"}</span></div>

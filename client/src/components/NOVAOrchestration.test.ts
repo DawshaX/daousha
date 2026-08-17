@@ -28,6 +28,8 @@ describe("NOVA Orchestration source catalog", () => {
     expect(source).toContain("trpc.nova.addKnowledge.useMutation");
     expect(source).toContain('category: "rights"');
     expect(source).toContain("لا يعتبر ذلك اعتمادًا للمادة أو تصريحًا بالنشر");
+    expect(source).toContain("مسار بحث يدوي موثق");
+    expect(source).toContain("لا يحوّل NOVA جلسات المواقع");
     expect(source).not.toContain("yt-dlp");
   });
 });
