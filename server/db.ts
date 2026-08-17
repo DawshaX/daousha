@@ -24,6 +24,7 @@ import {
   publishingRuns,
   publishingSchedules,
   systemChangeLog,
+  telegramWebhookUpdates,
   uploadMetadataDrafts,
   users,
   videoProjects,
@@ -663,6 +664,8 @@ export async function listContentPlaybooks(ownerId: number) { const db = await g
 export async function listContentPlaybookSteps(playbookId: number) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.select().from(contentPlaybookSteps).where(eq(contentPlaybookSteps.playbookId, playbookId)).orderBy(contentPlaybookSteps.stepOrder); }
 export async function createContentPlaybook(input: { ownerId: number; title: string; description: string; impact: "read" | "draft" | "guarded" | "high"; steps: Array<{ title: string; toolName: string; inputTemplate?: string }> }) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.transaction(async tx => { const result = await tx.insert(contentPlaybooks).values({ ownerId: input.ownerId, title: input.title, description: input.description, impact: input.impact }); const id = Number(result[0].insertId); if (input.steps.length) await tx.insert(contentPlaybookSteps).values(input.steps.map((step, index) => ({ playbookId: id, stepOrder: index + 1, ...step }))); return (await tx.select().from(contentPlaybooks).where(eq(contentPlaybooks.id, id)).limit(1))[0]; }); }
 export async function createPlaybookRun(input: { ownerId: number; playbookId: number; sessionId?: number; status: "queued" | "running" | "completed" | "blocked" | "failed"; resultSummary?: string }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(playbookRuns).values({ ...input, completedAt: ["completed", "blocked", "failed"].includes(input.status) ? new Date() : null }); const id = Number(result[0].insertId); return (await db!.select().from(playbookRuns).where(eq(playbookRuns.id, id)).limit(1))[0]; }
+export async function recordTelegramWebhookUpdate(input: { updateId: number; ownerId: number; chatId: string }) { const db = await getDb(); if (!db) databaseUnavailable(); try { const result = await db!.insert(telegramWebhookUpdates).values(input); const id = Number(result[0].insertId); return { created: true, row: (await db!.select().from(telegramWebhookUpdates).where(eq(telegramWebhookUpdates.id, id)).limit(1))[0] }; } catch { return { created: false, row: (await db!.select().from(telegramWebhookUpdates).where(eq(telegramWebhookUpdates.updateId, input.updateId)).limit(1))[0] }; } }
+export async function updateTelegramWebhookUpdate(updateId: number, status: "completed" | "ignored" | "failed", detail: string) { const db = await getDb(); if (!db) databaseUnavailable(); await db!.update(telegramWebhookUpdates).set({ status, detail }).where(eq(telegramWebhookUpdates.updateId, updateId)); }
 
 export async function getDashboardData(ownerId: number) {
   const db = await getDb();

@@ -14,6 +14,7 @@ import { registerFacebookOAuthRoutes } from "../facebookOAuth";
 import { registerTikTokOAuthRoutes } from "../tiktokOAuth";
 import { registerTikTokSiteVerificationRoute } from "../tiktokSiteVerification";
 import { registerScheduledRoutes } from "../scheduledRoutes";
+import { registerTelegramCommandWebhook } from "../telegramCommands";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -48,6 +49,7 @@ async function startServer() {
   registerTikTokOAuthRoutes(app);
   registerTikTokSiteVerificationRoute(app);
   registerScheduledRoutes(app);
+  registerTelegramCommandWebhook(app);
   // tRPC API
   app.use(
     "/api/trpc",

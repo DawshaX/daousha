@@ -371,5 +371,17 @@ export const playbookRuns = mysqlTable("playbook_runs", {
   completedAt: timestamp("completedAt"),
 }, table => [index("playbook_runs_owner_created_idx").on(table.ownerId, table.createdAt)]);
 
+/** Idempotency record for owner-restricted Telegram webhook updates. */
+export const telegramWebhookUpdates = mysqlTable("telegram_webhook_updates", {
+  id: int("id").autoincrement().primaryKey(),
+  updateId: int("updateId").notNull().unique(),
+  ownerId: int("ownerId").notNull(),
+  chatId: varchar("chatId", { length: 80 }).notNull(),
+  status: mysqlEnum("status", ["received", "completed", "ignored", "failed"]).default("received").notNull(),
+  detail: text("detail"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("telegram_webhook_updates_owner_created_idx").on(table.ownerId, table.createdAt)]);
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;

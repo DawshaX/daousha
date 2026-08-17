@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { platformReferences } from "../shared/daousha";
 import * as db from "./db";
+import { configureTelegramCommandWebhook } from "./telegram";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -47,6 +48,11 @@ export const appRouter = router({
     }),
   }),
   nova: router({
+    configureTelegramWebhook: protectedProcedure.input(z.object({ publicBaseUrl: z.string().url() })).mutation(async ({ ctx, input }) => {
+      const result = await configureTelegramCommandWebhook(input.publicBaseUrl);
+      await db.createAssistantAuditEvent({ ownerId: ctx.user.id, actor: "user", action: "telegram_webhook_configured", target: "telegram", decision: "completed", detail: "تم تفعيل Webhook أوامر Telegram للمالك." });
+      return result;
+    }),
     sessions: protectedProcedure.query(({ ctx }) => db.listAssistantSessions(ctx.user.id)),
     memories: protectedProcedure.query(({ ctx }) => db.listAssistantMemories(ctx.user.id)),
     addMemory: protectedProcedure

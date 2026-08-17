@@ -51,3 +51,17 @@ export async function sendTelegramOperationalNotification(input: { chatId?: stri
     return { delivered: false, reason: "تعذّر الاتصال بـ Telegram." } as const;
   }
 }
+
+export async function configureTelegramCommandWebhook(publicBaseUrl: string) {
+  if (!ENV.telegramBotToken || !ENV.telegramWebhookSecret) throw new Error("لم تُهيأ بيانات Webhook Telegram بعد.");
+  const base = new URL(publicBaseUrl);
+  if (base.protocol !== "https:" || !base.hostname.endsWith(".manus.space")) throw new Error("يجب ضبط Webhook على نطاق XDAW NOVA المنشور عبر HTTPS.");
+  const response = await fetch(`https://api.telegram.org/bot${ENV.telegramBotToken}/setWebhook`, {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ url: `${base.origin}/api/webhooks/telegram`, secret_token: ENV.telegramWebhookSecret, allowed_updates: ["message"] }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  const payload = (await response.json()) as TelegramApiResponse;
+  if (!response.ok || !payload.ok) throw new Error("تعذر تفعيل Webhook Telegram.");
+  return { configured: true, url: `${base.origin}/api/webhooks/telegram` };
+}
