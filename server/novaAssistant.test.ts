@@ -25,6 +25,9 @@ const dbMock = {
   listAssistantActionPlans: vi.fn(),
   listAssistantActionSteps: vi.fn(),
   listAssistantAuditEvents: vi.fn(),
+  listAssistantMemories: vi.fn(),
+  listContentPlaybooks: vi.fn(),
+  searchAssistantKnowledge: vi.fn(),
 };
 const llmMock = { invokeLLM: vi.fn() };
 
@@ -72,6 +75,9 @@ describe("NOVA Assistant", () => {
     dbMock.listPublishingRuns.mockResolvedValue([]);
     dbMock.getPublishingPolicy.mockResolvedValue({ mode: "guarded_auto", publicPublishingEnabled: true, killSwitchEnabled: false, requirePrivateCanary: true, minIntervalMinutes: 10, maxPublicationsPerDay: 6, lastPublishedAt: null });
     dbMock.listOwnedProjectVideoAssets.mockResolvedValue([]);
+    dbMock.listAssistantMemories.mockResolvedValue([{ id: 1, title: "لغة المحتوى" }]);
+    dbMock.listContentPlaybooks.mockResolvedValue([{ id: 2, title: "حلقة معرفية قصيرة" }]);
+    dbMock.searchAssistantKnowledge.mockResolvedValue([{ id: 3, title: "دليل الحقوق" }]);
     llmMock.invokeLLM.mockResolvedValue(modelPlan());
   });
 
@@ -122,6 +128,35 @@ describe("NOVA Assistant", () => {
     expect(result.status).toBe("completed");
     expect(llmMock.invokeLLM).not.toHaveBeenCalled();
     expect(dbMock.createSource).toHaveBeenCalledWith(expect.objectContaining({ name: "مصدر UNESCO", url: "https://www.unesco.org", trustStatus: "proposed" }));
+  });
+
+  it("يعرض الذاكرة والـPlaybooks من المصدر الموحد من دون استدعاء نموذج اللغة", async () => {
+    const result = await runNOVATurn({ ownerId: 7, content: "اعرض الذاكرة والـPlaybooks", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.listAssistantMemories).toHaveBeenCalledWith(7);
+    expect(dbMock.listContentPlaybooks).toHaveBeenCalledWith(7);
+    expect(result.reply).toContain("لغة المحتوى");
+    expect(result.reply).toContain("حلقة معرفية قصيرة");
+  });
+
+  it("يبحث في قاعدة المعرفة من أمر موحد من دون استدعاء نموذج اللغة", async () => {
+    const result = await runNOVATurn({ ownerId: 7, content: "ابحث في قاعدة المعرفة عن الحقوق", origin: "web" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.searchAssistantKnowledge).toHaveBeenCalledWith(7, "الحقوق");
+    expect(result.reply).toContain("دليل الحقوق");
+  });
+
+  it("يحجب أمر اعتماد عالي الأثر برسالة تشغيلية واضحة من دون استدعاء نموذج اللغة", async () => {
+    const result = await runNOVATurn({ ownerId: 7, content: "اعتمد الفيديو وغيّر سقف النشر", origin: "telegram" });
+
+    expect(result.status).toBe("needs_approval");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.createProject).not.toHaveBeenCalled();
+    expect(result.reply).toContain("لم أنفذ أي تغيير أو نشر");
   });
 
   it("يحجب أي طلب عالي الأثر حتى لو طلب نموذج اللغة أداة تنفيذية", async () => {
