@@ -56,6 +56,7 @@ import OperationalNotifications from "@/components/OperationalNotifications";
 import PerformanceImprovementLoop from "@/components/PerformanceImprovementLoop";
 import NOVAConsole from "@/components/NOVAConsole";
 import NOVAOrchestration from "@/components/NOVAOrchestration";
+import NOVAOperationsCenter from "@/components/NOVAOperationsCenter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -407,7 +408,7 @@ function Automation() {
 }
 
 function Assistant() {
-  return <Frame section="assistant"><NOVAConsole /><NOVAOrchestration /></Frame>;
+  return <Frame section="assistant"><NOVAConsole /><NOVAOrchestration /><NOVAOperationsCenter /></Frame>;
 }
 
 function Insights() {
