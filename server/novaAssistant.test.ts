@@ -37,7 +37,7 @@ const dbMock = {
   listContentPlaybookSteps: vi.fn(),
 };
 const llmMock = { invokeLLM: vi.fn() };
-const advisorMock = { createNOVAAdvisorDraft: vi.fn() };
+const advisorMock = { createNOVAAdvisorDraft: vi.fn(), getNOVAAdvisorProviderStatuses: vi.fn() };
 
 vi.mock("./db", () => dbMock);
 vi.mock("./_core/llm", () => llmMock);
@@ -94,6 +94,11 @@ describe("NOVA Assistant", () => {
     dbMock.listContentPlaybookSteps.mockResolvedValue([]);
     llmMock.invokeLLM.mockResolvedValue(modelPlan());
     advisorMock.createNOVAAdvisorDraft.mockResolvedValue({ provider: "gemini", model: "gemini-2.0-flash", content: "مسودة آمنة للمراجعة البشرية.", safetyNote: "هذه مسودة إرشادية فقط." });
+    advisorMock.getNOVAAdvisorProviderStatuses.mockReturnValue([
+      { id: "gemini", title: "Google Gemini", status: "ready", detail: "متاح للمسودة الصريحة." },
+      { id: "openai", title: "OpenAI", status: "ready", detail: "قد يخضع لحصة الحساب." },
+      { id: "perplexity", title: "Perplexity", status: "disabled", detail: "API متوقف بقرار المالك." },
+    ]);
   });
 
   it("ينشئ مشروعًا مسودًا فقط تحت مالك الجلسة ويوثق الخطة والخطوة", async () => {
@@ -143,6 +148,18 @@ describe("NOVA Assistant", () => {
     expect(result.reply).toContain("تجديد YouTube الخادمي");
     expect(result.reply).toContain("TikTok خارج التشغيل الإنتاجي");
     expect(result.reply).not.toContain("credentialCiphertext");
+  });
+
+  it("يعرض حالة Gemini وOpenAI وPerplexity من Telegram دون استدعاء نموذج أو مزود خارجي", async () => {
+    const result = await runNOVATurn({ ownerId: 7, origin: "telegram", content: "ما حالة مزودي الذكاء الاصطناعي؟" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(advisorMock.createNOVAAdvisorDraft).not.toHaveBeenCalled();
+    expect(advisorMock.getNOVAAdvisorProviderStatuses).toHaveBeenCalledOnce();
+    expect(result.reply).toContain("**Google Gemini:** متاح للمسودة الصريحة");
+    expect(result.reply).toContain("**Perplexity:** متوقف");
+    expect(result.reply).toContain("لم يُستدعَ نموذج");
   });
 
   it("يعرض دليل بدء حتميًا من Telegram من دون استدعاء نموذج اللغة أو تنفيذ أي إجراء", async () => {

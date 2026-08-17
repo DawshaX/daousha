@@ -3,7 +3,7 @@ import * as db from "./db";
 import { buildChannelRenewalGuidance } from "./channelRenewalPolicy";
 import { assessAssetIntake } from "./rightsSafetyGate";
 import { evaluatePublishGuard } from "./publishingGuards";
-import { createNOVAAdvisorDraft, type NOVAAdvisorProvider } from "./novaProviderAdvisory";
+import { createNOVAAdvisorDraft, getNOVAAdvisorProviderStatuses, type NOVAAdvisorProvider } from "./novaProviderAdvisory";
 
 const MAX_MESSAGE_LENGTH = 8_000;
 const SAFE_TOOL_NAMES = [
@@ -14,6 +14,7 @@ const SAFE_TOOL_NAMES = [
   "get_review_overview",
   "get_nova_resources",
   "get_source_overview",
+  "get_advisor_overview",
   "search_knowledge",
   "run_playbook",
   "prepare_publish_plan",
@@ -55,6 +56,7 @@ const PLAYBOOK_AUTO_EXECUTABLE_TOOLS = new Set<SafeToolName>([
   "get_review_overview",
   "get_nova_resources",
   "get_source_overview",
+  "get_advisor_overview",
   "prepare_publish_plan",
 ]);
 
@@ -180,6 +182,17 @@ function deterministicNotificationsOverview(content: string): PlannedAssistantAc
     response: "سأعرض آخر التنبيهات التشغيلية المسجلة للمالك من دون إرسال تنبيه جديد أو تعديل أي جدولة.",
     planSummary: "قراءة آخر أحداث التنبيه من سجل XDAW NOVA الموحد.",
     toolName: "get_notifications_overview", impact: "read", requiresApproval: false,
+    title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+  };
+}
+
+function deterministicAdvisorOverview(content: string): PlannedAssistantAction | undefined {
+  if (!/(?:gemini|جيميني|openai|chatgpt|جي\s*بي\s*تي|perplexity|بيربلكسيتي|مزود(?:ي|ات).*ذكاء|حالة.*ذكاء.*اصطناعي)/i.test(content)) return undefined;
+  if (!/(حالة|وضع|متاح|جاهز|مفعل|مفعّل|status|provider|مزود)/i.test(content)) return undefined;
+  return {
+    response: "سأعرض حالة مزودي المسودات وحدودهم من سجل NOVA، من دون استخدام أي نموذج أو كشف مفتاح.",
+    planSummary: "قراءة حالة Gemini وOpenAI وPerplexity وحدود الاستدعاء الآمن.",
+    toolName: "get_advisor_overview", impact: "read", requiresApproval: false,
     title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
   };
 }
@@ -413,6 +426,16 @@ async function executeSafeTool(ownerId: number, action: PlannedAssistantAction):
     };
   }
 
+  if (action.toolName === "get_advisor_overview") {
+    const providers = getNOVAAdvisorProviderStatuses();
+    const summary = providers.map(provider => `**${provider.title}:** ${provider.status === "ready" ? "متاح للمسودة الصريحة" : provider.status === "disabled" ? "متوقف" : "غير مهيأ"} — ${provider.detail}`).join("\n");
+    return {
+      target: "advisor_overview",
+      resultSummary: summary,
+      responseContext: "هذه قراءة لحالة المزودين فقط؛ لم يُستدعَ نموذج ولم يُكشف مفتاح ولم تُنشأ مسودة أو نشر أو جدولة.",
+    };
+  }
+
   if (action.toolName === "get_source_overview") {
     const sources = await db.listSources(ownerId);
     const details = sources.slice(0, 8).map(source => `«${source.name}» — ${source.trustStatus}`).join("، ") || "لا توجد مصادر مسجلة بعد";
@@ -581,6 +604,7 @@ export async function runNOVATurn(input: { ownerId: number; content: string; ses
     ?? deterministicStartHelp(content)
     ?? deterministicAuthorizationGuidance(content)
     ?? deterministicNotificationsOverview(content)
+    ?? deterministicAdvisorOverview(content)
     ?? deterministicMemoryDraft(content)
     ?? deterministicOperationalStatus(content)
     ?? deterministicPublishPlan(content)

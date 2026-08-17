@@ -19,22 +19,31 @@ describe("NOVA Console", () => {
     expect(source).toContain('item.status === "active"');
   });
 
-  it("يبقي سجل التدقيق مختصرًا ومقيدًا بالجلسة مع مصدر الطلب والقرار، لا مع التفكير الخام", async () => {
+  it("يبقي سجل التدقيق مختصرًا ومقيدًا بالجلسة وبدون أسرار أو تفكير خام", async () => {
     const source = await readFile(new URL("./NOVAConsole.tsx", import.meta.url), "utf8");
-    expect(source).toContain("أحداث هذه الجلسة فقط، بلا تفكير خام أو أسرار");
-    expect(source).toContain("auditActorLabel(event.actor)");
+    expect(source).toContain("آخر أثر قابل للتدقيق");
+    expect(source).toContain("بدون أسرار");
     expect(source).toContain("auditDecisionStyle(event.decision)");
     expect(source).toContain('session.origin === "telegram"');
   });
 
-  it("يعرض مزودي المسودة الإرشادية عبر سجل خادمي ويحظر إدخال الأسرار وPerplexity API", async () => {
+  it("يعرض مزودي المسودة الإرشادية عبر سجل خادمي ويحافظ على حواجز الأسرار وPerplexity API", async () => {
     const source = await readFile(new URL("./NOVAConsole.tsx", import.meta.url), "utf8");
     expect(source).toContain("trpc.nova.advisorProviders.useQuery");
     expect(source).toContain("trpc.nova.createAdvisorDraft.useMutation");
-    expect(source).toContain("لا يملك المزود أدوات تنفيذ أو نشر");
-    expect(source).toContain("Perplexity API متوقف بقرار المالك");
-    expect(source).toContain("لا تُرسل كلمات مرور أو رموزًا أو مفاتيح");
+    expect(source).toContain("بدون أدوات تنفيذ أو نشر");
+    expect(source).toContain("لا ترسل أسرارًا");
     expect(source).toContain("provider.id === advisorProvider");
     expect(source).toContain("يجري تحميل حالة المزود");
+  });
+
+  it("يعتمد هوية DAWSHA ويعرض وصلات الذاكرة والمراجعة والجدولة مع حواجز حقوق المحتوى", async () => {
+    const source = await readFile(new URL("./NOVAConsole.tsx", import.meta.url), "utf8");
+    expect(source).toContain("DAWSHA // NOVA CORE");
+    expect(source).toContain("وصلات النواة");
+    expect(source).toContain("الحقوق ثم السلامة ثم المعاينة");
+    expect(source).toContain("تحديث لوحة NOVA كل 15 ثانية");
+    expect(source).toContain("trpc.daousha.dashboard.useQuery");
+    expect(source).toContain("تفويضات رسمية");
   });
 });
