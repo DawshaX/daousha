@@ -48,6 +48,21 @@ export const appRouter = router({
   }),
   nova: router({
     sessions: protectedProcedure.query(({ ctx }) => db.listAssistantSessions(ctx.user.id)),
+    memories: protectedProcedure.query(({ ctx }) => db.listAssistantMemories(ctx.user.id)),
+    addMemory: protectedProcedure
+      .input(z.object({ kind: z.enum(["preference", "project", "rule", "decision"]), title: z.string().trim().min(2).max(255), content: z.string().trim().min(2).max(8_000) }))
+      .mutation(({ ctx, input }) => db.createAssistantMemory({ ownerId: ctx.user.id, ...input })),
+    playbooks: protectedProcedure.query(async ({ ctx }) => {
+      const playbooks = await db.listContentPlaybooks(ctx.user.id);
+      return Promise.all(playbooks.map(async playbook => ({ ...playbook, steps: await db.listContentPlaybookSteps(playbook.id) })));
+    }),
+    createPlaybook: protectedProcedure
+      .input(z.object({ title: z.string().trim().min(3).max(255), description: z.string().trim().min(5).max(8_000), impact: z.enum(["read", "draft", "guarded", "high"]), steps: z.array(z.object({ title: z.string().trim().min(2).max(255), toolName: z.enum(["get_operational_overview", "create_project_draft", "propose_source", "register_asset_draft"]), inputTemplate: z.string().trim().max(4_000).optional() })).min(1).max(12) }))
+      .mutation(async ({ ctx, input }) => {
+        const playbook = await db.createContentPlaybook({ ownerId: ctx.user.id, ...input });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: `NOVA: إنشاء Playbook «${playbook.title}»`, details: `عدد الخطوات: ${input.steps.length} | الأثر: ${input.impact}`, actorType: "user" });
+        return playbook;
+      }),
     workspace: protectedProcedure
       .input(z.object({ sessionId: z.number().int().positive().optional() }).optional())
       .query(({ ctx, input }) => getNOVAWorkspace(ctx.user.id, input?.sessionId)),

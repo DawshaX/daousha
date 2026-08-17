@@ -5,17 +5,21 @@ import {
   assistantActionPlans,
   assistantActionSteps,
   assistantAuditEvents,
+  assistantMemories,
   assistantMessages,
   assistantSessions,
   channelConnections,
   connectionHealthMonitors,
   contentAssets,
+  contentPlaybookSteps,
+  contentPlaybooks,
   contentSources,
   developmentProposals,
   domainMonitors,
   InsertUser,
   notificationEvents,
   projectAssets,
+  playbookRuns,
   publishingPolicies,
   publishingRuns,
   publishingSchedules,
@@ -652,6 +656,13 @@ export async function listAssistantAuditEvents(ownerId: number, limit = 80) {
   if (!db) databaseUnavailable();
   return db!.select().from(assistantAuditEvents).where(eq(assistantAuditEvents.ownerId, ownerId)).orderBy(desc(assistantAuditEvents.createdAt)).limit(limit);
 }
+
+export async function listAssistantMemories(ownerId: number) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.select().from(assistantMemories).where(eq(assistantMemories.ownerId, ownerId)).orderBy(desc(assistantMemories.updatedAt)); }
+export async function createAssistantMemory(input: { ownerId: number; kind: "preference" | "project" | "rule" | "decision"; title: string; content: string }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(assistantMemories).values(input); const id = Number(result[0].insertId); return (await db!.select().from(assistantMemories).where(eq(assistantMemories.id, id)).limit(1))[0]; }
+export async function listContentPlaybooks(ownerId: number) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.select().from(contentPlaybooks).where(eq(contentPlaybooks.ownerId, ownerId)).orderBy(desc(contentPlaybooks.updatedAt)); }
+export async function listContentPlaybookSteps(playbookId: number) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.select().from(contentPlaybookSteps).where(eq(contentPlaybookSteps.playbookId, playbookId)).orderBy(contentPlaybookSteps.stepOrder); }
+export async function createContentPlaybook(input: { ownerId: number; title: string; description: string; impact: "read" | "draft" | "guarded" | "high"; steps: Array<{ title: string; toolName: string; inputTemplate?: string }> }) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.transaction(async tx => { const result = await tx.insert(contentPlaybooks).values({ ownerId: input.ownerId, title: input.title, description: input.description, impact: input.impact }); const id = Number(result[0].insertId); if (input.steps.length) await tx.insert(contentPlaybookSteps).values(input.steps.map((step, index) => ({ playbookId: id, stepOrder: index + 1, ...step }))); return (await tx.select().from(contentPlaybooks).where(eq(contentPlaybooks.id, id)).limit(1))[0]; }); }
+export async function createPlaybookRun(input: { ownerId: number; playbookId: number; sessionId?: number; status: "queued" | "running" | "completed" | "blocked" | "failed"; resultSummary?: string }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(playbookRuns).values({ ...input, completedAt: ["completed", "blocked", "failed"].includes(input.status) ? new Date() : null }); const id = Number(result[0].insertId); return (await db!.select().from(playbookRuns).where(eq(playbookRuns.id, id)).limit(1))[0]; }
 
 export async function getDashboardData(ownerId: number) {
   const db = await getDb();

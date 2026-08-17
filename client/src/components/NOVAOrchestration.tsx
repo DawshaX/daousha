@@ -1,0 +1,20 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { trpc } from "@/lib/trpc";
+import { BrainCircuit, ListChecks, Plus, ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+export default function NOVAOrchestration() {
+  const utils = trpc.useUtils();
+  const [memoryTitle, setMemoryTitle] = useState(""); const [memoryContent, setMemoryContent] = useState("");
+  const memories = trpc.nova.memories.useQuery(); const playbooks = trpc.nova.playbooks.useQuery();
+  const addMemory = trpc.nova.addMemory.useMutation({ onSuccess: () => { setMemoryTitle(""); setMemoryContent(""); utils.nova.memories.invalidate(); toast.success("حُفظت الذاكرة للمراجعة والاستخدام داخل NOVA."); }, onError: e => toast.error(e.message) });
+  const createPlaybook = trpc.nova.createPlaybook.useMutation({ onSuccess: () => { utils.nova.playbooks.invalidate(); toast.success("أُنشئ Playbook للمحتوى. لا ينفذ نشرًا بنفسه."); }, onError: e => toast.error(e.message) });
+  return <section className="grid gap-5 xl:grid-cols-2" dir="rtl">
+    <Card className="border-white/8 bg-zinc-950/65"><CardHeader><CardTitle className="flex items-center gap-2 text-white"><BrainCircuit className="h-5 w-5 text-red-400" /> ذاكرة NOVA</CardTitle><CardDescription className="text-zinc-500">تفضيلات وقرارات ظاهرة لك وقابلة للمراجعة؛ لا تحفظ كلمات مرور أو رموزًا.</CardDescription></CardHeader><CardContent className="space-y-3"><Input value={memoryTitle} onChange={e => setMemoryTitle(e.target.value)} placeholder="عنوان التفضيل أو القرار" className="border-white/10 bg-black/20 text-zinc-100" /><Textarea value={memoryContent} onChange={e => setMemoryContent(e.target.value)} placeholder="مثال: أفضل أن تكون افتتاحية Reels عربية مختصرة وهادئة." className="border-white/10 bg-black/20 text-zinc-100" /><Button className="bg-red-600 hover:bg-red-500" disabled={!memoryTitle.trim() || !memoryContent.trim() || addMemory.isPending} onClick={() => addMemory.mutate({ kind: "preference", title: memoryTitle, content: memoryContent })}><Plus className="ml-2 h-4 w-4" /> حفظ ذاكرة</Button><div className="space-y-2 pt-2">{(memories.data ?? []).slice(0, 4).map(memory => <div key={memory.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><p className="text-xs font-semibold text-zinc-200">{memory.title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{memory.content}</p></div>)}</div></CardContent></Card>
+    <Card className="border-white/8 bg-zinc-950/65"><CardHeader><CardTitle className="flex items-center gap-2 text-white"><ListChecks className="h-5 w-5 text-red-400" /> Playbooks المحتوى</CardTitle><CardDescription className="text-zinc-500">وصفات ثابتة تستدعي فقط أدوات XDAW المسموحة وتبقى محكومة بالسياسة.</CardDescription></CardHeader><CardContent className="space-y-3"><Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-red-500/10" disabled={createPlaybook.isPending} onClick={() => createPlaybook.mutate({ title: "تجهيز حزمة مراجعة", description: "مراجعة حالة المشروع والأصول قبل بوابة المراجعة.", impact: "draft", steps: [{ title: "عرض الحالة التشغيلية", toolName: "get_operational_overview" }, { title: "تسجيل مسودة مشروع عند الحاجة", toolName: "create_project_draft", inputTemplate: "تُستخدم فقط بعد طلب المالك." }] })}><Plus className="ml-2 h-4 w-4" /> إضافة وصفة مراجعة</Button><div className="space-y-2">{(playbooks.data ?? []).map(playbook => <div key={playbook.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-zinc-200">{playbook.title}</p><ShieldCheck className="h-4 w-4 text-red-300" /></div><p className="mt-1 text-xs text-zinc-500">{playbook.description}</p><p className="mt-2 text-[10px] text-zinc-600">{playbook.steps.length} خطوات · {playbook.impact}</p></div>)}</div></CardContent></Card>
+  </section>;
+}

@@ -326,5 +326,50 @@ export const assistantAuditEvents = mysqlTable("assistant_audit_events", {
   index("assistant_audit_events_session_created_idx").on(table.sessionId, table.createdAt),
 ]);
 
+/** Owner-reviewed long-term preferences and decisions used by NOVA Assistant. */
+export const assistantMemories = mysqlTable("assistant_memories", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  kind: mysqlEnum("kind", ["preference", "project", "rule", "decision"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  status: mysqlEnum("status", ["active", "archived"]).default("active").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("assistant_memories_owner_kind_updated_idx").on(table.ownerId, table.kind, table.updatedAt)]);
+
+/** Reusable owner-controlled content routines. Steps remain declarative until a governed runner is added. */
+export const contentPlaybooks = mysqlTable("content_playbooks", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  impact: mysqlEnum("impact", ["read", "draft", "guarded", "high"]).default("draft").notNull(),
+  status: mysqlEnum("status", ["active", "archived"]).default("active").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("content_playbooks_owner_updated_idx").on(table.ownerId, table.updatedAt)]);
+
+export const contentPlaybookSteps = mysqlTable("content_playbook_steps", {
+  id: int("id").autoincrement().primaryKey(),
+  playbookId: int("playbookId").notNull(),
+  stepOrder: int("stepOrder").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  toolName: varchar("toolName", { length: 120 }).notNull(),
+  inputTemplate: text("inputTemplate"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [index("content_playbook_steps_playbook_order_idx").on(table.playbookId, table.stepOrder)]);
+
+export const playbookRuns = mysqlTable("playbook_runs", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  playbookId: int("playbookId").notNull(),
+  sessionId: int("sessionId"),
+  status: mysqlEnum("status", ["queued", "running", "completed", "blocked", "failed"]).default("queued").notNull(),
+  resultSummary: text("resultSummary"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  completedAt: timestamp("completedAt"),
+}, table => [index("playbook_runs_owner_created_idx").on(table.ownerId, table.createdAt)]);
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
