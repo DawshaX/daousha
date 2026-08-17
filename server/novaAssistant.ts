@@ -38,6 +38,12 @@ type ToolExecution = {
   target?: string;
 };
 
+const PLAYBOOK_AUTO_EXECUTABLE_TOOLS = new Set<SafeToolName>([
+  "get_operational_overview",
+  "get_nova_resources",
+  "prepare_publish_plan",
+]);
+
 const assistantSchema = {
   type: "object",
   properties: {
@@ -291,6 +297,69 @@ export async function createNOVASession(ownerId: number, title?: string, origin:
   const session = await db.createAssistantSession({ ownerId, title: title?.trim().slice(0, 180) || "محادثة NOVA جديدة", origin });
   await db.createAssistantAuditEvent({ ownerId, sessionId: session.id, actor: "user", action: "assistant_session_created", target: `session:${session.id}`, decision: "allowed", detail: `مصدر الجلسة: ${origin}` });
   return session;
+}
+
+export async function runNOVAPlaybook(input: { ownerId: number; playbookId: number; sessionId?: number }) {
+  const playbook = (await db.listContentPlaybooks(input.ownerId)).find(item => item.id === input.playbookId && item.status === "active");
+  if (!playbook) throw new Error("Playbook غير موجود أو غير متاح لحسابك.");
+  const existingSession = input.sessionId ? await db.getOwnedAssistantSession(input.ownerId, input.sessionId) : undefined;
+  if (input.sessionId && !existingSession) throw new Error("جلسة NOVA غير موجودة أو لا تخص حسابك.");
+  const session = existingSession ?? await createNOVASession(input.ownerId, `تشغيل Playbook: ${playbook.title}`, "web");
+  if (session.status !== "active") throw new Error("هذه الجلسة مؤرشفة. افتح جلسة جديدة لتشغيل Playbook.");
+
+  const run = await db.createPlaybookRun({ ownerId: input.ownerId, playbookId: playbook.id, sessionId: session.id, status: "queued" });
+  const requiresApproval = playbook.impact === "guarded" || playbook.impact === "high";
+  const plan = await db.createAssistantActionPlan({ ownerId: input.ownerId, sessionId: session.id, summary: `تشغيل Playbook «${playbook.title}» ضمن أدوات NOVA المسموحة.`, impact: playbook.impact, requiresApproval });
+  await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: session.id, role: "assistant", content: planMessage(plan), displayKind: "plan" });
+
+  if (requiresApproval) {
+    await db.updatePlaybookRun(input.ownerId, run.id, { status: "blocked", resultSummary: "الوصفة تتطلب اعتمادًا أو حاوية تنفيذ مستقلة، ولم تبدأ." });
+    await db.updateAssistantActionPlan(input.ownerId, plan.id, { status: "blocked" });
+    await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: session.id, planId: plan.id, actor: "assistant", action: "playbook_run_blocked", target: `playbook:${playbook.id}`, decision: "blocked", detail: "أثر Playbook محكوم أو عالٍ؛ لا ينفذ تلقائيًا." });
+    return { session, planId: plan.id, runId: run.id, status: "blocked" as const, reply: "هذه الوصفة تتضمن أثرًا محكومًا أو عاليًا؛ لم يبدأ أي تنفيذ تلقائي." };
+  }
+
+  await db.updatePlaybookRun(input.ownerId, run.id, { status: "running" });
+  await db.updateAssistantActionPlan(input.ownerId, plan.id, { status: "executing" });
+  const playbookSteps = await db.listContentPlaybookSteps(playbook.id);
+  const summaries: string[] = [];
+
+  for (const playbookStep of playbookSteps) {
+    const toolName = playbookStep.toolName as SafeToolName;
+    const step = await db.createAssistantActionStep({ ownerId: input.ownerId, planId: plan.id, stepOrder: playbookStep.stepOrder, title: playbookStep.title, toolName: playbookStep.toolName, inputSummary: playbookStep.inputTemplate || "لا توجد مدخلات تنفيذية." });
+    if (!PLAYBOOK_AUTO_EXECUTABLE_TOOLS.has(toolName)) {
+      const detail = `الخطوة «${playbookStep.title}» تتطلب مدخلات أو تغيير بيانات، لذلك حُجبت من التشغيل التلقائي.`;
+      await db.updateAssistantActionStep(input.ownerId, step.id, { status: "blocked", resultSummary: detail });
+      await db.updateAssistantActionPlan(input.ownerId, plan.id, { status: "blocked" });
+      await db.updatePlaybookRun(input.ownerId, run.id, { status: "blocked", resultSummary: [...summaries, detail].join("\n") });
+      await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: session.id, planId: plan.id, stepId: step.id, actor: "assistant", action: "playbook_step_blocked", target: playbookStep.toolName, decision: "blocked", detail });
+      const reply = `${detail}\n\n> لم تُنفذ الخطوات اللاحقة ولم ينشأ نشر أو جدولة.`;
+      await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: session.id, role: "assistant", content: reply, displayKind: "notice" });
+      return { session, planId: plan.id, runId: run.id, status: "blocked" as const, reply };
+    }
+    await db.updateAssistantActionStep(input.ownerId, step.id, { status: "running" });
+    try {
+      const execution = await executeSafeTool(input.ownerId, { response: "", planSummary: playbookStep.title, toolName, impact: "read", requiresApproval: false, title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "" });
+      summaries.push(`${playbookStep.title}: ${execution.resultSummary}`);
+      await db.updateAssistantActionStep(input.ownerId, step.id, { status: "completed", resultSummary: execution.resultSummary });
+      await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: session.id, planId: plan.id, stepId: step.id, actor: "assistant", action: "playbook_step_completed", target: execution.target, decision: "completed", detail: execution.resultSummary });
+    } catch (error) {
+      const detail = error instanceof Error ? error.message.slice(0, 800) : "تعذر تنفيذ خطوة Playbook.";
+      await db.updateAssistantActionStep(input.ownerId, step.id, { status: "failed", resultSummary: detail });
+      await db.updateAssistantActionPlan(input.ownerId, plan.id, { status: "failed" });
+      await db.updatePlaybookRun(input.ownerId, run.id, { status: "failed", resultSummary: [...summaries, detail].join("\n") });
+      await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: session.id, planId: plan.id, stepId: step.id, actor: "assistant", action: "playbook_step_failed", target: playbookStep.toolName, decision: "failed", detail });
+      return { session, planId: plan.id, runId: run.id, status: "failed" as const, reply: "تعذر إكمال Playbook. توقفت الوصفة ولم تُنفذ الخطوات اللاحقة." };
+    }
+  }
+
+  const resultSummary = summaries.join("\n") || "لم تحتوِ الوصفة على خطوات قابلة للتشغيل.";
+  await db.updateAssistantActionPlan(input.ownerId, plan.id, { status: "completed" });
+  await db.updatePlaybookRun(input.ownerId, run.id, { status: "completed", resultSummary });
+  await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: session.id, planId: plan.id, actor: "assistant", action: "playbook_run_completed", target: `playbook:${playbook.id}`, decision: "completed", detail: resultSummary });
+  const reply = `اكتمل Playbook «${playbook.title}».\n\n**النتيجة:** ${resultSummary}\n\n> نُفذت خطوات القراءة المسموحة فقط؛ لم يُنشأ نشر أو جدولة أو تغيير سياسة.`;
+  await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: session.id, role: "assistant", content: reply, displayKind: "tool_result" });
+  return { session, planId: plan.id, runId: run.id, status: "completed" as const, reply };
 }
 
 export async function getNOVAWorkspace(ownerId: number, requestedSessionId?: number) {

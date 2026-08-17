@@ -3,20 +3,64 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { BrainCircuit, Copy, ListChecks, Plus, ShieldCheck } from "lucide-react";
+import { BrainCircuit, Copy, ListChecks, Play, Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function NOVAOrchestration() {
   const utils = trpc.useUtils();
-  const [memoryTitle, setMemoryTitle] = useState(""); const [memoryContent, setMemoryContent] = useState("");
-  const memories = trpc.nova.memories.useQuery(); const playbooks = trpc.nova.playbooks.useQuery();
-  const addMemory = trpc.nova.addMemory.useMutation({ onSuccess: () => { setMemoryTitle(""); setMemoryContent(""); utils.nova.memories.invalidate(); toast.success("حُفظت الذاكرة للمراجعة والاستخدام داخل NOVA."); }, onError: e => toast.error(e.message) });
-  const createPlaybook = trpc.nova.createPlaybook.useMutation({ onSuccess: () => { utils.nova.playbooks.invalidate(); toast.success("أُنشئ Playbook للمحتوى. لا ينفذ نشرًا بنفسه."); }, onError: e => toast.error(e.message) });
-  const configureTelegram = trpc.nova.configureTelegramWebhook.useMutation({ onSuccess: () => toast.success("تم ربط أوامر Telegram المحكومة بالنطاق المنشور."), onError: e => toast.error(e.message) });
-  const [pairCommand, setPairCommand] = useState(""); const pairing = trpc.nova.telegramPairingStatus.useQuery(); const createPairing = trpc.nova.createTelegramPairing.useMutation({ onSuccess: result => { setPairCommand(result.command); pairing.refetch(); toast.success("أُنشئ رمز ربط صالح لعشر دقائق."); }, onError: e => toast.error(e.message) });
+  const [memoryTitle, setMemoryTitle] = useState("");
+  const [memoryContent, setMemoryContent] = useState("");
+  const [pairCommand, setPairCommand] = useState("");
+  const memories = trpc.nova.memories.useQuery();
+  const playbooks = trpc.nova.playbooks.useQuery();
+  const pairing = trpc.nova.telegramPairingStatus.useQuery();
+  const addMemory = trpc.nova.addMemory.useMutation({
+    onSuccess: () => { setMemoryTitle(""); setMemoryContent(""); utils.nova.memories.invalidate(); toast.success("حُفظت الذاكرة للمراجعة والاستخدام داخل NOVA."); },
+    onError: error => toast.error(error.message),
+  });
+  const createPlaybook = trpc.nova.createPlaybook.useMutation({
+    onSuccess: () => { utils.nova.playbooks.invalidate(); toast.success("أُنشئ Playbook للمحتوى. لا ينفذ نشرًا بنفسه."); },
+    onError: error => toast.error(error.message),
+  });
+  const runPlaybook = trpc.nova.runPlaybook.useMutation({
+    onSuccess: result => {
+      utils.nova.playbookRuns.invalidate();
+      utils.nova.workspace.invalidate();
+      toast[result.status === "completed" ? "success" : "warning"](result.reply);
+    },
+    onError: error => toast.error(error.message),
+  });
+  const configureTelegram = trpc.nova.configureTelegramWebhook.useMutation({ onSuccess: () => toast.success("تم ربط أوامر Telegram المحكومة بالنطاق المنشور."), onError: error => toast.error(error.message) });
+  const createPairing = trpc.nova.createTelegramPairing.useMutation({
+    onSuccess: result => { setPairCommand(result.command); pairing.refetch(); toast.success("أُنشئ رمز ربط صالح لعشر دقائق."); },
+    onError: error => toast.error(error.message),
+  });
+
   return <section className="grid gap-5 xl:grid-cols-2" dir="rtl">
-    <Card className="border-white/8 bg-zinc-950/65"><CardHeader><CardTitle className="flex items-center gap-2 text-white"><BrainCircuit className="h-5 w-5 text-red-400" /> ذاكرة NOVA</CardTitle><CardDescription className="text-zinc-500">تفضيلات وقرارات ظاهرة لك وقابلة للمراجعة؛ لا تحفظ كلمات مرور أو رموزًا.</CardDescription></CardHeader><CardContent className="space-y-3"><Input value={memoryTitle} onChange={e => setMemoryTitle(e.target.value)} placeholder="عنوان التفضيل أو القرار" className="border-white/10 bg-black/20 text-zinc-100" /><Textarea value={memoryContent} onChange={e => setMemoryContent(e.target.value)} placeholder="مثال: أفضل أن تكون افتتاحية Reels عربية مختصرة وهادئة." className="border-white/10 bg-black/20 text-zinc-100" /><Button className="bg-red-600 hover:bg-red-500" disabled={!memoryTitle.trim() || !memoryContent.trim() || addMemory.isPending} onClick={() => addMemory.mutate({ kind: "preference", title: memoryTitle, content: memoryContent })}><Plus className="ml-2 h-4 w-4" /> حفظ ذاكرة</Button><div className="space-y-2 pt-2">{(memories.data ?? []).slice(0, 4).map(memory => <div key={memory.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><p className="text-xs font-semibold text-zinc-200">{memory.title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{memory.content}</p></div>)}</div></CardContent></Card>
-    <Card className="border-white/8 bg-zinc-950/65"><CardHeader><CardTitle className="flex items-center gap-2 text-white"><ListChecks className="h-5 w-5 text-red-400" /> Playbooks المحتوى</CardTitle><CardDescription className="text-zinc-500">وصفات ثابتة تستدعي فقط أدوات XDAW المسموحة وتبقى محكومة بالسياسة.</CardDescription></CardHeader><CardContent className="space-y-3"><Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-red-500/10" disabled={configureTelegram.isPending} onClick={() => configureTelegram.mutate({ publicBaseUrl: window.location.origin })}><ShieldCheck className="ml-2 h-4 w-4" /> تفعيل Webhook Telegram</Button><div className="rounded-xl border border-white/8 bg-black/20 p-3"><p className="text-xs font-semibold text-zinc-200">ربط محادثتك بـNOVA</p><p className="mt-1 text-[11px] leading-5 text-zinc-500">ينشئ رمزًا صالحًا لعشر دقائق. أرسله للبوت كما هو، ثم تصبح محادثتك هي الواجهة المعتمدة.</p><Button size="sm" className="mt-3 bg-red-600 hover:bg-red-500" disabled={createPairing.isPending} onClick={() => createPairing.mutate()}>{pairing.data?.status === "paired" ? "إعادة ربط Telegram" : "إنشاء رمز الربط"}</Button>{pairCommand ? <button onClick={() => { navigator.clipboard.writeText(pairCommand); toast.success("نُسخ الأمر."); }} className="mt-3 flex w-full items-center justify-between rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-2 font-mono text-xs text-red-100"><span>{pairCommand}</span><Copy className="h-3.5 w-3.5" /></button> : null}{pairing.data?.status === "paired" ? <p className="mt-2 text-xs text-emerald-300">محادثة Telegram موثقة ومربوطة.</p> : null}</div><Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-red-500/10" disabled={createPlaybook.isPending} onClick={() => createPlaybook.mutate({ title: "تجهيز حزمة مراجعة", description: "مراجعة حالة المشروع والأصول قبل بوابة المراجعة.", impact: "draft", steps: [{ title: "عرض الحالة التشغيلية", toolName: "get_operational_overview" }, { title: "تسجيل مسودة مشروع عند الحاجة", toolName: "create_project_draft", inputTemplate: "تُستخدم فقط بعد طلب المالك." }] })}><Plus className="ml-2 h-4 w-4" /> إضافة وصفة مراجعة</Button><div className="space-y-2">{(playbooks.data ?? []).map(playbook => <div key={playbook.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-zinc-200">{playbook.title}</p><ShieldCheck className="h-4 w-4 text-red-300" /></div><p className="mt-1 text-xs text-zinc-500">{playbook.description}</p><p className="mt-2 text-[10px] text-zinc-600">{playbook.steps.length} خطوات · {playbook.impact}</p></div>)}</div></CardContent></Card>
+    <Card className="border-white/8 bg-zinc-950/65">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-white"><BrainCircuit className="h-5 w-5 text-red-400" /> ذاكرة NOVA</CardTitle>
+        <CardDescription className="text-zinc-500">تفضيلات وقرارات ظاهرة لك وقابلة للمراجعة؛ لا تحفظ كلمات مرور أو رموزًا.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Input value={memoryTitle} onChange={event => setMemoryTitle(event.target.value)} placeholder="عنوان التفضيل أو القرار" className="border-white/10 bg-black/20 text-zinc-100" />
+        <Textarea value={memoryContent} onChange={event => setMemoryContent(event.target.value)} placeholder="مثال: أفضل أن تكون افتتاحية Reels عربية مختصرة وهادئة." className="border-white/10 bg-black/20 text-zinc-100" />
+        <Button className="bg-red-600 hover:bg-red-500" disabled={!memoryTitle.trim() || !memoryContent.trim() || addMemory.isPending} onClick={() => addMemory.mutate({ kind: "preference", title: memoryTitle, content: memoryContent })}><Plus className="ml-2 h-4 w-4" /> حفظ ذاكرة</Button>
+        <div className="space-y-2 pt-2">{(memories.data ?? []).slice(0, 4).map(memory => <div key={memory.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><p className="text-xs font-semibold text-zinc-200">{memory.title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{memory.content}</p></div>)}</div>
+      </CardContent>
+    </Card>
+    <Card className="border-white/8 bg-zinc-950/65">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-white"><ListChecks className="h-5 w-5 text-red-400" /> Playbooks المحتوى</CardTitle>
+        <CardDescription className="text-zinc-500">تنفّذ الوصفة خطوات القراءة المسموحة فقط، وتسجل أي حظر أو فشل في نفس سجل NOVA.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-red-500/10" disabled={configureTelegram.isPending} onClick={() => configureTelegram.mutate({ publicBaseUrl: window.location.origin })}><ShieldCheck className="ml-2 h-4 w-4" /> تفعيل Webhook Telegram</Button>
+        <div className="rounded-xl border border-white/8 bg-black/20 p-3"><p className="text-xs font-semibold text-zinc-200">ربط محادثتك بـNOVA</p><p className="mt-1 text-[11px] leading-5 text-zinc-500">ينشئ رمزًا صالحًا لعشر دقائق. أرسله للبوت كما هو، ثم تصبح محادثتك هي الواجهة المعتمدة.</p><Button size="sm" className="mt-3 bg-red-600 hover:bg-red-500" disabled={createPairing.isPending} onClick={() => createPairing.mutate()}>{pairing.data?.status === "paired" ? "إعادة ربط Telegram" : "إنشاء رمز الربط"}</Button>{pairCommand ? <button onClick={() => { navigator.clipboard.writeText(pairCommand); toast.success("نُسخ الأمر."); }} className="mt-3 flex w-full items-center justify-between rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-2 font-mono text-xs text-red-100"><span>{pairCommand}</span><Copy className="h-3.5 w-3.5" /></button> : null}{pairing.data?.status === "paired" ? <p className="mt-2 text-xs text-emerald-300">محادثة Telegram موثقة ومربوطة.</p> : null}</div>
+        <Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-red-500/10" disabled={createPlaybook.isPending} onClick={() => createPlaybook.mutate({ title: "تجهيز حزمة مراجعة", description: "مراجعة حالة المشروع والأصول قبل بوابة المراجعة.", impact: "draft", steps: [{ title: "عرض الحالة التشغيلية", toolName: "get_operational_overview" }, { title: "تسجيل مسودة مشروع عند الحاجة", toolName: "create_project_draft", inputTemplate: "تُستخدم فقط بعد طلب المالك." }] })}><Plus className="ml-2 h-4 w-4" /> إضافة وصفة مراجعة</Button>
+        <div className="space-y-2">{(playbooks.data ?? []).map(playbook => <div key={playbook.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-zinc-200">{playbook.title}</p><ShieldCheck className="h-4 w-4 text-red-300" /></div><p className="mt-1 text-xs text-zinc-500">{playbook.description}</p><div className="mt-2 flex items-center justify-between gap-2"><p className="text-[10px] text-zinc-600">{playbook.steps.length} خطوات · {playbook.impact}</p><Button size="sm" variant="outline" className="h-7 border-red-500/30 bg-red-500/5 px-2 text-xs text-red-100 hover:bg-red-500/15" disabled={runPlaybook.isPending} onClick={() => runPlaybook.mutate({ playbookId: playbook.id })}><Play className="ml-1 h-3.5 w-3.5" /> تشغيل محكوم</Button></div></div>)}</div>
+      </CardContent>
+    </Card>
   </section>;
 }

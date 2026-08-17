@@ -28,7 +28,7 @@ import { executeInstagramHealthMonitor } from "./instagramHealthMonitoring";
 import { derivePerformanceImprovementSuggestion } from "../shared/performanceImprovement";
 import { performanceExperimentAdvice, summarizePerformance } from "../shared/performanceSummary";
 import { describeUploadFailure } from "./uploadFailureDetail";
-import { createNOVASession, getNOVAWorkspace, runNOVATurn } from "./novaAssistant";
+import { createNOVASession, getNOVAWorkspace, runNOVAPlaybook, runNOVATurn } from "./novaAssistant";
 import { safeNOVAAttachmentFilename, validateNOVAAttachment } from "./assistantAttachmentGuards";
 import { createHash, randomBytes } from "node:crypto";
 
@@ -88,6 +88,10 @@ export const appRouter = router({
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: `NOVA: إنشاء Playbook «${playbook.title}»`, details: `عدد الخطوات: ${input.steps.length} | الأثر: ${input.impact}`, actorType: "user" });
         return playbook;
       }),
+    runPlaybook: protectedProcedure
+      .input(z.object({ playbookId: z.number().int().positive(), sessionId: z.number().int().positive().optional() }))
+      .mutation(({ ctx, input }) => runNOVAPlaybook({ ownerId: ctx.user.id, ...input })),
+    playbookRuns: protectedProcedure.query(({ ctx }) => db.listPlaybookRuns(ctx.user.id)),
     workspace: protectedProcedure
       .input(z.object({ sessionId: z.number().int().positive().optional() }).optional())
       .query(({ ctx, input }) => getNOVAWorkspace(ctx.user.id, input?.sessionId)),

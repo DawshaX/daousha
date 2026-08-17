@@ -28,13 +28,16 @@ const dbMock = {
   listAssistantMemories: vi.fn(),
   listContentPlaybooks: vi.fn(),
   searchAssistantKnowledge: vi.fn(),
+  createPlaybookRun: vi.fn(),
+  updatePlaybookRun: vi.fn(),
+  listContentPlaybookSteps: vi.fn(),
 };
 const llmMock = { invokeLLM: vi.fn() };
 
 vi.mock("./db", () => dbMock);
 vi.mock("./_core/llm", () => llmMock);
 
-const { getNOVAWorkspace, runNOVATurn } = await import("./novaAssistant");
+const { getNOVAWorkspace, runNOVAPlaybook, runNOVATurn } = await import("./novaAssistant");
 
 function modelPlan(overrides: Record<string, unknown> = {}) {
   return {
@@ -78,6 +81,9 @@ describe("NOVA Assistant", () => {
     dbMock.listAssistantMemories.mockResolvedValue([{ id: 1, title: "لغة المحتوى" }]);
     dbMock.listContentPlaybooks.mockResolvedValue([{ id: 2, title: "حلقة معرفية قصيرة" }]);
     dbMock.searchAssistantKnowledge.mockResolvedValue([{ id: 3, title: "دليل الحقوق" }]);
+    dbMock.createPlaybookRun.mockResolvedValue({ id: 51 });
+    dbMock.updatePlaybookRun.mockResolvedValue({ id: 51, status: "completed" });
+    dbMock.listContentPlaybookSteps.mockResolvedValue([]);
     llmMock.invokeLLM.mockResolvedValue(modelPlan());
   });
 
@@ -174,6 +180,29 @@ describe("NOVA Assistant", () => {
     expect(dbMock.createProject).not.toHaveBeenCalled();
     expect(dbMock.updateAssistantActionStep).toHaveBeenLastCalledWith(7, 42, expect.objectContaining({ status: "blocked" }));
     expect(dbMock.updateAssistantActionPlan).toHaveBeenLastCalledWith(7, 41, expect.objectContaining({ status: "blocked" }));
+  });
+
+  it("يشغّل Playbook قراءة فقط ويسجل خطواته ونتيجته في خطة NOVA", async () => {
+    dbMock.listContentPlaybooks.mockResolvedValue([{ id: 51, title: "فحص تشغيل", status: "active", impact: "read" }]);
+    dbMock.listContentPlaybookSteps.mockResolvedValue([{ stepOrder: 1, title: "عرض الحالة", toolName: "get_operational_overview" }]);
+
+    const result = await runNOVAPlaybook({ ownerId: 7, playbookId: 51 });
+
+    expect(result.status).toBe("completed");
+    expect(dbMock.createPlaybookRun).toHaveBeenCalledWith(expect.objectContaining({ playbookId: 51, status: "queued" }));
+    expect(dbMock.updatePlaybookRun).toHaveBeenLastCalledWith(7, 51, expect.objectContaining({ status: "completed" }));
+    expect(dbMock.getDashboardData).toHaveBeenCalledWith(7);
+  });
+
+  it("يحجب Playbook الذي يطلب تغيير بيانات قبل إنشاء مسودة أو نشر", async () => {
+    dbMock.listContentPlaybooks.mockResolvedValue([{ id: 52, title: "مسودة تحتاج إدخال", status: "active", impact: "draft" }]);
+    dbMock.listContentPlaybookSteps.mockResolvedValue([{ stepOrder: 1, title: "إنشاء مشروع", toolName: "create_project_draft", inputTemplate: "عنوان مطلوب" }]);
+
+    const result = await runNOVAPlaybook({ ownerId: 7, playbookId: 52 });
+
+    expect(result.status).toBe("blocked");
+    expect(dbMock.createProject).not.toHaveBeenCalled();
+    expect(dbMock.updatePlaybookRun).toHaveBeenLastCalledWith(7, 51, expect.objectContaining({ status: "blocked" }));
   });
 
   it("يعرض مساحة الجلسة من بيانات المالك وخططها وخطواتها من دون أي محتوى داخلي إضافي", async () => {
