@@ -143,6 +143,34 @@ function deterministicPublishPlan(content: string): PlannedAssistantAction | und
   };
 }
 
+function deterministicDraftProject(content: string): PlannedAssistantAction | undefined {
+  const match = content.match(/(?:أنشئ|اعمل|جهّز|جهز)\s+(?:لي\s+)?(?:مسودة\s+)?(?:reel|ريل|فيديو|مشروع)\s+(?:عن\s+)?(.{3,180})/i);
+  if (!match) return undefined;
+  const title = match[1].replace(/[.؟!]+$/, "").trim();
+  return {
+    response: "سأنشئ مسودة مشروع فقط لتظهر في البرنامج الأساسي وتنتظر الإنتاج والمراجعة.",
+    planSummary: `إنشاء مسودة مشروع «${title}» ضمن دورة XDAW NOVA.`,
+    toolName: "create_project_draft",
+    impact: "draft",
+    requiresApproval: false,
+    title, brief: "مسودة منشأة من أمر NOVA الموحد وتحتاج خطوات المحتوى والمراجعة قبل أي نشر.", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+  };
+}
+
+function deterministicSourceProposal(content: string): PlannedAssistantAction | undefined {
+  const url = content.match(/https?:\/\/[^\s]+/i)?.[0];
+  if (!url || !/(مصدر|source|أضف)/i.test(content)) return undefined;
+  const name = content.replace(url, "").replace(/(?:أضف|مصدرًا?|source|مقترحًا?|:)/gi, " ").replace(/\s+/g, " ").trim().slice(0, 180);
+  return {
+    response: "سأسجل المصدر كمقترح فقط ليظهر في البرنامج الأساسي بانتظار الاعتماد.",
+    planSummary: `إضافة المصدر «${name || "مصدر جديد"}» للمراجعة قبل التفعيل.`,
+    toolName: "propose_source",
+    impact: "draft",
+    requiresApproval: false,
+    title: "", brief: "", sourceName: name || "مصدر جديد", sourceUrl: url, licenseType: "", assetTitle: "",
+  };
+}
+
 async function executeSafeTool(ownerId: number, action: PlannedAssistantAction): Promise<ToolExecution> {
   if (action.toolName === "get_operational_overview") {
     const [dashboard, monitors, notifications] = await Promise.all([
@@ -227,7 +255,10 @@ export async function runNOVATurn(input: { ownerId: number; content: string; ses
 
   const history = await db.listAssistantMessages(input.ownerId, resolvedSession.id);
   let planned: PlannedAssistantAction;
-  const deterministic = deterministicOperationalStatus(content) ?? deterministicPublishPlan(content);
+  const deterministic = deterministicOperationalStatus(content)
+    ?? deterministicPublishPlan(content)
+    ?? deterministicDraftProject(content)
+    ?? deterministicSourceProposal(content);
   if (deterministic) {
     planned = deterministic;
   } else try {

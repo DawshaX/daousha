@@ -79,7 +79,7 @@ describe("NOVA Assistant", () => {
     const result = await runNOVATurn({ ownerId: 7, content: "أنشئ Reel عن التحقق من المعلومات" });
 
     expect(result.status).toBe("completed");
-    expect(dbMock.createProject).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, title: "فكرة تحقق أصلية", targetLanguage: "both", contentFormat: "short" }));
+    expect(dbMock.createProject).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, title: "التحقق من المعلومات", targetLanguage: "both", contentFormat: "short" }));
     expect(dbMock.createAssistantActionPlan).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, sessionId: 21, impact: "draft", requiresApproval: false }));
     expect(dbMock.updateAssistantActionStep).toHaveBeenLastCalledWith(7, 42, expect.objectContaining({ status: "completed" }));
     expect(dbMock.createAssistantMessage).toHaveBeenCalledWith(expect.objectContaining({ displayKind: "plan", content: expect.stringContaining("### خطة NOVA") }));
@@ -105,6 +105,23 @@ describe("NOVA Assistant", () => {
     expect(llmMock.invokeLLM).not.toHaveBeenCalled();
     expect(result.reply).toContain("حزمة عربية");
     expect(result.reply).toContain("هذا فحص فقط");
+  });
+
+  it("ينشئ مسودة من أمر مباشر من دون استدعاء نموذج اللغة", async () => {
+    const result = await runNOVATurn({ ownerId: 7, content: "أنشئ Reel عن حماية الحسابات", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.createProject).toHaveBeenCalledWith(expect.objectContaining({ title: "حماية الحسابات", ownerId: 7 }));
+  });
+
+  it("يسجل المصدر كمقترح من أمر مباشر من دون استدعاء نموذج اللغة", async () => {
+    dbMock.createSource.mockResolvedValue({ id: 92, name: "UNESCO" });
+    const result = await runNOVATurn({ ownerId: 7, content: "أضف مصدر UNESCO https://www.unesco.org", origin: "web" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.createSource).toHaveBeenCalledWith(expect.objectContaining({ name: "مصدر UNESCO", url: "https://www.unesco.org", trustStatus: "proposed" }));
   });
 
   it("يحجب أي طلب عالي الأثر حتى لو طلب نموذج اللغة أداة تنفيذية", async () => {
