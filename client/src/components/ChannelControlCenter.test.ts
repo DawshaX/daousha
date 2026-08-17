@@ -54,4 +54,12 @@ describe("ChannelControlCenter distribution panel", () => {
     expect(source).toContain("تجديد التفويضات وحدود الاستمرارية");
     expect(source).toContain("integrations?.renewalGuidance");
   });
+
+  it("offers a standing DAWSHA approval switch without removing the canary or kill switch", async () => {
+    const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain("موافقة DAWSHA الدائمة");
+    expect(source).toContain("ownerAutoApprovalEnabled");
+    expect(source).toContain("نسخة اختبار خاصة");
+    expect(source).toContain("مفتاح الإيقاف الفوري");
+  });
 });

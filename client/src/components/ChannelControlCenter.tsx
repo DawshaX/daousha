@@ -108,11 +108,12 @@ export default function ChannelControlCenter() {
     onError: error => toast.error(error.message),
   });
 
-  const patchPolicy = (patch: Partial<{ mode: "human_review" | "guarded_auto"; publicPublishingEnabled: boolean; killSwitchEnabled: boolean; requirePrivateCanary: boolean; minIntervalMinutes: number; maxPublicationsPerDay: number; dailyShortTarget: number; dailyLongTarget: number }>) => {
+  const patchPolicy = (patch: Partial<{ mode: "human_review" | "guarded_auto"; publicPublishingEnabled: boolean; ownerAutoApprovalEnabled: boolean; killSwitchEnabled: boolean; requirePrivateCanary: boolean; minIntervalMinutes: number; maxPublicationsPerDay: number; dailyShortTarget: number; dailyLongTarget: number }>) => {
     if (!policy) return;
     updatePolicy.mutate({
       mode: patch.mode ?? policy.mode,
       publicPublishingEnabled: patch.publicPublishingEnabled ?? policy.publicPublishingEnabled,
+      ownerAutoApprovalEnabled: patch.ownerAutoApprovalEnabled ?? policy.ownerAutoApprovalEnabled,
       killSwitchEnabled: patch.killSwitchEnabled ?? policy.killSwitchEnabled,
       requirePrivateCanary: patch.requirePrivateCanary ?? policy.requirePrivateCanary,
       minIntervalMinutes: patch.minIntervalMinutes ?? policy.minIntervalMinutes,
@@ -259,6 +260,7 @@ export default function ChannelControlCenter() {
           <div className="space-y-3 rounded-xl border border-white/8 bg-black/20 p-4">
             <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium text-zinc-100">وضع التشغيل</p><p className="mt-1 text-xs text-zinc-500">النشر العام لا يعمل إلا في وضع الحراسة.</p></div><Switch checked={policy?.mode === "guarded_auto"} disabled={policyBusy} onCheckedChange={checked => patchPolicy({ mode: checked ? "guarded_auto" : "human_review" })} /></div>
             <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium text-zinc-100">النشر العام</p><p className="mt-1 text-xs text-zinc-500">يبقى غير فعّال حتى ينجح تفويض YouTube واختبار الرفع الخاص.</p></div><Switch checked={policy?.publicPublishingEnabled ?? false} disabled={policyBusy} onCheckedChange={checked => patchPolicy({ publicPublishingEnabled: checked })} /></div>
+            <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium text-zinc-100">موافقة DAWSHA الدائمة</p><p className="mt-1 text-xs text-zinc-500">للمحتوى الأصلي الذي اجتاز الحقوق والسلامة فقط؛ لا ينتظر إقرار معاينة جديدًا لكل فيديو.</p></div><Switch checked={policy?.ownerAutoApprovalEnabled ?? false} disabled={policyBusy} onCheckedChange={checked => patchPolicy({ ownerAutoApprovalEnabled: checked })} /></div>
             <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium text-zinc-100">نسخة اختبار خاصة</p><p className="mt-1 text-xs text-zinc-500">تجربة رفع محفوظة قبل السماح بالنسخة العامة.</p></div><Switch checked={policy?.requirePrivateCanary ?? true} disabled={policyBusy} onCheckedChange={checked => patchPolicy({ requirePrivateCanary: checked })} /></div>
           </div>
           <div className="space-y-3 rounded-xl border border-white/8 bg-black/20 p-4">

@@ -459,10 +459,10 @@ export const appRouter = router({
     publishingPolicy: protectedProcedure.query(({ ctx }) => db.getPublishingPolicy(ctx.user.id)),
     contentMixStatus: protectedProcedure.query(({ ctx }) => db.getContentMixStatus(ctx.user.id)),
     updatePublishingPolicy: protectedProcedure
-      .input(z.object({ mode: z.enum(["human_review", "guarded_auto"]), publicPublishingEnabled: z.boolean(), killSwitchEnabled: z.boolean(), requirePrivateCanary: z.boolean(), minIntervalMinutes: z.number().int().min(10).max(1440), maxPublicationsPerDay: z.number().int().min(1).max(144), dailyShortTarget: z.number().int().min(0).max(100), dailyLongTarget: z.number().int().min(0).max(20) }))
+      .input(z.object({ mode: z.enum(["human_review", "guarded_auto"]), publicPublishingEnabled: z.boolean(), ownerAutoApprovalEnabled: z.boolean().optional(), killSwitchEnabled: z.boolean(), requirePrivateCanary: z.boolean(), minIntervalMinutes: z.number().int().min(10).max(1440), maxPublicationsPerDay: z.number().int().min(1).max(144), dailyShortTarget: z.number().int().min(0).max(100), dailyLongTarget: z.number().int().min(0).max(20) }))
       .mutation(async ({ ctx, input }) => {
         const policy = await db.updatePublishingPolicy(ctx.user.id, input);
-        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "safety_rule", summary: "تحديث سياسة النشر", details: `الوضع: ${input.mode} | علني: ${input.publicPublishingEnabled ? "نعم" : "لا"} | الإيقاف: ${input.killSwitchEnabled ? "مفعّل" : "غير مفعّل"} | القصير: ${input.dailyShortTarget} | الطويل: ${input.dailyLongTarget}`, actorType: "user" });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "safety_rule", summary: "تحديث سياسة النشر", details: `الوضع: ${input.mode} | علني: ${input.publicPublishingEnabled ? "نعم" : "لا"} | اعتماد المالك الدائم: ${(input.ownerAutoApprovalEnabled ?? policy.ownerAutoApprovalEnabled) ? "نعم" : "لا"} | الإيقاف: ${input.killSwitchEnabled ? "مفعّل" : "غير مفعّل"} | القصير: ${input.dailyShortTarget} | الطويل: ${input.dailyLongTarget}`, actorType: "user" });
         return policy;
       }),
     publishingRuns: protectedProcedure.query(({ ctx }) => db.listPublishingRuns(ctx.user.id)),

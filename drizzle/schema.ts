@@ -190,6 +190,7 @@ export const publishingPolicies = mysqlTable("publishing_policies", {
   ownerId: int("ownerId").notNull().unique(),
   mode: mysqlEnum("mode", ["human_review", "guarded_auto"]).default("human_review").notNull(),
   publicPublishingEnabled: boolean("publicPublishingEnabled").default(false).notNull(),
+  ownerAutoApprovalEnabled: boolean("ownerAutoApprovalEnabled").default(false).notNull(),
   killSwitchEnabled: boolean("killSwitchEnabled").default(true).notNull(),
   requirePrivateCanary: boolean("requirePrivateCanary").default(true).notNull(),
   minIntervalMinutes: int("minIntervalMinutes").default(10).notNull(),

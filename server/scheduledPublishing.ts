@@ -28,6 +28,15 @@ export async function executeScheduledPublish(taskUid: string) {
     return { ok: true, skipped: "platform_not_connected" as const, scheduleId: schedule.id };
   }
 
+  const channelHealth = await db.getConnectionHealthMonitor(schedule.ownerId, platform);
+  if (!channelHealth?.lastCheckedAt || channelHealth.status !== "healthy") {
+    const detail = !channelHealth?.lastCheckedAt
+      ? `قناة ${platform} تنتظر فحص الصحة المجدول الأول.`
+      : `قناة ${platform} ليست سليمة للنشر الذاتي حاليًا (${channelHealth.status}).`;
+    await db.createPublishingRun({ ownerId: schedule.ownerId, projectId: schedule.projectId, platform, status: "skipped", visibility: "private", decisionReason: detail, initiatedBy: "scheduled_job" });
+    return { ok: true, skipped: "channel_not_healthy" as const, scheduleId: schedule.id, reason: detail };
+  }
+
   const [policy, runs, connections, assets] = await Promise.all([
     db.getPublishingPolicy(schedule.ownerId),
     db.listPublishingRuns(schedule.ownerId),

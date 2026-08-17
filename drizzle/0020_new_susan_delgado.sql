@@ -1,0 +1,1 @@
+ALTER TABLE `publishing_policies` ADD `ownerAutoApprovalEnabled` boolean DEFAULT false NOT NULL;
