@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { BrainCircuit, Copy, ListChecks, Play, Plus, ShieldCheck } from "lucide-react";
+import { BrainCircuit, Copy, Globe2, ListChecks, Play, Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ export default function NOVAOrchestration() {
   const playbooks = trpc.nova.playbooks.useQuery();
   const pairing = trpc.nova.telegramPairingStatus.useQuery();
   const sourceHealth = trpc.daousha.sourceHealthMonitor.useQuery();
+  const sources = trpc.daousha.sources.useQuery();
   const addMemory = trpc.nova.addMemory.useMutation({
     onSuccess: () => { setMemoryTitle(""); setMemoryContent(""); utils.nova.memories.invalidate(); toast.success("حُفظت الذاكرة للمراجعة والاستخدام داخل NOVA."); },
     onError: error => toast.error(error.message),
@@ -53,6 +54,21 @@ export default function NOVAOrchestration() {
         <Textarea value={memoryContent} onChange={event => setMemoryContent(event.target.value)} placeholder="مثال: أفضل أن تكون افتتاحية Reels عربية مختصرة وهادئة." className="border-white/10 bg-black/20 text-zinc-100" />
         <Button className="bg-red-600 hover:bg-red-500" disabled={!memoryTitle.trim() || !memoryContent.trim() || addMemory.isPending} onClick={() => addMemory.mutate({ kind: "preference", title: memoryTitle, content: memoryContent })}><Plus className="ml-2 h-4 w-4" /> حفظ ذاكرة</Button>
         <div className="space-y-2 pt-2">{(memories.data ?? []).slice(0, 4).map(memory => <div key={memory.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><p className="text-xs font-semibold text-zinc-200">{memory.title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{memory.content}</p></div>)}</div>
+      </CardContent>
+    </Card>
+    <Card className="border-white/8 bg-zinc-950/65">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-white"><Globe2 className="h-5 w-5 text-red-400" /> مصادر اللقطات والبحث</CardTitle>
+        <CardDescription className="text-zinc-500">مصادر للمراجعة فقط. لا يجلب NOVA موادًا تلقائيًا، ولا يحذف علامة مائية، ولا يحوّل ترخيص المصدر إلى ملكية خاصة.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {(sources.data ?? []).filter(source => source.sourceKind === "asset" || source.sourceKind === "audio").slice(0, 5).map(source => (
+          <div key={source.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">
+            <div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-zinc-200">{source.name}</p><span className={source.trustStatus === "approved" ? "text-[10px] text-emerald-300" : "text-[10px] text-amber-300"}>{source.trustStatus === "approved" ? "معتمد" : "بانتظار المراجعة"}</span></div>
+            <p className="mt-1 text-[11px] leading-5 text-zinc-500">{source.notes || "تحقق من ترخيص كل لقطة، الأشخاص، الشعارات، ونسبة الاستخدام قبل التسجيل."}</p>
+          </div>
+        ))}
+        {!sources.isLoading && !(sources.data ?? []).some(source => source.sourceKind === "asset" || source.sourceKind === "audio") ? <p className="rounded-lg border border-dashed border-white/10 p-3 text-xs text-zinc-500">لا توجد مصادر لقطات مسجلة بعد.</p> : null}
       </CardContent>
     </Card>
     <Card className="border-white/8 bg-zinc-950/65">

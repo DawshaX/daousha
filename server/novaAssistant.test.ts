@@ -21,6 +21,7 @@ const dbMock = {
   listChannelConnections: vi.fn(),
   listPublishingRuns: vi.fn(),
   getPublishingPolicy: vi.fn(),
+  listSources: vi.fn(),
   listOwnedProjectVideoAssets: vi.fn(),
   listAssistantSessions: vi.fn(),
   listAssistantActionPlans: vi.fn(),
@@ -80,6 +81,7 @@ describe("NOVA Assistant", () => {
     dbMock.listChannelConnections.mockResolvedValue([{ platform: "youtube", status: "authorized" }]);
     dbMock.listPublishingRuns.mockResolvedValue([]);
     dbMock.getPublishingPolicy.mockResolvedValue({ mode: "guarded_auto", publicPublishingEnabled: true, killSwitchEnabled: false, requirePrivateCanary: true, minIntervalMinutes: 10, maxPublicationsPerDay: 6, lastPublishedAt: null });
+    dbMock.listSources.mockResolvedValue([{ id: 4, name: "Pexels — ترخيص اللقطات", trustStatus: "proposed" }]);
     dbMock.listOwnedProjectVideoAssets.mockResolvedValue([]);
     dbMock.listAssistantMemories.mockResolvedValue([{ id: 1, title: "لغة المحتوى" }]);
     dbMock.listContentPlaybooks.mockResolvedValue([{ id: 2, title: "حلقة معرفية قصيرة" }]);
@@ -127,6 +129,18 @@ describe("NOVA Assistant", () => {
     expect(result.reply).toContain("تجديد YouTube الخادمي");
     expect(result.reply).toContain("TikTok خارج التشغيل الإنتاجي");
     expect(result.reply).not.toContain("credentialCiphertext");
+  });
+
+  it("يعرض دليل بدء حتميًا من Telegram من دون استدعاء نموذج اللغة أو تنفيذ أي إجراء", async () => {
+    llmMock.invokeLLM.mockRejectedValue(new Error("service unavailable"));
+
+    const result = await runNOVATurn({ ownerId: 7, content: "/start", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(result.reply).toContain("أهلًا بك في XDAW NOVA");
+    expect(result.reply).toContain("ما حالة القنوات؟");
+    expect(dbMock.createProject).not.toHaveBeenCalled();
   });
 
   it("يعرض آخر التنبيهات من Telegram من دون استدعاء النموذج أو إرسال رسالة جديدة", async () => {
@@ -207,6 +221,16 @@ describe("NOVA Assistant", () => {
     expect(dbMock.listContentPlaybooks).toHaveBeenCalledWith(7);
     expect(result.reply).toContain("لغة المحتوى");
     expect(result.reply).toContain("حلقة معرفية قصيرة");
+  });
+
+  it("يعرض مصادر اللقطات المرخصة من Telegram من دون تنزيل أو اعتماد أو استدعاء نموذج اللغة", async () => {
+    const result = await runNOVATurn({ ownerId: 7, content: "اعرض مصادر اللقطات المرخصة", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.listSources).toHaveBeenCalledWith(7);
+    expect(result.reply).toContain("Pexels — ترخيص اللقطات");
+    expect(result.reply).toContain("لم يبدأ تنزيل");
   });
 
   it("يبحث في قاعدة المعرفة من أمر موحد من دون استدعاء نموذج اللغة", async () => {
