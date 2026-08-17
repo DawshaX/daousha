@@ -63,6 +63,7 @@ export default function NOVAOrchestration() {
     : referenceProvider === "pixabay"
       ? `https://pixabay.com/videos/search/${encodeURIComponent(referenceQuery.trim())}/`
       : `https://mixkit.co/free-stock-video/search/${encodeURIComponent(referenceQuery.trim())}/`;
+  const visualReferences = (sources.data ?? []).filter(source => source.sourceKind === "reference").slice(0, 4);
 
   return <section className="grid gap-5 xl:grid-cols-2" dir="rtl">
     <Card className="border-white/8 bg-zinc-950/65">
@@ -93,6 +94,7 @@ export default function NOVAOrchestration() {
           <p className="mt-1 text-[11px] leading-5 text-zinc-500">سجّل Pin أو Idea كمصدر إلهام موثق فقط. لا يحمّل NOVA الوسائط ولا يقصها أو يعيد توزيعها.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1.3fr_auto]"><Input value={pinterestReferenceTitle} onChange={event => setPinterestReferenceTitle(event.target.value)} placeholder="اسم الفكرة أو التركيب" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Input value={pinterestReferenceUrl} onChange={event => setPinterestReferenceUrl(event.target.value)} dir="ltr" placeholder="https://www.pinterest.com/pin/..." className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Button size="sm" variant="outline" className="h-8 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={!pinterestUrlIsValid || pinterestReferenceTitle.trim().length < 2 || addPinterestReference.isPending} onClick={() => addPinterestReference.mutate({ name: `Pinterest — ${pinterestReferenceTitle.trim()}`, url: pinterestReferenceUrl.trim(), sourceKind: "reference", language: "both", notes: "مرجع إلهام بصري فقط. لا يمنح ترخيصًا لتنزيل Pin أو استخدامه أو إعادة توزيعه؛ يجب إنتاج مشهد أصلي أو تسجيل مادة مرخصة منفصلة." })}>{addPinterestReference.isPending ? "جارٍ التسجيل…" : "تسجيل مرجع"}</Button></div>
         </div>
+        {visualReferences.length ? <div className="rounded-lg border border-fuchsia-500/15 bg-fuchsia-500/[0.025] p-3"><p className="text-xs font-semibold text-fuchsia-100">مراجع بصرية مسجلة</p><p className="mt-1 text-[11px] leading-5 text-zinc-500">تُعرض كرابط وفكرة فقط. لا تتحول هذه المراجع إلى مواد إنتاج أو تصريح تنزيل أو نشر.</p><div className="mt-2 space-y-2">{visualReferences.map(source => <div key={source.id} className="flex items-center justify-between gap-3 rounded-md border border-white/8 bg-black/20 px-2 py-2"><div className="min-w-0"><p className="truncate text-[11px] font-semibold text-zinc-200">{source.name}</p><p className="mt-0.5 text-[10px] text-zinc-600">{source.trustStatus === "approved" ? "مرجع معتمد" : "بانتظار المراجعة"} · إلهام فقط</p></div><a href={source.url} target="_blank" rel="noreferrer" className="shrink-0 text-[11px] text-fuchsia-200 hover:text-fuchsia-100">فتح المرجع ↗</a></div>)}</div></div> : null}
         <div className="rounded-lg border border-white/8 bg-black/20 p-3">
           <p className="text-xs font-semibold text-zinc-200">نتيجة قراءة موثقة</p>
           <p className="mt-1 text-[11px] leading-5 text-zinc-500">سجل ما قرأته من صفحة رسمية أو مصدر مرخص مع رابطه. لا يعتبر ذلك اعتمادًا للمادة أو تصريحًا بالنشر.</p>

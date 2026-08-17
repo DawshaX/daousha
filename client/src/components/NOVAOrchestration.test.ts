@@ -19,6 +19,9 @@ describe("NOVA Orchestration source catalog", () => {
     expect(source).toContain("لا يحمل NOVA أي ملف");
     expect(source).toContain("مرجع Pinterest بصري");
     expect(source).toContain("pinterestUrlIsValid");
+    expect(source).toContain("visualReferences");
+    expect(source).toContain("مراجع بصرية مسجلة");
+    expect(source).toContain("إلهام فقط");
     expect(source).toContain('sourceKind: "reference"');
     expect(source).toContain("لا يمنح ترخيصًا لتنزيل Pin أو استخدامه أو إعادة توزيعه");
     expect(source).toContain("نتيجة قراءة موثقة");
