@@ -17,7 +17,7 @@ function selectNewSignal(signals: TrendSignal[], existingTitles: Set<string>) {
  */
 export async function executeDawshaEngine(taskUid: string) {
   const monitor = await db.getDawshaEngineMonitorByTaskUid(taskUid);
-  if (!monitor || monitor.status !== "active") return { ok: true, skipped: "orphan_or_paused" as const };
+  if (!monitor || monitor.status === "paused") return { ok: true, skipped: "orphan_or_paused" as const };
   const now = Date.now();
   if (monitor.lastRunAt && now - monitor.lastRunAt.getTime() < MIN_INTAKE_INTERVAL_MS) {
     return { ok: true, skipped: "intake_interval" as const, summary: "محرك DAWSHA يعمل بحد إنشاء مشروع واحد خلال 20 ساعة؛ لم يبدأ دورة جديدة." };

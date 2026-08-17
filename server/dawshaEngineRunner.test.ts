@@ -30,4 +30,10 @@ describe("DAWSHA scheduled trend intake", () => {
     expect(trendMock.fetchGoogleTrendSignals).not.toHaveBeenCalled();
     expect(dbMock.createDawshaPipeline).not.toHaveBeenCalled();
   });
+
+  it("allows a later scheduled retry after a prior radar error instead of treating it as a permanent pause", async () => {
+    dbMock.getDawshaEngineMonitorByTaskUid.mockResolvedValue({ id: 1, ownerId: 7, status: "error", lastRunAt: null });
+    await expect(executeDawshaEngine("heartbeat-1")).resolves.toMatchObject({ ok: true, projectId: 90 });
+    expect(dbMock.createDawshaPipeline).toHaveBeenCalledOnce();
+  });
 });
