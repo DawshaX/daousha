@@ -12,6 +12,7 @@ export default function NOVAOrchestration() {
   const [memoryTitle, setMemoryTitle] = useState("");
   const [memoryContent, setMemoryContent] = useState("");
   const [pairCommand, setPairCommand] = useState("");
+  const [referenceQuery, setReferenceQuery] = useState("");
   const memories = trpc.nova.memories.useQuery();
   const playbooks = trpc.nova.playbooks.useQuery();
   const pairing = trpc.nova.telegramPairingStatus.useQuery();
@@ -62,10 +63,16 @@ export default function NOVAOrchestration() {
         <CardDescription className="text-zinc-500">مصادر للمراجعة فقط. لا يجلب NOVA موادًا تلقائيًا، ولا يحذف علامة مائية، ولا يحوّل ترخيص المصدر إلى ملكية خاصة.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
+        <div className="rounded-lg border border-red-500/15 bg-red-500/[0.03] p-3">
+          <p className="text-xs font-semibold text-zinc-200">بحث مرجعي مرخّص</p>
+          <p className="mt-1 text-[11px] leading-5 text-zinc-500">يفتح البحث في Pexels فقط لتصفح اللقطات وترخيصها يدويًا؛ لا يحمل NOVA أي ملف ولا يسجله كمادة أو يرسل شيئًا للنشر.</p>
+          <div className="mt-3 flex gap-2"><Input value={referenceQuery} onChange={event => setReferenceQuery(event.target.value)} placeholder="مثال: calm sunrise" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Button size="sm" variant="outline" className="h-8 shrink-0 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={referenceQuery.trim().length < 2} onClick={() => window.open(`https://www.pexels.com/search/videos/${encodeURIComponent(referenceQuery.trim())}/`, "_blank", "noopener,noreferrer")}>فتح المرجع</Button></div>
+        </div>
         {(sources.data ?? []).filter(source => source.sourceKind === "asset" || source.sourceKind === "audio").slice(0, 5).map(source => (
           <div key={source.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">
             <div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-zinc-200">{source.name}</p><span className={source.trustStatus === "approved" ? "text-[10px] text-emerald-300" : "text-[10px] text-amber-300"}>{source.trustStatus === "approved" ? "معتمد" : "بانتظار المراجعة"}</span></div>
             <p className="mt-1 text-[11px] leading-5 text-zinc-500">{source.notes || "تحقق من ترخيص كل لقطة، الأشخاص، الشعارات، ونسبة الاستخدام قبل التسجيل."}</p>
+            <a href={source.url} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-[11px] text-red-200 hover:text-red-100">فتح صفحة المصدر ↗</a>
           </div>
         ))}
         {!sources.isLoading && !(sources.data ?? []).some(source => source.sourceKind === "asset" || source.sourceKind === "audio") ? <p className="rounded-lg border border-dashed border-white/10 p-3 text-xs text-zinc-500">لا توجد مصادر لقطات مسجلة بعد.</p> : null}

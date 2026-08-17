@@ -10,6 +10,10 @@ describe("NOVA Orchestration source catalog", () => {
     expect(source).toContain("لا يجلب NOVA موادًا تلقائيًا");
     expect(source).toContain("لا يحذف علامة مائية");
     expect(source).toContain('source.sourceKind === "asset" || source.sourceKind === "audio"');
+    expect(source).toContain("بحث مرجعي مرخّص");
+    expect(source).toContain("https://www.pexels.com/search/videos/");
+    expect(source).toContain('target="_blank"');
+    expect(source).toContain("لا يحمل NOVA أي ملف");
     expect(source).not.toContain("yt-dlp");
   });
 });
