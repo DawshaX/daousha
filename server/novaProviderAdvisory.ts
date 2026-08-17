@@ -38,14 +38,14 @@ export function getNOVAAdvisorProviderStatuses(): ProviderStatus[] {
       title: "Google Gemini",
       status: ENV.geminiApiKey ? "ready" : "not_configured",
       mode: "manual_draft",
-      detail: ENV.geminiApiKey ? "مفتاح متاح؛ لا تُرسل أي مطالبة إلا عند طلب مسودة صريح من المالك." : "لم يُضف مفتاح Gemini للخادم.",
+      detail: ENV.geminiApiKey ? "مفتاح متاح؛ لا تُرسل أي مطالبة إلا عند طلب مسودة صريح من المالك. قد يخضع الاستدعاء لحصة أو رصيد الحساب لدى المزود." : "لم يُضف مفتاح Gemini للخادم.",
     },
     {
       id: "openai",
       title: "OpenAI",
       status: ENV.openaiApiKey ? "ready" : "not_configured",
       mode: "manual_draft",
-      detail: ENV.openaiApiKey ? "مفتاح متاح؛ لا تُرسل أي مطالبة إلا عند طلب مسودة صريح من المالك." : "لم يُضف مفتاح OpenAI للخادم.",
+      detail: ENV.openaiApiKey ? "مفتاح متاح؛ لا تُرسل أي مطالبة إلا عند طلب مسودة صريح من المالك. قد يخضع الاستدعاء لحصة أو رصيد الحساب لدى المزود." : "لم يُضف مفتاح OpenAI للخادم.",
     },
     {
       id: "perplexity",

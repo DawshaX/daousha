@@ -34,5 +34,7 @@ describe("NOVA Console", () => {
     expect(source).toContain("لا يملك المزود أدوات تنفيذ أو نشر");
     expect(source).toContain("Perplexity API متوقف بقرار المالك");
     expect(source).toContain("لا تُرسل كلمات مرور أو رموزًا أو مفاتيح");
+    expect(source).toContain("provider.id === advisorProvider");
+    expect(source).toContain("يجري تحميل حالة المزود");
   });
 });
