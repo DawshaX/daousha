@@ -237,15 +237,16 @@ function deterministicDraftProject(content: string): PlannedAssistantAction | un
 
 function deterministicSourceProposal(content: string): PlannedAssistantAction | undefined {
   const url = content.match(/https?:\/\/[^\s]+/i)?.[0];
-  if (!url || !/(مصدر|source|أضف)/i.test(content)) return undefined;
-  const name = content.replace(url, "").replace(/(?:أضف|مصدرًا?|source|مقترحًا?|:)/gi, " ").replace(/\s+/g, " ").trim().slice(0, 180);
+  const isPinterestReference = Boolean(url && /(?:pinterest\.[a-z.]+\/(?:pin|ideas)\/|pin\.it\/)/i.test(url));
+  if (!url || !/(مصدر|source|أضف|مرجع|pinterest|بينترست)/i.test(content)) return undefined;
+  const name = content.replace(url, "").replace(/(?:أضف|مصدرًا?|source|مقترحًا?|مرجعًا?|pinterest|بينترست|:)/gi, " ").replace(/\s+/g, " ").trim().slice(0, 180);
   return {
-    response: "سأسجل المصدر كمقترح فقط ليظهر في البرنامج الأساسي بانتظار الاعتماد.",
-    planSummary: `إضافة المصدر «${name || "مصدر جديد"}» للمراجعة قبل التفعيل.`,
+    response: isPinterestReference ? "سأسجل رابط Pinterest كمرجع إلهام بصري فقط؛ لن يُنزّل NOVA أي Pin أو يستخدمه كمادة إنتاج." : "سأسجل المصدر كمقترح فقط ليظهر في البرنامج الأساسي بانتظار الاعتماد.",
+    planSummary: isPinterestReference ? `إضافة مرجع Pinterest «${name || "مرجع بصري"}» للمراجعة دون تنزيل أو استخدام للمادة.` : `إضافة المصدر «${name || "مصدر جديد"}» للمراجعة قبل التفعيل.`,
     toolName: "propose_source",
     impact: "draft",
     requiresApproval: false,
-    title: "", brief: "", sourceName: name || "مصدر جديد", sourceUrl: url, licenseType: "", assetTitle: "",
+    title: "", brief: "", sourceName: name || (isPinterestReference ? "مرجع Pinterest بصري" : "مصدر جديد"), sourceUrl: url, licenseType: "", assetTitle: "",
   };
 }
 
@@ -424,9 +425,10 @@ async function executeSafeTool(ownerId: number, action: PlannedAssistantAction):
   }
 
   if (action.toolName === "propose_source") {
-    const source = await db.createSource({ ownerId, name: action.sourceName, url: action.sourceUrl, sourceKind: "trend", language: "both", trustStatus: "proposed", notes: "أضيف بواسطة NOVA Assistant ويحتاج اعتمادًا بشريًا قبل التفعيل." });
+    const isPinterestReference = /(?:pinterest\.[a-z.]+\/(?:pin|ideas)\/|pin\.it\/)/i.test(action.sourceUrl);
+    const source = await db.createSource({ ownerId, name: action.sourceName, url: action.sourceUrl, sourceKind: isPinterestReference ? "reference" : "trend", language: "both", trustStatus: "proposed", notes: isPinterestReference ? "مرجع Pinterest بصري أضيف بواسطة NOVA Assistant. لا يمنح حق تنزيل أو استخدام Pin أو إعادة توزيعه." : "أضيف بواسطة NOVA Assistant ويحتاج اعتمادًا بشريًا قبل التفعيل." });
     await db.createChangeLogEntry({ ownerId, category: "source", summary: `NOVA: اقتراح مصدر «${source.name}»`, details: `الرابط: ${source.url}`, actorType: "system" });
-    return { target: `source:${source.id}`, resultSummary: `أُضيف المصدر «${source.name}» كمقترح بانتظار الاعتماد.`, responseContext: "لا يبدأ الرصد أو جلب البيانات تلقائيًا قبل الاعتماد." };
+    return { target: `source:${source.id}`, resultSummary: `أُضيف المصدر «${source.name}» كمقترح بانتظار الاعتماد.`, responseContext: isPinterestReference ? "حُفظ كمرجع بصري فقط؛ لا يبدأ تنزيل أو استخدام أو جلب محتوى تلقائيًا." : "لا يبدأ الرصد أو جلب البيانات تلقائيًا قبل الاعتماد." };
   }
 
   if (action.toolName === "register_asset_draft") {

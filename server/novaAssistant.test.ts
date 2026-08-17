@@ -212,6 +212,16 @@ describe("NOVA Assistant", () => {
     expect(dbMock.createSource).toHaveBeenCalledWith(expect.objectContaining({ name: "مصدر UNESCO", url: "https://www.unesco.org", trustStatus: "proposed" }));
   });
 
+  it("يسجل رابط Pinterest كمرجع بصري مقترح فقط من دون تنزيل أو استدعاء نموذج اللغة", async () => {
+    dbMock.createSource.mockResolvedValue({ id: 93, name: "تكوين ضوء" });
+    const result = await runNOVATurn({ ownerId: 7, content: "أضف مرجع Pinterest تكوين ضوء https://www.pinterest.com/pin/123456789/", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(result.reply).toContain("مرجع إلهام بصري");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.createSource).toHaveBeenCalledWith(expect.objectContaining({ sourceKind: "reference", trustStatus: "proposed", notes: expect.stringContaining("لا يمنح حق تنزيل") }));
+  });
+
   it("يعرض الذاكرة والـPlaybooks من المصدر الموحد من دون استدعاء نموذج اللغة", async () => {
     const result = await runNOVATurn({ ownerId: 7, content: "اعرض الذاكرة والـPlaybooks", origin: "telegram" });
 
