@@ -185,13 +185,13 @@ export const appRouter = router({
         return asset;
       }),
     uploadAsset: protectedProcedure
-      .input(z.object({ title: z.string().trim().min(2).max(255), fileName: z.string().trim().min(1).max(255), contentType: z.string().trim().min(3).max(160), base64: z.string().min(4).max(14_000_000), assetKind: z.enum(["video", "audio", "image", "other"]), licenseType: z.string().trim().min(2).max(160), sourceUrl: url.optional(), attribution: z.string().trim().max(4000).optional() }))
+      .input(z.object({ title: z.string().trim().min(2).max(255), fileName: z.string().trim().min(1).max(255), contentType: z.string().trim().min(3).max(160), base64: z.string().min(4).max(14_000_000), assetKind: z.enum(["video", "audio", "image", "other"]), licenseType: z.string().trim().min(2).max(160), sourceUrl: url.optional(), licenseUrl: url.optional(), attribution: z.string().trim().max(4000).optional() }))
       .mutation(async ({ ctx, input }) => {
         const safeName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
         const bytes = Buffer.from(input.base64, "base64");
         if (!bytes.length || bytes.length > 10 * 1024 * 1024) throw new Error("الملف غير صالح أو أكبر من الحد الأولي للرفع.");
         const uploaded = await storagePut(`daousha/${ctx.user.id}/raw/${safeName}`, bytes, input.contentType);
-        const assetInput = { title: input.title, assetKind: input.assetKind, storageKey: uploaded.key, storageUrl: uploaded.url, sourceUrl: input.sourceUrl, licenseType: input.licenseType, attribution: input.attribution };
+        const assetInput = { title: input.title, assetKind: input.assetKind, storageKey: uploaded.key, storageUrl: uploaded.url, sourceUrl: input.sourceUrl, licenseUrl: input.licenseUrl, licenseType: input.licenseType, attribution: input.attribution };
         const asset = await db.createAsset({ ownerId: ctx.user.id, ...assetInput, ...assessAssetIntake(assetInput) });
         await notifyOwnerOperationalEvent({ ownerId: ctx.user.id, eventType: "review_required", title: "ملف يحتاج مراجعة", detail: `الملف «${asset.title}» رُفع وينتظر قرار الحقوق والسلامة.` });
         return asset;
