@@ -406,6 +406,14 @@ export const appRouter = router({
       await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: "تفعيل دورة رصد DAWSHA", details: "تفحص Google Trends كل 6 ساعات، وتنشئ مشروع بحث واحدًا كحد أقصى خلال 20 ساعة. لا تولد سكربتًا أو وسائط ولا تنشر.", actorType: "user" });
       return { monitor: saved, nextExecutionAt };
     }),
+    pauseDawshaEngine: protectedProcedure.mutation(async ({ ctx }) => {
+      const monitor = await db.getDawshaEngineMonitor(ctx.user.id);
+      if (!monitor?.scheduleCronTaskUid) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لا توجد دورة رصد DAWSHA مفعلة لإيقافها." });
+      await updateHeartbeatJob(monitor.scheduleCronTaskUid, { enable: false }, readSessionToken(ctx.req.headers.cookie));
+      const saved = await db.setDawshaEngineMonitorStatus(ctx.user.id, "paused", "أوقف المالك دورة رصد DAWSHA. لا يُنشأ مشروع بحث جديد حتى الاستئناف الصريح.");
+      await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: "إيقاف دورة رصد DAWSHA", details: "أوقفت مهمة Heartbeat؛ لا تغيير في الحقوق أو السلامة أو الجداول أو النشر.", actorType: "user" });
+      return saved;
+    }),
     integrations: protectedProcedure.query(async ({ ctx }) => {
       const [connections, assets, youtubeHealthMonitor, instagramHealthMonitor, facebookHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube"), db.getConnectionHealthMonitor(ctx.user.id, "instagram"), db.getConnectionHealthMonitor(ctx.user.id, "facebook")]);
       return {

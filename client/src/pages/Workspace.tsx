@@ -191,6 +191,9 @@ function StatZero({ label, sublabel, value = "0" }: { label: string; sublabel: s
 function Dashboard() {
   const { data: dashboard } = trpc.daousha.dashboard.useQuery();
   const { data: engineMonitor } = trpc.daousha.dawshaEngineMonitor.useQuery();
+  const utils = trpc.useUtils();
+  const activateDawshaEngine = trpc.daousha.activateDawshaEngine.useMutation({ onSuccess: () => { utils.daousha.dawshaEngineMonitor.invalidate(); toast.success("تم تفعيل دورة رصد DAWSHA."); }, onError: error => toast.error(error.message) });
+  const pauseDawshaEngine = trpc.daousha.pauseDawshaEngine.useMutation({ onSuccess: () => { utils.daousha.dawshaEngineMonitor.invalidate(); toast.success("تم إيقاف دورة رصد DAWSHA."); }, onError: error => toast.error(error.message) });
   const stats = dashboard?.stats;
   const engineTasks = [...(dashboard?.tasks ?? [])].sort((left, right) => right.id - left.id);
   const engineTask = engineTasks.find(task => task.status === "running") ?? engineTasks.find(task => task.status === "blocked") ?? engineTasks.find(task => task.status === "queued") ?? engineTasks[0];
@@ -245,7 +248,12 @@ function Dashboard() {
             <CardTitle className="flex items-center gap-2 text-base text-white"><Bot className="h-4 w-4 text-red-400" /> محرك DAWSHA المركزي</CardTitle>
             <CardDescription className="mt-1 text-zinc-500">قراءة مباشرة لمهام دورة المحتوى المسجلة؛ لا يفتح العرض إنتاجًا أو نشرًا.</CardDescription>
           </div>
-          <Badge variant="outline" className="border-red-500/25 bg-red-500/10 text-red-200">{engineMonitor?.status === "active" ? "رصد دوري نشط" : engineMonitor?.status === "error" ? "آخر دورة تحتاج فحصًا" : `${engineTasks.length} مهمة`}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="border-red-500/25 bg-red-500/10 text-red-200">{engineMonitor?.status === "active" ? "رصد دوري نشط" : engineMonitor?.status === "error" ? "آخر دورة تحتاج فحصًا" : `${engineTasks.length} مهمة`}</Badge>
+            <Button size="sm" variant="outline" className="h-7 border-white/10 bg-black/20 px-2 text-[10px] text-zinc-300 hover:bg-white/10 hover:text-white" disabled={activateDawshaEngine.isPending || pauseDawshaEngine.isPending} onClick={() => engineMonitor?.status === "active" ? pauseDawshaEngine.mutate() : activateDawshaEngine.mutate()}>
+              {engineMonitor?.status === "active" ? "إيقاف الرصد" : "تفعيل الرصد"}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="grid gap-3 p-5 md:grid-cols-[.9fr_1.15fr_1.55fr]">
           <div className="rounded-xl border border-white/8 bg-black/20 p-4">

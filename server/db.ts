@@ -615,6 +615,13 @@ export async function updateDawshaEngineMonitorRun(id: number, input: { status: 
   return (await db!.select().from(dawshaEngineMonitors).where(eq(dawshaEngineMonitors.id, id)).limit(1))[0] ?? null;
 }
 
+export async function setDawshaEngineMonitorStatus(ownerId: number, status: "active" | "paused" | "error", summary: string) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(dawshaEngineMonitors).set({ status, lastSummary: summary.slice(0, 4_000) }).where(eq(dawshaEngineMonitors.ownerId, ownerId));
+  return getDawshaEngineMonitor(ownerId);
+}
+
 export async function createAssistantSession(input: { ownerId: number; title: string; origin?: "web" | "telegram" }) {
   const db = await getDb();
   if (!db) databaseUnavailable();
