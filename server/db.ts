@@ -26,6 +26,7 @@ import {
   publishingRuns,
   publishingSchedules,
   systemChangeLog,
+  telegramOwnerBindings,
   telegramWebhookUpdates,
   uploadMetadataDrafts,
   users,
@@ -77,6 +78,11 @@ export async function getUserByOpenId(openId: string) {
   if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
   return result[0];
+}
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  return (await db.select().from(users).where(eq(users.id, id)).limit(1))[0];
 }
 
 export async function listProjects(ownerId: number) {
@@ -668,6 +674,10 @@ export async function createContentPlaybook(input: { ownerId: number; title: str
 export async function createPlaybookRun(input: { ownerId: number; playbookId: number; sessionId?: number; status: "queued" | "running" | "completed" | "blocked" | "failed"; resultSummary?: string }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(playbookRuns).values({ ...input, completedAt: ["completed", "blocked", "failed"].includes(input.status) ? new Date() : null }); const id = Number(result[0].insertId); return (await db!.select().from(playbookRuns).where(eq(playbookRuns.id, id)).limit(1))[0]; }
 export async function recordTelegramWebhookUpdate(input: { updateId: number; ownerId: number; chatId: string }) { const db = await getDb(); if (!db) databaseUnavailable(); try { const result = await db!.insert(telegramWebhookUpdates).values(input); const id = Number(result[0].insertId); return { created: true, row: (await db!.select().from(telegramWebhookUpdates).where(eq(telegramWebhookUpdates.id, id)).limit(1))[0] }; } catch { return { created: false, row: (await db!.select().from(telegramWebhookUpdates).where(eq(telegramWebhookUpdates.updateId, input.updateId)).limit(1))[0] }; } }
 export async function updateTelegramWebhookUpdate(updateId: number, status: "completed" | "ignored" | "failed", detail: string) { const db = await getDb(); if (!db) databaseUnavailable(); await db!.update(telegramWebhookUpdates).set({ status, detail }).where(eq(telegramWebhookUpdates.updateId, updateId)); }
+export async function upsertTelegramOwnerPairing(ownerId: number, pairingCodeHash: string, expiresAt: Date) { const db = await getDb(); if (!db) databaseUnavailable(); const existing = await db!.select().from(telegramOwnerBindings).where(eq(telegramOwnerBindings.ownerId, ownerId)).limit(1); if (existing[0]) { await db!.update(telegramOwnerBindings).set({ chatId: null, pairingCodeHash, status: "pending", expiresAt, pairedAt: null }).where(eq(telegramOwnerBindings.ownerId, ownerId)); return (await db!.select().from(telegramOwnerBindings).where(eq(telegramOwnerBindings.ownerId, ownerId)).limit(1))[0]; } const result = await db!.insert(telegramOwnerBindings).values({ ownerId, pairingCodeHash, status: "pending", expiresAt }); return (await db!.select().from(telegramOwnerBindings).where(eq(telegramOwnerBindings.id, Number(result[0].insertId))).limit(1))[0]; }
+export async function pairTelegramOwnerByCode(pairingCodeHash: string, chatId: string) { const db = await getDb(); if (!db) databaseUnavailable(); const now = new Date(); const candidate = await db!.select().from(telegramOwnerBindings).where(and(eq(telegramOwnerBindings.pairingCodeHash, pairingCodeHash), eq(telegramOwnerBindings.status, "pending"))).limit(1); const binding = candidate[0]; if (!binding || !binding.expiresAt || binding.expiresAt <= now) return null; await db!.update(telegramOwnerBindings).set({ chatId, pairingCodeHash: null, status: "paired", expiresAt: null, pairedAt: now }).where(eq(telegramOwnerBindings.id, binding.id)); return (await db!.select().from(telegramOwnerBindings).where(eq(telegramOwnerBindings.id, binding.id)).limit(1))[0]; }
+export async function getPairedTelegramOwnerByChatId(chatId: string) { const db = await getDb(); if (!db) databaseUnavailable(); return (await db!.select().from(telegramOwnerBindings).where(and(eq(telegramOwnerBindings.chatId, chatId), eq(telegramOwnerBindings.status, "paired"))).limit(1))[0] ?? null; }
+export async function getTelegramOwnerBinding(ownerId: number) { const db = await getDb(); if (!db) databaseUnavailable(); return (await db!.select().from(telegramOwnerBindings).where(eq(telegramOwnerBindings.ownerId, ownerId)).limit(1))[0] ?? null; }
 export async function createAssistantAttachment(input: { ownerId: number; sessionId: number; storageKey: string; url: string; filename: string; mimeType: string; sizeBytes: number }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(assistantAttachments).values(input); const id = Number(result[0].insertId); return (await db!.select().from(assistantAttachments).where(eq(assistantAttachments.id, id)).limit(1))[0]; }
 export async function listAssistantAttachments(ownerId: number, sessionId: number) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.select().from(assistantAttachments).where(and(eq(assistantAttachments.ownerId, ownerId), eq(assistantAttachments.sessionId, sessionId))).orderBy(desc(assistantAttachments.createdAt)); }
 export async function createAssistantKnowledgeItem(input: { ownerId: number; category: "identity" | "rights" | "safety" | "workflow" | "distribution"; title: string; content: string; sourceUrl?: string }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(assistantKnowledgeItems).values(input); const id = Number(result[0].insertId); return (await db!.select().from(assistantKnowledgeItems).where(eq(assistantKnowledgeItems.id, id)).limit(1))[0]; }

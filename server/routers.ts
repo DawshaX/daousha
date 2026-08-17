@@ -30,6 +30,7 @@ import { performanceExperimentAdvice, summarizePerformance } from "../shared/per
 import { describeUploadFailure } from "./uploadFailureDetail";
 import { createNOVASession, getNOVAWorkspace, runNOVATurn } from "./novaAssistant";
 import { safeNOVAAttachmentFilename, validateNOVAAttachment } from "./assistantAttachmentGuards";
+import { createHash, randomBytes } from "node:crypto";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -49,6 +50,8 @@ export const appRouter = router({
     }),
   }),
   nova: router({
+    createTelegramPairing: protectedProcedure.mutation(async ({ ctx }) => { const code = randomBytes(12).toString("base64url"); const expiresAt = new Date(Date.now() + 10 * 60 * 1000); await db.upsertTelegramOwnerPairing(ctx.user.id, createHash("sha256").update(code).digest("hex"), expiresAt); await db.createAssistantAuditEvent({ ownerId: ctx.user.id, actor: "user", action: "telegram_pairing_created", decision: "completed", detail: "أُنشئ رمز اقتران Telegram صالح لعشر دقائق." }); return { command: `/start ${code}`, expiresAt }; }),
+    telegramPairingStatus: protectedProcedure.query(({ ctx }) => db.getTelegramOwnerBinding(ctx.user.id)),
     attachments: protectedProcedure.input(z.object({ sessionId: z.number().int().positive() })).query(async ({ ctx, input }) => {
       const session = await db.getOwnedAssistantSession(ctx.user.id, input.sessionId); if (!session) throw new TRPCError({ code: "NOT_FOUND" });
       return db.listAssistantAttachments(ctx.user.id, input.sessionId);

@@ -383,6 +383,19 @@ export const telegramWebhookUpdates = mysqlTable("telegram_webhook_updates", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("telegram_webhook_updates_owner_created_idx").on(table.ownerId, table.createdAt)]);
 
+/** One owner-controlled Telegram binding, established only through a short-lived pairing code. */
+export const telegramOwnerBindings = mysqlTable("telegram_owner_bindings", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull().unique(),
+  chatId: varchar("chatId", { length: 80 }),
+  pairingCodeHash: varchar("pairingCodeHash", { length: 128 }),
+  status: mysqlEnum("status", ["pending", "paired", "revoked"]).default("pending").notNull(),
+  expiresAt: timestamp("expiresAt"),
+  pairedAt: timestamp("pairedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("telegram_owner_bindings_chat_status_idx").on(table.chatId, table.status)]);
+
 /** Metadata for user-provided NOVA session files; bytes live only in S3. */
 export const assistantAttachments = mysqlTable("assistant_attachments", {
   id: int("id").autoincrement().primaryKey(),

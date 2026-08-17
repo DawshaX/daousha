@@ -3,6 +3,7 @@ import { ENV } from "./_core/env";
 import * as db from "./db";
 import { runNOVATurn } from "./novaAssistant";
 import { sendTelegramOperationalNotification } from "./telegram";
+import { createHash } from "node:crypto";
 
 const SECRET_HEADER = "x-telegram-bot-api-secret-token";
 const SENSITIVE_CONTENT = /(password|passcode|token|otp|verification\s*code|كلمة\s*مرور|رمز\s*(تحقق|دخول|وصول))/i;
@@ -18,8 +19,18 @@ export async function handleTelegramCommandWebhook(req: Request, res: Response) 
   const content = update.message?.text?.trim() ?? "";
   if (!Number.isInteger(updateId) || !chatId) return res.status(200).json({ ok: true, ignored: "non_message" });
 
-  const owner = await db.getUserByOpenId(ENV.ownerOpenId);
-  if (!owner || !ENV.telegramChatId || chatId !== ENV.telegramChatId) return res.status(403).json({ ok: false });
+  const pairingMatch = content.match(/^\/start\s+([A-Za-z0-9_-]{12,80})$/);
+  if (pairingMatch) {
+    const pairing = await db.pairTelegramOwnerByCode(createHash("sha256").update(pairingMatch[1]).digest("hex"), chatId);
+    if (!pairing) return res.status(200).json({ ok: true, ignored: "invalid_pairing" });
+    const receipt = await db.recordTelegramWebhookUpdate({ updateId: updateId!, ownerId: pairing.ownerId, chatId });
+    if (receipt.created) { await db.updateTelegramWebhookUpdate(updateId!, "completed", "اقتران Telegram للمالك مكتمل."); await sendTelegramOperationalNotification({ chatId, title: "تم ربط NOVA", detail: "أصبح Telegram واجهة أوامر مرتبطة بحسابك. اكتب: ما حالة القنوات؟" }); }
+    return res.status(200).json({ ok: true, paired: true });
+  }
+  const binding = await db.getPairedTelegramOwnerByChatId(chatId);
+  if (!binding) return res.status(200).json({ ok: true, ignored: "unpaired_chat" });
+  const owner = await db.getUserById(binding.ownerId);
+  if (!owner) return res.status(200).json({ ok: true, ignored: "owner_missing" });
   const receipt = await db.recordTelegramWebhookUpdate({ updateId: updateId!, ownerId: owner.id, chatId });
   if (!receipt.created) return res.status(200).json({ ok: true, duplicate: true });
   if (!content || SENSITIVE_CONTENT.test(content)) {
