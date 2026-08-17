@@ -21,4 +21,6 @@ export const ENV = {
   tiktokClientSecret: process.env.TIKTOK_CLIENT_SECRET ?? "",
   tiktokSandboxClientKey: process.env.TIKTOK_SANDBOX_CLIENT_KEY ?? "",
   tiktokSandboxClientSecret: process.env.TIKTOK_SANDBOX_CLIENT_SECRET ?? "",
+  geminiApiKey: process.env.GEMINI_API_KEY ?? "",
+  openaiApiKey: process.env.OPENAI_API_KEY ?? "",
 };

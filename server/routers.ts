@@ -31,6 +31,7 @@ import { performanceExperimentAdvice, summarizePerformance } from "../shared/per
 import { describeUploadFailure } from "./uploadFailureDetail";
 import { createNOVASession, getNOVAWorkspace, runNOVAPlaybook, runNOVATurn } from "./novaAssistant";
 import { safeNOVAAttachmentFilename, validateNOVAAttachment } from "./assistantAttachmentGuards";
+import { createNOVAAdvisorDraft, getNOVAAdvisorProviderStatuses } from "./novaProviderAdvisory";
 import { createHash, randomBytes } from "node:crypto";
 
 const url = z.string().url().max(1500);
@@ -75,6 +76,14 @@ export const appRouter = router({
     }),
     sessions: protectedProcedure.query(({ ctx }) => db.listAssistantSessions(ctx.user.id)),
     memories: protectedProcedure.query(({ ctx }) => db.listAssistantMemories(ctx.user.id)),
+    advisorProviders: protectedProcedure.query(() => getNOVAAdvisorProviderStatuses()),
+    createAdvisorDraft: protectedProcedure
+      .input(z.object({ provider: z.enum(["gemini", "openai"]), prompt: z.string().trim().min(3).max(6_000), language: z.enum(["ar", "en", "both"]).default("ar") }))
+      .mutation(async ({ ctx, input }) => {
+        const draft = await createNOVAAdvisorDraft(input);
+        await db.createAssistantAuditEvent({ ownerId: ctx.user.id, actor: "assistant", action: "advisor_draft_created", target: input.provider, decision: "completed", detail: `أُنشئت مسودة إرشادية فقط عبر ${input.provider}; لا يوجد نشر أو جدولة أو تغيير سياسة.` });
+        return draft;
+      }),
     addMemory: protectedProcedure
       .input(z.object({ kind: z.enum(["preference", "project", "rule", "decision"]), title: z.string().trim().min(2).max(255), content: z.string().trim().min(2).max(8_000) }))
       .mutation(({ ctx, input }) => db.createAssistantMemory({ ownerId: ctx.user.id, ...input })),

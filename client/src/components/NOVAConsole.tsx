@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { Archive, BellRing, BookOpenCheck, Bot, Brain, CheckCircle2, CircleAlert, ClipboardList, KeyRound, Loader2, MessageSquarePlus, RadioTower, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -56,6 +57,10 @@ export default function NOVAConsole() {
   });
   const memories = trpc.nova.memories.useQuery(undefined, { refetchInterval: 15_000, refetchOnWindowFocus: true });
   const playbooks = trpc.nova.playbooks.useQuery(undefined, { refetchInterval: 15_000, refetchOnWindowFocus: true });
+  const advisorProviders = trpc.nova.advisorProviders.useQuery(undefined, { refetchInterval: 60_000, refetchOnWindowFocus: true });
+  const [advisorPrompt, setAdvisorPrompt] = useState("");
+  const [advisorProvider, setAdvisorProvider] = useState<"gemini" | "openai">("gemini");
+  const [advisorDraft, setAdvisorDraft] = useState<string | undefined>();
   const createSession = trpc.nova.createSession.useMutation({
     onSuccess: session => {
       setSelectedSessionId(session.id);
@@ -79,6 +84,14 @@ export default function NOVAConsole() {
       setSelectedSessionId(result.session.id);
       utils.nova.workspace.invalidate();
       utils.nova.sessions.invalidate();
+    },
+    onError: error => toast.error(error.message),
+  });
+  const createAdvisorDraft = trpc.nova.createAdvisorDraft.useMutation({
+    onSuccess: result => {
+      setAdvisorDraft(result.content);
+      utils.nova.workspace.invalidate();
+      toast.success(`أُنشئت مسودة إرشادية عبر ${result.provider}.`);
     },
     onError: error => toast.error(error.message),
   });
@@ -129,6 +142,15 @@ export default function NOVAConsole() {
           <div className="rounded-xl border border-white/7 bg-black/20 p-3"><div className="flex items-center justify-between gap-2"><span className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200"><BookOpenCheck className="h-3.5 w-3.5 text-red-300" /> Playbooks النشطة</span><span className="text-xs font-black text-white">{playbooks.data?.filter(item => item.status === "active").length ?? 0}</span></div><p className="mt-1.5 text-[10px] leading-5 text-zinc-600">تشغيل الوصفات يظل محكومًا؛ يُسمح تلقائيًا بخطوات القراءة فقط.</p></div>
           {memories.isLoading ? <p className="text-[11px] text-zinc-600">يجري تحميل ملخص الذاكرة…</p> : (memories.data?.length ?? 0) > 0 ? <div className="space-y-2">{memories.data?.slice(0, 2).map(memory => <div key={memory.id} className="rounded-lg border border-white/6 bg-white/[0.025] px-3 py-2"><p className="line-clamp-1 text-[11px] font-semibold text-zinc-200">{memory.title}</p><p className="mt-1 text-[10px] text-zinc-600">{formatTime(memory.updatedAt)}</p></div>)}</div> : <p className="text-[11px] leading-5 text-zinc-600">لا توجد ذاكرة صريحة محفوظة بعد. اكتب «تذكر أن …» لحفظ قرار غير حساس.</p>}
           <p className="rounded-lg border border-amber-500/15 bg-amber-500/[0.035] px-3 py-2 text-[10px] leading-5 text-amber-100/75">{NOVA_MEMORY_GUIDANCE}</p>
+        </CardContent>
+      </Card>
+      <Card className="border-white/8 bg-zinc-950/65">
+        <CardHeader className="border-b border-white/7 pb-3"><div className="flex items-start justify-between gap-3"><div><CardTitle className="flex items-center gap-2 text-sm text-white"><Sparkles className="h-4 w-4 text-red-400" /> مسودة بمساعدة مزود</CardTitle><CardDescription className="mt-1 text-[11px] text-zinc-600">طلب صريح فقط؛ لا يملك المزود أدوات تنفيذ أو نشر.</CardDescription></div><Badge className="border border-white/10 bg-white/[0.03] text-[10px] text-zinc-400 hover:bg-white/[0.03]">مسودة فقط</Badge></div></CardHeader>
+        <CardContent className="space-y-3 p-3">
+          <div className="flex flex-wrap gap-1.5">{advisorProviders.data?.map(provider => <button key={provider.id} type="button" disabled={provider.status !== "ready" || provider.id === "perplexity"} onClick={() => provider.id !== "perplexity" && setAdvisorProvider(provider.id)} className={`rounded-lg border px-2 py-1 text-[10px] transition-colors ${provider.id === advisorProvider ? "border-red-500/35 bg-red-500/10 text-red-100" : "border-white/8 bg-white/[0.02] text-zinc-500"} ${provider.status !== "ready" ? "cursor-not-allowed opacity-55" : "hover:border-white/20"}`}>{provider.title} · {provider.status === "ready" ? "متاح" : provider.status === "disabled" ? "متوقف" : "غير مهيأ"}</button>)}</div>
+          <Textarea value={advisorPrompt} onChange={event => setAdvisorPrompt(event.target.value)} placeholder="مثال: اقترح هيكل سكربت قصير عربي عن فضل الأذكار، مع تنبيه حقوقي للمادة المرئية." className="min-h-24 resize-none border-white/10 bg-black/25 text-xs leading-6 text-zinc-200 placeholder:text-zinc-600" maxLength={6000} />
+          <Button size="sm" className="w-full bg-red-600 text-xs hover:bg-red-500" disabled={createAdvisorDraft.isPending || advisorPrompt.trim().length < 3} onClick={() => createAdvisorDraft.mutate({ provider: advisorProvider, prompt: advisorPrompt, language: "ar" })}>{createAdvisorDraft.isPending ? <Loader2 className="ml-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="ml-1.5 h-3.5 w-3.5" />} إنشاء مسودة إرشادية</Button>
+          {advisorDraft ? <div className="rounded-xl border border-amber-500/15 bg-amber-500/[0.035] p-3"><p className="mb-1.5 text-[10px] font-semibold text-amber-100">نتيجة إرشادية — تحتاج مراجعة بشرية</p><p className="whitespace-pre-wrap text-[11px] leading-6 text-zinc-300">{advisorDraft}</p></div> : <p className="text-[10px] leading-5 text-zinc-600">لا تُرسل كلمات مرور أو رموزًا أو مفاتيح. Perplexity API متوقف بقرار المالك؛ استخدم البحث اليدوي الموثق بدلًا منه.</p>}
         </CardContent>
       </Card>
       <Card className="border-white/8 bg-zinc-950/65">

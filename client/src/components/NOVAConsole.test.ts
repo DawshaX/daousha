@@ -26,4 +26,13 @@ describe("NOVA Console", () => {
     expect(source).toContain("auditDecisionStyle(event.decision)");
     expect(source).toContain('session.origin === "telegram"');
   });
+
+  it("يعرض مزودي المسودة الإرشادية عبر سجل خادمي ويحظر إدخال الأسرار وPerplexity API", async () => {
+    const source = await readFile(new URL("./NOVAConsole.tsx", import.meta.url), "utf8");
+    expect(source).toContain("trpc.nova.advisorProviders.useQuery");
+    expect(source).toContain("trpc.nova.createAdvisorDraft.useMutation");
+    expect(source).toContain("لا يملك المزود أدوات تنفيذ أو نشر");
+    expect(source).toContain("Perplexity API متوقف بقرار المالك");
+    expect(source).toContain("لا تُرسل كلمات مرور أو رموزًا أو مفاتيح");
+  });
 });
