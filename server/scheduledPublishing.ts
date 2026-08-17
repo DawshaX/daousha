@@ -15,6 +15,13 @@ function automaticMetadata(project: { title: string; brief: string | null; scrip
   };
 }
 
+const MAX_TRANSIENT_UPLOAD_ATTEMPTS = 3;
+
+function isTransientUploadError(error: unknown) {
+  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+  return /timeout|timed out|network|econnreset|etimedout|econnrefused|temporar|unavailable|service unavailable|\b429\b|\b5\d\d\b/.test(message);
+}
+
 /** Idempotent execution: one active schedule may upload a vetted project once, then becomes locally paused. */
 export async function executeScheduledPublish(taskUid: string) {
   const schedule = await db.getScheduleByTaskUid(taskUid);
@@ -95,8 +102,13 @@ export async function executeScheduledPublish(taskUid: string) {
     return { ok: true, published: true, scheduleId: schedule.id, run: completed, url: uploaded.url, visibility: decision.visibility };
   } catch (error) {
     await db.updatePublishingRun(schedule.ownerId, run.id, { status: "failed" });
+    const failedAttempts = runs.filter(item => item.projectId === linked.project.id && item.platform === platform && item.status === "failed").length + 1;
+    if (isTransientUploadError(error) && failedAttempts < MAX_TRANSIENT_UPLOAD_ATTEMPTS) {
+      await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: `scheduled_${platform}_retry`, title: "إعادة محاولة نشر تلقائية", detail: `تعذر رفع مشروع «${linked.project.title}» مؤقتًا. سيعيد NOVA المحاولة تلقائيًا (${failedAttempts}/${MAX_TRANSIENT_UPLOAD_ATTEMPTS}). السبب: ${describeUploadFailure(error)}.` });
+      throw error;
+    }
     await db.setScheduleStatus(schedule.ownerId, schedule.id, "failed");
-    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: `scheduled_${platform}_failed`, title: "تعثر نشر مجدول", detail: `تعذر رفع مشروع «${linked.project.title}». سبب التعثر: ${describeUploadFailure(error)}. أوقفت الجدولة ولم تبدأ إعادة محاولة تلقائية.` });
+    await notifyOwnerOperationalEvent({ ownerId: schedule.ownerId, publishingRunId: run.id, eventType: `scheduled_${platform}_failed`, title: "تعثر نشر مجدول", detail: `تعذر رفع مشروع «${linked.project.title}». سبب التعثر: ${describeUploadFailure(error)}. أوقفت الجدولة بعد انتهاء محاولات الأعطال المؤقتة أو لأن الخطأ غير قابل لإعادة المحاولة.` });
     throw error;
   }
 }

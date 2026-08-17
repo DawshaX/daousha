@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const dbMock = {
-  getScheduleByTaskUid: vi.fn(), markScheduleExecuted: vi.fn(), getPublishingPolicy: vi.fn(), listPublishingRuns: vi.fn(), listChannelConnections: vi.fn(), listOwnedProjectVideoAssets: vi.fn(), createPublishingRun: vi.fn(), updatePublishingRun: vi.fn(), markPolicyPublished: vi.fn(), markProjectPublished: vi.fn(), setScheduleStatus: vi.fn(),
+  getScheduleByTaskUid: vi.fn(), markScheduleExecuted: vi.fn(), getConnectionHealthMonitor: vi.fn(), getPublishingPolicy: vi.fn(), listPublishingRuns: vi.fn(), listChannelConnections: vi.fn(), listOwnedProjectVideoAssets: vi.fn(), createPublishingRun: vi.fn(), updatePublishingRun: vi.fn(), markPolicyPublished: vi.fn(), markProjectPublished: vi.fn(), setScheduleStatus: vi.fn(),
 };
 const guardMock = { evaluatePublishGuard: vi.fn() };
 const notifierMock = { notifyOwnerOperationalEvent: vi.fn() };
@@ -21,6 +21,7 @@ describe("scheduled publishing notifications", () => {
     vi.clearAllMocks();
     dbMock.getScheduleByTaskUid.mockResolvedValue({ id: 3, ownerId: 9, projectId: 4, platform: "youtube", status: "active" });
     dbMock.markScheduleExecuted.mockResolvedValue(undefined);
+    dbMock.getConnectionHealthMonitor.mockResolvedValue({ platform: "youtube", status: "healthy", lastCheckedAt: new Date() });
     dbMock.getPublishingPolicy.mockResolvedValue({});
     dbMock.listPublishingRuns.mockResolvedValue([]);
     dbMock.listChannelConnections.mockResolvedValue([]);
@@ -80,14 +81,25 @@ describe("scheduled publishing notifications", () => {
     expect(notifierMock.notifyOwnerOperationalEvent).toHaveBeenCalledWith(expect.objectContaining({ eventType: "scheduled_facebook_upload", detail: expect.stringContaining("معرّف فيديو Facebook: fb-55") }));
   });
 
-  it("records a failure notification and pauses the schedule when the upload provider errors", async () => {
+  it("retries a temporary provider failure while leaving the schedule active for the platform retry", async () => {
     guardMock.evaluatePublishGuard.mockReturnValue({ allowed: true, visibility: "private", reason: "جاهز" });
     dbMock.listChannelConnections.mockResolvedValue([{ platform: "youtube", status: "authorized", credentialCiphertext: "cipher" }]);
     publisherMock.uploadVettedVideoToYouTube.mockRejectedValue(new Error("provider unavailable"));
 
     await expect(executeScheduledPublish("cron_3")).rejects.toThrow("provider unavailable");
     expect(dbMock.updatePublishingRun).toHaveBeenCalledWith(9, 77, { status: "failed" });
+    expect(dbMock.setScheduleStatus).not.toHaveBeenCalledWith(9, 3, "failed");
+    expect(notifierMock.notifyOwnerOperationalEvent).toHaveBeenCalledWith(expect.objectContaining({ publishingRunId: 77, eventType: "scheduled_youtube_retry", detail: expect.stringContaining("1/3") }));
+  });
+
+  it("stops the schedule after the maximum temporary upload attempts", async () => {
+    guardMock.evaluatePublishGuard.mockReturnValue({ allowed: true, visibility: "private", reason: "جاهز" });
+    dbMock.listChannelConnections.mockResolvedValue([{ platform: "youtube", status: "authorized", credentialCiphertext: "cipher" }]);
+    dbMock.listPublishingRuns.mockResolvedValue([{ projectId: 4, platform: "youtube", status: "failed" }, { projectId: 4, platform: "youtube", status: "failed" }]);
+    publisherMock.uploadVettedVideoToYouTube.mockRejectedValue(new Error("provider unavailable"));
+
+    await expect(executeScheduledPublish("cron_3")).rejects.toThrow("provider unavailable");
     expect(dbMock.setScheduleStatus).toHaveBeenCalledWith(9, 3, "failed");
-    expect(notifierMock.notifyOwnerOperationalEvent).toHaveBeenCalledWith(expect.objectContaining({ publishingRunId: 77, eventType: "scheduled_youtube_failed", detail: expect.stringContaining("provider unavailable") }));
+    expect(notifierMock.notifyOwnerOperationalEvent).toHaveBeenCalledWith(expect.objectContaining({ publishingRunId: 77, eventType: "scheduled_youtube_failed" }));
   });
 });
