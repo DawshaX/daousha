@@ -14,6 +14,7 @@ const dbMock = {
   createChangeLogEntry: vi.fn(),
   createSource: vi.fn(),
   createAsset: vi.fn(),
+  createPublishingRun: vi.fn(),
   getDashboardData: vi.fn(),
   listProjects: vi.fn(),
   getConnectionHealthMonitor: vi.fn(),
@@ -36,9 +37,11 @@ const dbMock = {
   listContentPlaybookSteps: vi.fn(),
 };
 const llmMock = { invokeLLM: vi.fn() };
+const advisorMock = { createNOVAAdvisorDraft: vi.fn() };
 
 vi.mock("./db", () => dbMock);
 vi.mock("./_core/llm", () => llmMock);
+vi.mock("./novaProviderAdvisory", () => advisorMock);
 
 const { getNOVAWorkspace, runNOVAPlaybook, runNOVATurn } = await import("./novaAssistant");
 
@@ -90,6 +93,7 @@ describe("NOVA Assistant", () => {
     dbMock.updatePlaybookRun.mockResolvedValue({ id: 51, status: "completed" });
     dbMock.listContentPlaybookSteps.mockResolvedValue([]);
     llmMock.invokeLLM.mockResolvedValue(modelPlan());
+    advisorMock.createNOVAAdvisorDraft.mockResolvedValue({ provider: "gemini", model: "gemini-2.0-flash", content: "مسودة آمنة للمراجعة البشرية.", safetyNote: "هذه مسودة إرشادية فقط." });
   });
 
   it("ينشئ مشروعًا مسودًا فقط تحت مالك الجلسة ويوثق الخطة والخطوة", async () => {
@@ -141,6 +145,27 @@ describe("NOVA Assistant", () => {
     expect(result.reply).toContain("أهلًا بك في XDAW NOVA");
     expect(result.reply).toContain("ما حالة القنوات؟");
     expect(dbMock.createProject).not.toHaveBeenCalled();
+  });
+
+  it("ينشئ مسودة Gemini إرشادية من Telegram عبر المنفذ الموحد من دون استدعاء محلل الخطة أو أدوات النشر", async () => {
+    const result = await runNOVATurn({ ownerId: 7, origin: "telegram", content: "مسودة Gemini عن فضل الأذكار في دقيقة" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(advisorMock.createNOVAAdvisorDraft).toHaveBeenCalledWith({ provider: "gemini", prompt: "فضل الأذكار في دقيقة", language: "both" });
+    expect(result.reply).toContain("مسودة آمنة للمراجعة البشرية");
+    expect(result.reply).toContain("لن تُنشئ المسودة نشرًا أو جدولة");
+    expect(dbMock.createPublishingRun).not.toHaveBeenCalled();
+  });
+
+  it("يقدم إرشادًا آمنًا قابلًا للتدقيق إذا تعذر محلل طلب غير حتمي بدل إنهاء الجلسة بالفشل", async () => {
+    llmMock.invokeLLM.mockRejectedValue(new Error("service unavailable"));
+    const result = await runNOVATurn({ ownerId: 7, content: "فسر لي خطوة جديدة غير مصنفة" });
+
+    expect(result.status).toBe("completed");
+    expect(result.reply).toContain("لم يتضح الطلب بما يكفي الآن");
+    expect(result.reply).toContain("مسودة Gemini عن");
+    expect(dbMock.createAssistantAuditEvent).toHaveBeenCalledWith(expect.objectContaining({ action: "assistant_plan_degraded", decision: "completed" }));
   });
 
   it("يعرض آخر التنبيهات من Telegram من دون استدعاء النموذج أو إرسال رسالة جديدة", async () => {

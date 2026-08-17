@@ -3,6 +3,7 @@ import * as db from "./db";
 import { buildChannelRenewalGuidance } from "./channelRenewalPolicy";
 import { assessAssetIntake } from "./rightsSafetyGate";
 import { evaluatePublishGuard } from "./publishingGuards";
+import { createNOVAAdvisorDraft, type NOVAAdvisorProvider } from "./novaProviderAdvisory";
 
 const MAX_MESSAGE_LENGTH = 8_000;
 const SAFE_TOOL_NAMES = [
@@ -19,6 +20,7 @@ const SAFE_TOOL_NAMES = [
   "create_project_draft",
   "propose_source",
   "register_asset_draft",
+  "create_advisor_draft",
   "respond_only",
 ] as const;
 
@@ -37,6 +39,7 @@ type PlannedAssistantAction = {
   sourceUrl: string;
   licenseType: string;
   assetTitle: string;
+  advisorProvider?: NOVAAdvisorProvider;
 };
 
 type ToolExecution = {
@@ -141,6 +144,7 @@ function safeAction(input: PlannedAssistantAction) {
   if (input.toolName === "create_memory_draft" && containsSensitiveMemoryInput(input.brief)) return { ...input, toolName: "respond_only" as const, response: "لن أحفظ كلمات مرور أو رموز وصول أو رموز تحقق في ذاكرة NOVA. احفظ بدلاً منها قاعدة أو تفضيلًا غير حساس." };
   if (input.toolName === "propose_source" && !canCreateSource(input)) return { ...input, toolName: "respond_only" as const, response: "أحتاج اسم المصدر ورابطًا صحيحًا يبدأ بـ https:// لإضافته كمقترح للمراجعة." };
   if (input.toolName === "register_asset_draft" && (input.assetTitle.length < 2 || input.licenseType.length < 2)) return { ...input, toolName: "respond_only" as const, response: "أحتاج اسم المادة ونوع الترخيص لتسجيلها في بوابة الحقوق للمراجعة." };
+  if (input.toolName === "create_advisor_draft" && !input.advisorProvider) return { ...input, toolName: "respond_only" as const, response: "لإنشاء مسودة خارجية، اذكر مزودًا صراحةً: Gemini أو OpenAI. لا تُرسل مفاتيح أو رموزًا ضمن الطلب." };
   return input;
 }
 
@@ -191,7 +195,7 @@ function deterministicMemoryDraft(content: string): PlannedAssistantAction | und
 function deterministicStartHelp(content: string): PlannedAssistantAction | undefined {
   if (!/^\/(?:start|help)(?:@\w+)?\s*$/i.test(content.trim())) return undefined;
   return {
-    response: "أهلًا بك في XDAW NOVA. أستطيع عرض الحالة والتفويض والتنبيهات والمراجعات والذاكرة والـPlaybooks، أو إعداد مسودة مشروع ومقترح مصدر ضمن الحواجز. جرّب: «ما حالة القنوات؟»، «ما حالة التفويض؟»، «اعرض آخر التنبيهات»، «ما الذي يحتاج مراجعة؟»، أو «تذكر أن الأولوية للعربية أولاً». أمر النشر يعرض خطة مقيدة فقط ولا ينشر مباشرة.",
+    response: "أهلًا بك في XDAW NOVA. أستطيع عرض الحالة والتفويض والتنبيهات والمراجعات والذاكرة والـPlaybooks، أو إعداد مسودة مشروع ومقترح مصدر ضمن الحواجز. جرّب: «ما حالة القنوات؟»، «ما حالة التفويض؟»، «اعرض آخر التنبيهات»، «ما الذي يحتاج مراجعة؟»، أو «تذكر أن الأولوية للعربية أولاً». للمسودات الإرشادية فقط استخدم: «مسودة Gemini عن …» أو «مسودة OpenAI عن …». أمر النشر يعرض خطة مقيدة فقط ولا ينشر مباشرة.",
     planSummary: "عرض دليل بدء NOVA والأوامر المسموحة من دون تنفيذ أو تعديل بيانات.",
     toolName: "respond_only", impact: "read", requiresApproval: false,
     title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
@@ -232,6 +236,19 @@ function deterministicDraftProject(content: string): PlannedAssistantAction | un
     impact: "draft",
     requiresApproval: false,
     title, brief: "مسودة منشأة من أمر NOVA الموحد وتحتاج خطوات المحتوى والمراجعة قبل أي نشر.", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+  };
+}
+
+function deterministicAdvisorDraft(content: string): PlannedAssistantAction | undefined {
+  const match = content.match(/^(?:مسودة|اكتب\s+(?:لي\s+)?مسودة|draft)\s+(Gemini|OpenAI)\s*(?:عن|for|:)?\s*(.{3,6000})$/i);
+  if (!match) return undefined;
+  const provider = match[1].toLowerCase() as NOVAAdvisorProvider;
+  const brief = match[2].replace(/[.؟!]+$/, "").trim();
+  return {
+    response: `سأنشئ مسودة إرشادية عبر ${provider === "gemini" ? "Gemini" : "OpenAI"}. لن تُنشئ المسودة نشرًا أو جدولة أو تغييرًا في الحقوق أو السياسة.`,
+    planSummary: `إنشاء مسودة إرشادية مقيدة عبر ${provider === "gemini" ? "Gemini" : "OpenAI"} للمالك.`,
+    toolName: "create_advisor_draft", impact: "draft", requiresApproval: false,
+    title: "", brief, sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "", advisorProvider: provider,
   };
 }
 
@@ -437,6 +454,15 @@ async function executeSafeTool(ownerId: number, action: PlannedAssistantAction):
     return { target: `asset:${asset.id}`, resultSummary: `سُجلت المادة «${asset.title}» في بوابة الحقوق بحالة مراجعة.`, responseContext: "لم تصبح المادة صالحة للإنتاج أو النشر قبل فحص الترخيص والسلامة." };
   }
 
+  if (action.toolName === "create_advisor_draft") {
+    const draft = await createNOVAAdvisorDraft({ provider: action.advisorProvider!, prompt: action.brief, language: "both" });
+    return {
+      target: `advisor:${draft.provider}`,
+      resultSummary: `مسودة ${draft.provider === "gemini" ? "Gemini" : "OpenAI"} (${draft.model}):\n${draft.content}`,
+      responseContext: draft.safetyNote,
+    };
+  }
+
   return { target: "conversation", resultSummary: "قُدّم رد إرشادي من دون تنفيذ أي أداة أو تغيير بيانات.", responseContext: "لا توجد صلاحية متاحة لتنفيذ هذا الطلب تلقائيًا في المرحلة الحالية." };
 }
 
@@ -543,6 +569,7 @@ export async function runNOVATurn(input: { ownerId: number; content: string; ses
     ?? deterministicOperationalStatus(content)
     ?? deterministicPublishPlan(content)
     ?? deterministicReviewOverview(content)
+    ?? deterministicAdvisorDraft(content)
     ?? deterministicDraftProject(content)
     ?? deterministicSourceProposal(content)
     ?? deterministicPlaybookRun(content)
@@ -563,10 +590,13 @@ export async function runNOVATurn(input: { ownerId: number; content: string; ses
     });
     planned = normalizePlan(JSON.parse(readModelContent(modelResponse.choices[0]?.message.content)), content);
   } catch (error) {
-    const fallback = "تعذر تحليل الطلب الآن، لذلك لم أنفذ أي إجراء. أعد صياغة الطلب أو حاول لاحقًا.";
-    await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: resolvedSession.id, role: "assistant", content: fallback, displayKind: "notice" });
-    await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: resolvedSession.id, actor: "assistant", action: "assistant_plan_failed", target: `session:${resolvedSession.id}`, decision: "failed", detail: error instanceof Error ? error.message.slice(0, 800) : "تعذر استدعاء محلل المساعد." });
-    return { session: resolvedSession, status: "failed" as const, reply: fallback };
+    planned = {
+      response: "لم يتضح الطلب بما يكفي الآن، لكن لم يُنفذ أي تغيير. استخدم أمرًا واضحًا مثل «ما حالة القنوات؟»، «اعرض آخر التنبيهات»، «مسودة Gemini عن …»، أو «مسودة OpenAI عن …».",
+      planSummary: "تقديم إرشاد آمن بعد تعذر تحليل طلب غير حتمي، من دون تنفيذ أو تعديل بيانات.",
+      toolName: "respond_only", impact: "read", requiresApproval: false,
+      title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+    };
+    await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: resolvedSession.id, actor: "assistant", action: "assistant_plan_degraded", target: `session:${resolvedSession.id}`, decision: "completed", detail: error instanceof Error ? error.message.slice(0, 800) : "تعذر استدعاء محلل المساعد؛ استُخدم بديل إرشادي." });
   }
 
   const action = safeAction(planned);
