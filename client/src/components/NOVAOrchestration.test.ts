@@ -14,6 +14,10 @@ describe("NOVA Orchestration source catalog", () => {
     expect(source).toContain("https://www.pexels.com/search/videos/");
     expect(source).toContain('target="_blank"');
     expect(source).toContain("لا يحمل NOVA أي ملف");
+    expect(source).toContain("مرجع Pinterest بصري");
+    expect(source).toContain("pinterestUrlIsValid");
+    expect(source).toContain('sourceKind: "reference"');
+    expect(source).toContain("لا يمنح ترخيصًا لتنزيل Pin أو استخدامه أو إعادة توزيعه");
     expect(source).not.toContain("yt-dlp");
   });
 });

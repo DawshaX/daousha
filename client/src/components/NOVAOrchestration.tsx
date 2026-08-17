@@ -13,6 +13,8 @@ export default function NOVAOrchestration() {
   const [memoryContent, setMemoryContent] = useState("");
   const [pairCommand, setPairCommand] = useState("");
   const [referenceQuery, setReferenceQuery] = useState("");
+  const [pinterestReferenceTitle, setPinterestReferenceTitle] = useState("");
+  const [pinterestReferenceUrl, setPinterestReferenceUrl] = useState("");
   const memories = trpc.nova.memories.useQuery();
   const playbooks = trpc.nova.playbooks.useQuery();
   const pairing = trpc.nova.telegramPairingStatus.useQuery();
@@ -43,6 +45,11 @@ export default function NOVAOrchestration() {
     onSuccess: result => { sourceHealth.refetch(); toast.success(`فُعلت مراقبة المصادر. الموعد التالي: ${result.nextExecutionAt ? new Date(result.nextExecutionAt).toLocaleString("ar-EG") : "سيظهر بعد جدولة Heartbeat"}.`); },
     onError: error => toast.error(error.message),
   });
+  const addPinterestReference = trpc.daousha.addSource.useMutation({
+    onSuccess: () => { setPinterestReferenceTitle(""); setPinterestReferenceUrl(""); utils.daousha.sources.invalidate(); toast.success("سُجل مرجع Pinterest للمراجعة البصرية فقط."); },
+    onError: error => toast.error(error.message),
+  });
+  const pinterestUrlIsValid = /^https?:\/\/(?:[a-z]{2,3}\.)?pinterest\.[a-z.]+\/(?:pin|ideas)\/|^https?:\/\/pin\.it\//i.test(pinterestReferenceUrl.trim());
 
   return <section className="grid gap-5 xl:grid-cols-2" dir="rtl">
     <Card className="border-white/8 bg-zinc-950/65">
@@ -67,6 +74,11 @@ export default function NOVAOrchestration() {
           <p className="text-xs font-semibold text-zinc-200">بحث مرجعي مرخّص</p>
           <p className="mt-1 text-[11px] leading-5 text-zinc-500">يفتح البحث في Pexels فقط لتصفح اللقطات وترخيصها يدويًا؛ لا يحمل NOVA أي ملف ولا يسجله كمادة أو يرسل شيئًا للنشر.</p>
           <div className="mt-3 flex gap-2"><Input value={referenceQuery} onChange={event => setReferenceQuery(event.target.value)} placeholder="مثال: calm sunrise" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Button size="sm" variant="outline" className="h-8 shrink-0 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={referenceQuery.trim().length < 2} onClick={() => window.open(`https://www.pexels.com/search/videos/${encodeURIComponent(referenceQuery.trim())}/`, "_blank", "noopener,noreferrer")}>فتح المرجع</Button></div>
+        </div>
+        <div className="rounded-lg border border-white/8 bg-black/20 p-3">
+          <p className="text-xs font-semibold text-zinc-200">مرجع Pinterest بصري</p>
+          <p className="mt-1 text-[11px] leading-5 text-zinc-500">سجّل Pin أو Idea كمصدر إلهام موثق فقط. لا يحمّل NOVA الوسائط ولا يقصها أو يعيد توزيعها.</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1.3fr_auto]"><Input value={pinterestReferenceTitle} onChange={event => setPinterestReferenceTitle(event.target.value)} placeholder="اسم الفكرة أو التركيب" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Input value={pinterestReferenceUrl} onChange={event => setPinterestReferenceUrl(event.target.value)} dir="ltr" placeholder="https://www.pinterest.com/pin/..." className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Button size="sm" variant="outline" className="h-8 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={!pinterestUrlIsValid || pinterestReferenceTitle.trim().length < 2 || addPinterestReference.isPending} onClick={() => addPinterestReference.mutate({ name: `Pinterest — ${pinterestReferenceTitle.trim()}`, url: pinterestReferenceUrl.trim(), sourceKind: "reference", language: "both", notes: "مرجع إلهام بصري فقط. لا يمنح ترخيصًا لتنزيل Pin أو استخدامه أو إعادة توزيعه؛ يجب إنتاج مشهد أصلي أو تسجيل مادة مرخصة منفصلة." })}>{addPinterestReference.isPending ? "جارٍ التسجيل…" : "تسجيل مرجع"}</Button></div>
         </div>
         {(sources.data ?? []).filter(source => source.sourceKind === "asset" || source.sourceKind === "audio").slice(0, 5).map(source => (
           <div key={source.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">
