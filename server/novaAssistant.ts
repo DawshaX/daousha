@@ -116,6 +116,18 @@ function safeAction(input: PlannedAssistantAction) {
   return input;
 }
 
+function deterministicOperationalStatus(content: string): PlannedAssistantAction | undefined {
+  if (!/(حالة|القنوات|اخبار|أخبار|status|channels|الجدول|الجدولة|المهام)/i.test(content)) return undefined;
+  return {
+    response: "سأعرض الحالة التشغيلية الفعلية للقنوات والجدولة من بيانات XDAW NOVA.",
+    planSummary: "قراءة حالة القنوات والمراقبات والجدولة من المصدر التشغيلي الموحد.",
+    toolName: "get_operational_overview",
+    impact: "read",
+    requiresApproval: false,
+    title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+  };
+}
+
 async function executeSafeTool(ownerId: number, action: PlannedAssistantAction): Promise<ToolExecution> {
   if (action.toolName === "get_operational_overview") {
     const [dashboard, monitors, notifications] = await Promise.all([
@@ -185,7 +197,10 @@ export async function runNOVATurn(input: { ownerId: number; content: string; ses
 
   const history = await db.listAssistantMessages(input.ownerId, resolvedSession.id);
   let planned: PlannedAssistantAction;
-  try {
+  const deterministic = deterministicOperationalStatus(content);
+  if (deterministic) {
+    planned = deterministic;
+  } else try {
     const modelResponse = await invokeLLM({
       model: "gpt-5-mini",
       maxTokens: 900,

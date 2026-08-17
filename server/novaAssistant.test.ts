@@ -61,6 +61,9 @@ describe("NOVA Assistant", () => {
     dbMock.updateAssistantActionStep.mockResolvedValue({ id: 42 });
     dbMock.createProject.mockResolvedValue({ id: 88, title: "فكرة تحقق أصلية" });
     dbMock.createChangeLogEntry.mockResolvedValue({ id: 89 });
+    dbMock.getDashboardData.mockResolvedValue({ stats: { activeProjects: 2, reviewProjects: 0, activeSchedules: 6 }, connections: [{ platform: "youtube", status: "authorized" }] });
+    dbMock.getConnectionHealthMonitor.mockResolvedValue({ platform: "youtube", status: "healthy" });
+    dbMock.listNotificationEvents.mockResolvedValue([]);
     llmMock.invokeLLM.mockResolvedValue(modelPlan());
   });
 
@@ -73,6 +76,16 @@ describe("NOVA Assistant", () => {
     expect(dbMock.updateAssistantActionStep).toHaveBeenLastCalledWith(7, 42, expect.objectContaining({ status: "completed" }));
     expect(dbMock.createAssistantMessage).toHaveBeenCalledWith(expect.objectContaining({ displayKind: "plan", content: expect.stringContaining("### خطة NOVA") }));
     expect(dbMock.createAssistantMessage).toHaveBeenCalledWith(expect.objectContaining({ displayKind: "tool_result", content: expect.stringContaining("لم يُنشأ أي جدول أو نشر") }));
+  });
+
+  it("يجيب عن حالة القنوات من المصدر التشغيلي حتى إذا تعذر محلل اللغة", async () => {
+    llmMock.invokeLLM.mockRejectedValue(new Error("service unavailable"));
+    const result = await runNOVATurn({ ownerId: 7, content: "القنوات أخبارها إيه؟" , origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.getDashboardData).toHaveBeenCalledWith(7);
+    expect(result.reply).toContain("الجداول النشطة 6");
   });
 
   it("يحجب أي طلب عالي الأثر حتى لو طلب نموذج اللغة أداة تنفيذية", async () => {
