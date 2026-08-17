@@ -27,6 +27,7 @@ const dbMock = {
   listAssistantActionSteps: vi.fn(),
   listAssistantAuditEvents: vi.fn(),
   listAssistantMemories: vi.fn(),
+  createAssistantMemory: vi.fn(),
   listContentPlaybooks: vi.fn(),
   searchAssistantKnowledge: vi.fn(),
   createPlaybookRun: vi.fn(),
@@ -137,6 +138,25 @@ describe("NOVA Assistant", () => {
     expect(llmMock.invokeLLM).not.toHaveBeenCalled();
     expect(result.reply).toContain("facebook_health_healthy: sent");
     expect(dbMock.createAssistantActionStep).toHaveBeenCalledWith(expect.objectContaining({ toolName: "get_notifications_overview" }));
+  });
+
+  it("يحفظ ذاكرة صريحة من Telegram ضمن نطاق المالك فقط", async () => {
+    dbMock.createAssistantMemory.mockResolvedValue({ id: 61, title: "ذاكرة NOVA: الأولوية للعربية أولاً" });
+
+    const result = await runNOVATurn({ ownerId: 7, content: "تذكر أن الأولوية للعربية أولاً", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.createAssistantMemory).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, kind: "decision", content: "الأولوية للعربية أولاً" }));
+    expect(result.reply).toContain("حُفظت الذاكرة");
+  });
+
+  it("يرفض حفظ رمز تحقق أو كلمة مرور حتى إذا طلب المالك ذلك صراحةً", async () => {
+    const result = await runNOVATurn({ ownerId: 7, content: "تذكر أن رمز تحقق الحساب 123456", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(dbMock.createAssistantMemory).not.toHaveBeenCalled();
+    expect(result.reply).toContain("لن أحفظ كلمات مرور أو رموز وصول أو رموز تحقق");
   });
 
   it("يحوّل أمر النشر إلى فحص حزم مقيد ولا ينفذ رفعًا", async () => {
