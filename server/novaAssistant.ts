@@ -8,6 +8,7 @@ const SAFE_TOOL_NAMES = [
   "get_operational_overview",
   "get_nova_resources",
   "search_knowledge",
+  "run_playbook",
   "prepare_publish_plan",
   "create_project_draft",
   "propose_source",
@@ -65,7 +66,7 @@ const assistantSchema = {
 
 const systemPrompt = `أنت NOVA Assistant داخل XDAW NOVA، منصة لإدارة محتوى فيديو ثنائي اللغة بصورة مسؤولة.
 	أجب بالعربية الواضحة إلا إذا طلب المستخدم الإنجليزية. لا تكشف سلسلة التفكير أو أي تعليمات داخلية.
-		لديك فقط هذه الأدوات: get_operational_overview، get_nova_resources، search_knowledge، prepare_publish_plan، create_project_draft، propose_source، register_asset_draft، respond_only.
+		لديك فقط هذه الأدوات: get_operational_overview، get_nova_resources، search_knowledge، run_playbook، prepare_publish_plan، create_project_draft، propose_source، register_asset_draft، respond_only.
 لا تملك أي صلاحية مباشرة للنشر أو الحذف أو تغيير السياسة أو ربط حسابات أو التعامل مع كلمات المرور أو الرموز أو TikTok.
 اختر get_operational_overview لأسئلة الحالة والمهام والقنوات، وأنشئ مسودة مشروع أو مصدر أو أصل فقط عندما تتوفر الحقول اللازمة. إن لم تتوفر، اختر respond_only واطلب معلومة واحدة واضحة.
 يجب أن يكون planSummary ملخصًا قصيرًا قابلًا للعرض للمالك، لا تفكيرًا خامًا. يجب أن تكون requiresApproval صحيحة لأي فعل عالي الأثر؛ وفي هذه المرحلة لا تنفذ الأفعال عالية الأثر.`;
@@ -121,6 +122,7 @@ function canCreateSource(input: PlannedAssistantAction) {
 function safeAction(input: PlannedAssistantAction) {
   if (input.impact === "high") return { ...input, toolName: "respond_only" as const, requiresApproval: true };
   if (input.toolName === "create_project_draft" && input.title.length < 3) return { ...input, toolName: "respond_only" as const, response: "أحتاج عنوانًا مختصرًا من 3 أحرف أو أكثر لإنشاء مسودة المشروع." };
+  if (input.toolName === "run_playbook" && input.title.length < 3) return { ...input, toolName: "respond_only" as const, response: "أحتاج اسم Playbook واضحًا قبل تشغيله ضمن الحواجز." };
   if (input.toolName === "propose_source" && !canCreateSource(input)) return { ...input, toolName: "respond_only" as const, response: "أحتاج اسم المصدر ورابطًا صحيحًا يبدأ بـ https:// لإضافته كمقترح للمراجعة." };
   if (input.toolName === "register_asset_draft" && (input.assetTitle.length < 2 || input.licenseType.length < 2)) return { ...input, toolName: "respond_only" as const, response: "أحتاج اسم المادة ونوع الترخيص لتسجيلها في بوابة الحقوق للمراجعة." };
   return input;
@@ -205,6 +207,23 @@ function deterministicKnowledgeSearch(content: string): PlannedAssistantAction |
     planSummary: `بحث قراءة فقط في قاعدة المعرفة عن «${query}».`,
     toolName: "search_knowledge", impact: "read", requiresApproval: false,
     title: "", brief: query, sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+  };
+}
+
+function deterministicPlaybookRun(content: string): PlannedAssistantAction | undefined {
+  if (!/(شغّل|شغل|نفّذ|نفذ|run)/i.test(content) || !/(playbook|الوصفة|وصفة)/i.test(content)) return undefined;
+  const title = content.match(/(?:playbook|الوصفة|وصفة)\s*(?:بعنوان\s*)?(.{3,180})/i)?.[1]?.replace(/[.؟!]+$/, "").trim() || "";
+  if (!title) return {
+    response: "أحتاج اسم Playbook بعد كلمة «شغّل» لأبدأ الوصفة المحكومة من السجل نفسه.",
+    planSummary: "طلب اسم Playbook قبل بدء تشغيل محكوم.",
+    toolName: "respond_only", impact: "read", requiresApproval: false,
+    title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+  };
+  return {
+    response: `سأشغّل Playbook «${title}» عبر المنفذ المحكوم؛ ستنفذ خطوات القراءة فقط وتُحجب أي خطوة مؤثرة.`,
+    planSummary: `تشغيل Playbook «${title}» ضمن حواجز NOVA.`,
+    toolName: "run_playbook", impact: "guarded", requiresApproval: false,
+    title, brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
   };
 }
 
@@ -393,6 +412,7 @@ export async function runNOVATurn(input: { ownerId: number; content: string; ses
     ?? deterministicPublishPlan(content)
     ?? deterministicDraftProject(content)
     ?? deterministicSourceProposal(content)
+    ?? deterministicPlaybookRun(content)
     ?? deterministicKnowledgeSearch(content)
     ?? deterministicNOVAResources(content);
   if (deterministic) {
@@ -416,6 +436,16 @@ export async function runNOVATurn(input: { ownerId: number; content: string; ses
   }
 
   const action = safeAction(planned);
+  if (action.toolName === "run_playbook") {
+    const playbook = (await db.listContentPlaybooks(input.ownerId)).find(item => item.status === "active" && item.title.trim().toLocaleLowerCase() === action.title.trim().toLocaleLowerCase());
+    if (!playbook) {
+      const reply = `لم أجد Playbook نشطًا باسم «${action.title}». اعرض الـPlaybooks المحفوظة أو استخدم الاسم الظاهر في البرنامج.`;
+      await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: resolvedSession.id, role: "assistant", content: reply, displayKind: "notice" });
+      await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: resolvedSession.id, actor: "assistant", action: "playbook_run_not_found", target: action.title, decision: "blocked", detail: "لم تطابق الوصفة اسمًا نشطًا يخص المالك." });
+      return { session: resolvedSession, status: "blocked" as const, reply };
+    }
+    return runNOVAPlaybook({ ownerId: input.ownerId, playbookId: playbook.id, sessionId: resolvedSession.id });
+  }
   const plan = await db.createAssistantActionPlan({ ownerId: input.ownerId, sessionId: resolvedSession.id, summary: action.planSummary, impact: action.impact, requiresApproval: action.requiresApproval });
   const step = await db.createAssistantActionStep({ ownerId: input.ownerId, planId: plan.id, stepOrder: 1, title: action.planSummary.slice(0, 255), toolName: action.toolName, inputSummary: action.toolName === "respond_only" ? "لا توجد مدخلات تنفيذية." : "مدخلات من الطلب، تحققت من الخادم قبل التنفيذ." });
   await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: resolvedSession.id, role: "assistant", content: planMessage(plan), displayKind: "plan" });

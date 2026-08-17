@@ -194,6 +194,19 @@ describe("NOVA Assistant", () => {
     expect(dbMock.getDashboardData).toHaveBeenCalledWith(7);
   });
 
+  it("يشغّل Playbook باسمه من أمر Telegram عبر المحرك الموحد دون استدعاء نموذج اللغة", async () => {
+    const session = { id: 21, ownerId: 7, title: "جلسة جديدة", status: "active", origin: "telegram" };
+    dbMock.getOwnedAssistantSession.mockResolvedValue(session);
+    dbMock.listContentPlaybooks.mockResolvedValue([{ id: 53, title: "فحص تشغيل", status: "active", impact: "read" }]);
+    dbMock.listContentPlaybookSteps.mockResolvedValue([{ stepOrder: 1, title: "عرض الحالة", toolName: "get_operational_overview" }]);
+
+    const result = await runNOVATurn({ ownerId: 7, content: "شغل Playbook فحص تشغيل", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.createPlaybookRun).toHaveBeenCalledWith(expect.objectContaining({ playbookId: 53, sessionId: 21 }));
+  });
+
   it("يحجب Playbook الذي يطلب تغيير بيانات قبل إنشاء مسودة أو نشر", async () => {
     dbMock.listContentPlaybooks.mockResolvedValue([{ id: 52, title: "مسودة تحتاج إدخال", status: "active", impact: "draft" }]);
     dbMock.listContentPlaybookSteps.mockResolvedValue([{ stepOrder: 1, title: "إنشاء مشروع", toolName: "create_project_draft", inputTemplate: "عنوان مطلوب" }]);
