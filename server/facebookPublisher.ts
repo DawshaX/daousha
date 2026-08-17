@@ -40,6 +40,14 @@ async function verifyPageIdentity(pageId: string, accessToken: string) {
   return payload;
 }
 
+/** Read-only identity verification for the authorized Facebook Page. Never uploads or publishes content. */
+export async function verifyAuthorizedFacebookPage(connection: AuthorizedFacebookConnection) {
+  if (connection.status !== "authorized" || !connection.externalAccountRef) {
+    throw new Error("صفحة Facebook غير مفوضة للمراقبة.");
+  }
+  return verifyPageIdentity(connection.externalAccountRef, selectedPageToken(connection));
+}
+
 /**
  * Uploads one vetted video to the selected Facebook Page.
  * The caller must complete rights, safety, preview, and pre-schedule approval guards first.
@@ -50,7 +58,7 @@ export async function uploadVettedVideoToFacebookPage(connection: AuthorizedFace
   }
 
   const accessToken = selectedPageToken(connection);
-  await verifyPageIdentity(connection.externalAccountRef, accessToken);
+  await verifyAuthorizedFacebookPage(connection);
   const signedUrl = await storageGetSignedUrl(input.storageKey);
   const videoResponse = await fetch(signedUrl, { signal: AbortSignal.timeout(90_000) });
   if (!videoResponse.ok) throw new Error("تعذّر قراءة ملف الفيديو من التخزين الآمن.");

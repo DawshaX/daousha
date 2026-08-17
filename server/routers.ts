@@ -324,6 +324,27 @@ export const appRouter = router({
       await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "تفعيل مراقبة اتصال Instagram", details: "فحص هوية وتجديد رمز Instagram كل 6 ساعات؛ لا ينشئ أو ينشر أي Reel.", actorType: "user" });
       return { monitor: saved, nextExecutionAt };
     }),
+    facebookHealthMonitor: protectedProcedure.query(({ ctx }) => db.getConnectionHealthMonitor(ctx.user.id, "facebook")),
+    activateFacebookHealthMonitor: protectedProcedure.mutation(async ({ ctx }) => {
+      const connection = await db.getChannelConnection(ctx.user.id, "facebook");
+      if (!connection || connection.status !== "authorized" || !connection.externalAccountRef || (!connection.credentialCiphertext && !process.env.FACEBOOK_PAGE_ACCESS_TOKEN)) {
+        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اربط صفحة Facebook رسميًا برمز صفحة صالح قبل تفعيل مراقبة الاتصال." });
+      }
+      const monitor = await db.getConnectionHealthMonitor(ctx.user.id, "facebook");
+      let taskUid = monitor?.scheduleCronTaskUid;
+      let nextExecutionAt: string | null | undefined;
+      if (taskUid) {
+        const task = await updateHeartbeatJob(taskUid, { enable: true }, readSessionToken(ctx.req.headers.cookie));
+        nextExecutionAt = task.nextExecutionAt;
+      } else {
+        const task = await createHeartbeatJob({ name: `xdaw-facebook-health-${ctx.user.id}`, cron: "0 30 */6 * * *", path: "/api/scheduled/facebook-health-monitor", description: "XDAW NOVA non-publishing Facebook Page token health monitor" }, readSessionToken(ctx.req.headers.cookie));
+        taskUid = task.taskUid;
+        nextExecutionAt = task.nextExecutionAt;
+      }
+      const saved = await db.upsertConnectionHealthMonitor({ ownerId: ctx.user.id, platform: "facebook", scheduleCronTaskUid: taskUid });
+      await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "تفعيل مراقبة اتصال Facebook", details: "فحص هوية ورمز صفحة Facebook كل 6 ساعات؛ لا رفع ولا نشر.", actorType: "user" });
+      return { monitor: saved, nextExecutionAt };
+    }),
     sourceHealthMonitor: protectedProcedure.query(({ ctx }) => db.getSourceHealthMonitor(ctx.user.id)),
     activateSourceHealthMonitor: protectedProcedure.mutation(async ({ ctx }) => {
       const approvedSources = (await db.listSources(ctx.user.id)).filter(source => source.trustStatus === "approved");
@@ -344,11 +365,12 @@ export const appRouter = router({
       return { monitor: saved, nextExecutionAt };
     }),
     integrations: protectedProcedure.query(async ({ ctx }) => {
-      const [connections, assets, youtubeHealthMonitor, instagramHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube"), db.getConnectionHealthMonitor(ctx.user.id, "instagram")]);
+      const [connections, assets, youtubeHealthMonitor, instagramHealthMonitor, facebookHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube"), db.getConnectionHealthMonitor(ctx.user.id, "instagram"), db.getConnectionHealthMonitor(ctx.user.id, "facebook")]);
       return {
         connections,
         youtubeHealthMonitor,
         instagramHealthMonitor,
+        facebookHealthMonitor,
         distributionReadiness: resolveDistributionReadiness(connections),
         telegramConfigured: telegramIsConfigured(),
         youtubeClientConfigured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET),

@@ -4,6 +4,7 @@ import { executeEuOrgDomainMonitor } from "./domainMonitoring";
 import { executeScheduledPublish } from "./scheduledPublishing";
 import { executeYouTubeHealthMonitor } from "./youtubeHealthMonitoring";
 import { executeInstagramHealthMonitor } from "./instagramHealthMonitoring";
+import { executeFacebookHealthMonitor } from "./facebookHealthMonitoring";
 import { executeSourceHealthMonitor } from "./sourceHealthMonitoring";
 
 export function registerScheduledRoutes(app: Express) {
@@ -43,6 +44,16 @@ export function registerScheduledRoutes(app: Express) {
       const user = await sdk.authenticateRequest(req);
       if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron-only" });
       return res.json(await executeInstagramHealthMonitor(user.taskUid));
+    } catch (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : String(error), context: { url: req.originalUrl }, timestamp: new Date().toISOString() });
+    }
+  });
+
+  app.post("/api/scheduled/facebook-health-monitor", async (req: Request, res: Response) => {
+    try {
+      const user = await sdk.authenticateRequest(req);
+      if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron-only" });
+      return res.json(await executeFacebookHealthMonitor(user.taskUid));
     } catch (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : String(error), context: { url: req.originalUrl }, timestamp: new Date().toISOString() });
     }

@@ -100,6 +100,14 @@ export default function ChannelControlCenter() {
     onError: error => toast.error(error.message),
   });
 
+  const activateFacebookHealthMonitor = trpc.daousha.activateFacebookHealthMonitor.useMutation({
+    onSuccess: () => {
+      toast.success("فُعّلت مراقبة Facebook كل 6 ساعات. لا ينفذ هذا الفحص رفعًا أو نشرًا.");
+      utils.daousha.integrations.invalidate();
+    },
+    onError: error => toast.error(error.message),
+  });
+
   const patchPolicy = (patch: Partial<{ mode: "human_review" | "guarded_auto"; publicPublishingEnabled: boolean; killSwitchEnabled: boolean; requirePrivateCanary: boolean; minIntervalMinutes: number; maxPublicationsPerDay: number; dailyShortTarget: number; dailyLongTarget: number }>) => {
     if (!policy) return;
     updatePolicy.mutate({
@@ -119,6 +127,7 @@ export default function ChannelControlCenter() {
   const instagram = integrations?.connections.find(connection => connection.platform === "instagram");
   const instagramHealthMonitor = integrations?.instagramHealthMonitor;
   const facebook = integrations?.connections.find(connection => connection.platform === "facebook");
+  const facebookHealthMonitor = integrations?.facebookHealthMonitor;
   const tiktok = integrations?.connections.find(connection => connection.platform === "tiktok");
   const telegram = integrations?.connections.find(connection => connection.platform === "telegram");
   const policyBusy = policyLoading || updatePolicy.isPending;
@@ -170,6 +179,7 @@ export default function ChannelControlCenter() {
             </div>
             <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.05] p-3 text-xs leading-6 text-amber-100/85"><b>تنبيه التفويض:</b> تهيئة تطبيق Meta لا تثبت صلاحية رمز الصفحة. أظهر فحص القراءة المحدود في 15 أغسطس أن الرمز منتهٍ أو مُلغى؛ يظل رفع Facebook محجوبًا إلى أن يُجدد عبر المسار الرسمي ثم ينجح فحص قراءة جديد.</div>
             {integrations?.facebookClientConfigured && integrations.facebookDomainReady ? <Button asChild className="w-full bg-red-600 hover:bg-red-500"><a href="/api/integrations/facebook/authorize"><LockKeyhole className="ml-2 h-4 w-4" /> تفويض صفحة Facebook</a></Button> : <Button variant="outline" disabled className="w-full border-white/10 bg-white/[0.03] text-zinc-400"><LockKeyhole className="ml-2 h-4 w-4" /> {integrations?.facebookClientConfigured ? "بانتظار نطاق XDAW NOVA معتمد" : "إعداد Meta غير مكتمل"}</Button>}
+            {facebook?.status === "authorized" ? <div className="space-y-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.04] p-3"><p className="text-xs leading-5 text-emerald-100">{facebookHealthMonitor?.lastCheckedAt ? `آخر فحص: ${new Date(facebookHealthMonitor.lastCheckedAt).toLocaleString("ar-EG")} — ${facebookHealthMonitor.lastDetail ?? "لا تفاصيل إضافية."}` : "فعّل مراقبة الاتصال لفحص رمز الصفحة والهوية كل 6 ساعات؛ لا يرفع أو ينشر هذا الفحص أي فيديو."}</p><Button className="w-full bg-emerald-600 hover:bg-emerald-500" disabled={activateFacebookHealthMonitor.isPending} onClick={() => activateFacebookHealthMonitor.mutate()}><RadioTower className="ml-2 h-4 w-4" /> {activateFacebookHealthMonitor.isPending ? "جارٍ تفعيل مراقبة Facebook…" : facebookHealthMonitor?.scheduleCronTaskUid ? "استئناف مراقبة اتصال Facebook" : "تفعيل مراقبة اتصال Facebook"}</Button></div> : null}
           </CardContent>
         </Card>
 
