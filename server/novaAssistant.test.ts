@@ -72,7 +72,7 @@ describe("NOVA Assistant", () => {
     dbMock.updateAssistantActionStep.mockResolvedValue({ id: 42 });
     dbMock.createProject.mockResolvedValue({ id: 88, title: "فكرة تحقق أصلية" });
     dbMock.createChangeLogEntry.mockResolvedValue({ id: 89 });
-    dbMock.getDashboardData.mockResolvedValue({ stats: { activeProjects: 2, reviewProjects: 0, activeSchedules: 6 }, connections: [{ platform: "youtube", status: "authorized" }] });
+    dbMock.getDashboardData.mockResolvedValue({ stats: { activeProjects: 2, reviewProjects: 0, activeSchedules: 6 }, connections: [{ platform: "youtube", status: "authorized" }], schedules: [{ projectId: 81, platform: "youtube", status: "active", scheduleCronTaskUid: "heartbeat-test-81" }] });
     dbMock.listProjects.mockResolvedValue([]);
     dbMock.getConnectionHealthMonitor.mockResolvedValue({ platform: "youtube", status: "healthy" });
     dbMock.listNotificationEvents.mockResolvedValue([]);
@@ -108,6 +108,8 @@ describe("NOVA Assistant", () => {
     expect(llmMock.invokeLLM).not.toHaveBeenCalled();
     expect(dbMock.getDashboardData).toHaveBeenCalledWith(7);
     expect(result.reply).toContain("الجداول النشطة 6");
+    expect(result.reply).toContain("youtube للمشروع #81");
+    expect(result.reply).toContain("heartbeat-test-81");
   });
 
   it("يعرض سياسة التفويض والتجديد من Telegram دون استدعاء نموذج اللغة أو كشف رموز", async () => {
