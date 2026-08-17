@@ -119,6 +119,16 @@ describe("NOVA Assistant", () => {
     expect(result.reply).toContain("heartbeat-test-81");
   });
 
+  it("يفصل حالة المراقب الأولية عن فشل التفويض أو النشر", async () => {
+    dbMock.getConnectionHealthMonitor.mockResolvedValue({ platform: "facebook", status: "degraded", lastCheckedAt: null });
+    const result = await runNOVATurn({ ownerId: 7, content: "ما حالة القنوات؟" });
+
+    expect(result.status).toBe("completed");
+    expect(result.reply).toContain("facebook: بانتظار أول فحص مجدول");
+    expect(result.reply).toContain("وليست فشل تفويض أو نشر");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+  });
+
   it("يعرض سياسة التفويض والتجديد من Telegram دون استدعاء نموذج اللغة أو كشف رموز", async () => {
     dbMock.listChannelConnections.mockResolvedValue([
       { platform: "youtube", status: "authorized" },

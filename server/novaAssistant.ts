@@ -357,12 +357,12 @@ async function executeSafeTool(ownerId: number, action: PlannedAssistantAction):
       db.listNotificationEvents(ownerId),
     ]);
     const channelState = dashboard.connections.map(connection => `${connection.platform}: ${connection.status}`).join("، ") || "لا توجد قنوات مسجلة";
-    const healthState = monitors.filter(Boolean).map(monitor => `${monitor!.platform}: ${monitor!.status}`).join("، ") || "لا توجد نتائج فحص محفوظة";
+    const healthState = monitors.filter(Boolean).map(monitor => `${monitor!.platform}: ${!monitor!.lastCheckedAt ? "بانتظار أول فحص مجدول" : monitor!.status}`).join("، ") || "لا توجد نتائج فحص محفوظة";
     const activeSchedules = dashboard.schedules.filter(schedule => schedule.status === "active").map(schedule => `${schedule.platform} للمشروع #${schedule.projectId}${schedule.scheduleCronTaskUid ? ` (Heartbeat: ${schedule.scheduleCronTaskUid})` : ""}`).join("، ") || "لا توجد جداول نشر نشطة";
     return {
       target: "operation_overview",
       resultSummary: `المشروعات النشطة ${dashboard.stats.activeProjects}، المراجعة ${dashboard.stats.reviewProjects}، الجداول النشطة ${dashboard.stats.activeSchedules}: ${activeSchedules}. القنوات: ${channelState}.`,
-      responseContext: `حالة القنوات: ${channelState}. الصحة المراقبة: ${healthState}. آخر التنبيهات المسجلة: ${notifications.slice(0, 3).length}. تفاصيل الجدولة المعروضة قراءة فقط؛ لم يُنشأ أو يُعدل أي Heartbeat.`,
+      responseContext: `حالة القنوات: ${channelState}. الصحة المراقبة: ${healthState}. تعني «بانتظار أول فحص مجدول» أن المراقب لم يسجل نتيجة بعد، وليست فشل تفويض أو نشر. آخر التنبيهات المسجلة: ${notifications.slice(0, 3).length}. تفاصيل الجدولة المعروضة قراءة فقط؛ لم يُنشأ أو يُعدل أي Heartbeat.`,
     };
   }
 
