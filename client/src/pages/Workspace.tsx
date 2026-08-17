@@ -190,6 +190,7 @@ function StatZero({ label, sublabel, value = "0" }: { label: string; sublabel: s
 
 function Dashboard() {
   const { data: dashboard } = trpc.daousha.dashboard.useQuery();
+  const { data: engineMonitor } = trpc.daousha.dawshaEngineMonitor.useQuery();
   const stats = dashboard?.stats;
   const engineTasks = [...(dashboard?.tasks ?? [])].sort((left, right) => right.id - left.id);
   const engineTask = engineTasks.find(task => task.status === "running") ?? engineTasks.find(task => task.status === "blocked") ?? engineTasks.find(task => task.status === "queued") ?? engineTasks[0];
@@ -244,7 +245,7 @@ function Dashboard() {
             <CardTitle className="flex items-center gap-2 text-base text-white"><Bot className="h-4 w-4 text-red-400" /> محرك DAWSHA المركزي</CardTitle>
             <CardDescription className="mt-1 text-zinc-500">قراءة مباشرة لمهام دورة المحتوى المسجلة؛ لا يفتح العرض إنتاجًا أو نشرًا.</CardDescription>
           </div>
-          <Badge variant="outline" className="border-red-500/25 bg-red-500/10 text-red-200">{engineTasks.length} مهمة</Badge>
+          <Badge variant="outline" className="border-red-500/25 bg-red-500/10 text-red-200">{engineMonitor?.status === "active" ? "رصد دوري نشط" : engineMonitor?.status === "error" ? "آخر دورة تحتاج فحصًا" : `${engineTasks.length} مهمة`}</Badge>
         </CardHeader>
         <CardContent className="grid gap-3 p-5 md:grid-cols-[.9fr_1.15fr_1.55fr]">
           <div className="rounded-xl border border-white/8 bg-black/20 p-4">
@@ -259,7 +260,7 @@ function Dashboard() {
           </div>
           <div className="rounded-xl border border-amber-500/15 bg-amber-500/[0.045] p-4">
             <p className="text-[11px] font-medium tracking-wide text-amber-200/70">سبب التعليق أو التوجيه التالي</p>
-            <p className="mt-2 text-xs leading-6 text-amber-50/85">{engineTask?.detail ?? "ابدأ من NOVA بعبارة: ابدأ محرك DAWSHA عن [الموضوع]. ستُسجل المراحل، وتبقى الحقوق والسلامة والإنتاج والنشر مقيدة حتى استيفاء الشروط."}</p>
+            <p className="mt-2 text-xs leading-6 text-amber-50/85">{engineMonitor?.lastSummary ?? engineTask?.detail ?? "ابدأ من NOVA بعبارة: ابدأ محرك DAWSHA عن [الموضوع]. ستُسجل المراحل، وتبقى الحقوق والسلامة والإنتاج والنشر مقيدة حتى استيفاء الشروط."}</p>
           </div>
         </CardContent>
       </Card>

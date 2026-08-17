@@ -184,6 +184,20 @@ export const connectionHealthMonitors = mysqlTable("connection_health_monitors",
   index("connection_health_monitors_task_uid_idx").on(table.scheduleCronTaskUid),
 ]);
 
+/** Durable owner-level control row for the bounded DAWSHA trend-intake Heartbeat. */
+export const dawshaEngineMonitors = mysqlTable("dawsha_engine_monitors", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull().unique(),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  status: mysqlEnum("status", ["active", "paused", "error"]).default("paused").notNull(),
+  lastRunAt: timestamp("lastRunAt"),
+  lastProjectId: int("lastProjectId"),
+  lastSignalTitle: varchar("lastSignalTitle", { length: 255 }),
+  lastSummary: text("lastSummary"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("dawsha_engine_monitors_task_uid_idx").on(table.scheduleCronTaskUid)]);
+
 /** Guardrails for autonomous publishing. A kill switch always takes precedence over the selected mode. */
 export const publishingPolicies = mysqlTable("publishing_policies", {
   id: int("id").autoincrement().primaryKey(),

@@ -17,6 +17,7 @@ import {
   contentPlaybooks,
   contentSources,
   developmentProposals,
+  dawshaEngineMonitors,
   domainMonitors,
   InsertUser,
   notificationEvents,
@@ -581,6 +582,37 @@ export async function markConnectionHealthMonitorNotified(id: number, status: "h
   const db = await getDb();
   if (!db) databaseUnavailable();
   await db!.update(connectionHealthMonitors).set({ lastNotifiedStatus: status, lastNotificationAt: new Date() }).where(eq(connectionHealthMonitors.id, id));
+}
+
+export async function getDawshaEngineMonitor(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(dawshaEngineMonitors).where(eq(dawshaEngineMonitors.ownerId, ownerId)).limit(1))[0] ?? null;
+}
+
+export async function getDawshaEngineMonitorByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(dawshaEngineMonitors).where(eq(dawshaEngineMonitors.scheduleCronTaskUid, taskUid)).limit(1))[0] ?? null;
+}
+
+export async function upsertDawshaEngineMonitor(input: { ownerId: number; scheduleCronTaskUid: string; status: "active" | "paused" | "error" }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const existing = await getDawshaEngineMonitor(input.ownerId);
+  if (existing) {
+    await db!.update(dawshaEngineMonitors).set({ scheduleCronTaskUid: input.scheduleCronTaskUid, status: input.status }).where(eq(dawshaEngineMonitors.id, existing.id));
+    return getDawshaEngineMonitor(input.ownerId);
+  }
+  const result = await db!.insert(dawshaEngineMonitors).values(input);
+  return (await db!.select().from(dawshaEngineMonitors).where(eq(dawshaEngineMonitors.id, Number(result[0].insertId))).limit(1))[0] ?? null;
+}
+
+export async function updateDawshaEngineMonitorRun(id: number, input: { status: "active" | "paused" | "error"; summary: string; projectId?: number | null; signalTitle?: string | null }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(dawshaEngineMonitors).set({ status: input.status, lastRunAt: new Date(), lastSummary: input.summary.slice(0, 4_000), lastProjectId: input.projectId ?? null, lastSignalTitle: input.signalTitle?.slice(0, 255) ?? null }).where(eq(dawshaEngineMonitors.id, id));
+  return (await db!.select().from(dawshaEngineMonitors).where(eq(dawshaEngineMonitors.id, id)).limit(1))[0] ?? null;
 }
 
 export async function createAssistantSession(input: { ownerId: number; title: string; origin?: "web" | "telegram" }) {

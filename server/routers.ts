@@ -389,6 +389,23 @@ export const appRouter = router({
       await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "source", summary: "تفعيل مراقبة المصادر المعتمدة", details: "فحص إتاحة الروابط كل 12 ساعة دون جلب محتوى أو إضافة معرفة تلقائيًا.", actorType: "user" });
       return { monitor: saved, nextExecutionAt };
     }),
+    dawshaEngineMonitor: protectedProcedure.query(({ ctx }) => db.getDawshaEngineMonitor(ctx.user.id)),
+    activateDawshaEngine: protectedProcedure.mutation(async ({ ctx }) => {
+      const monitor = await db.getDawshaEngineMonitor(ctx.user.id);
+      let taskUid = monitor?.scheduleCronTaskUid;
+      let nextExecutionAt: string | null | undefined;
+      if (taskUid) {
+        const task = await updateHeartbeatJob(taskUid, { enable: true }, readSessionToken(ctx.req.headers.cookie));
+        nextExecutionAt = task.nextExecutionAt;
+      } else {
+        const task = await createHeartbeatJob({ name: `dawsha-trend-intake-${ctx.user.id}`, cron: "0 0 */6 * * *", path: "/api/scheduled/dawsha-engine", description: "DAWSHA bounded Google Trends intake: one research project per 20 hours, no media or publishing" }, readSessionToken(ctx.req.headers.cookie));
+        taskUid = task.taskUid;
+        nextExecutionAt = task.nextExecutionAt;
+      }
+      const saved = await db.upsertDawshaEngineMonitor({ ownerId: ctx.user.id, scheduleCronTaskUid: taskUid, status: "active" });
+      await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: "تفعيل دورة رصد DAWSHA", details: "تفحص Google Trends كل 6 ساعات، وتنشئ مشروع بحث واحدًا كحد أقصى خلال 20 ساعة. لا تولد سكربتًا أو وسائط ولا تنشر.", actorType: "user" });
+      return { monitor: saved, nextExecutionAt };
+    }),
     integrations: protectedProcedure.query(async ({ ctx }) => {
       const [connections, assets, youtubeHealthMonitor, instagramHealthMonitor, facebookHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube"), db.getConnectionHealthMonitor(ctx.user.id, "instagram"), db.getConnectionHealthMonitor(ctx.user.id, "facebook")]);
       return {

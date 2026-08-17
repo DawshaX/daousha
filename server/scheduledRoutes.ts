@@ -6,6 +6,7 @@ import { executeYouTubeHealthMonitor } from "./youtubeHealthMonitoring";
 import { executeInstagramHealthMonitor } from "./instagramHealthMonitoring";
 import { executeFacebookHealthMonitor } from "./facebookHealthMonitoring";
 import { executeSourceHealthMonitor } from "./sourceHealthMonitoring";
+import { executeDawshaEngine } from "./dawshaEngineRunner";
 
 export function registerScheduledRoutes(app: Express) {
   app.post("/api/scheduled/publish", async (req: Request, res: Response) => {
@@ -64,6 +65,16 @@ export function registerScheduledRoutes(app: Express) {
       const user = await sdk.authenticateRequest(req);
       if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron-only" });
       return res.json(await executeSourceHealthMonitor(user.taskUid));
+    } catch (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : String(error), context: { url: req.originalUrl }, timestamp: new Date().toISOString() });
+    }
+  });
+
+  app.post("/api/scheduled/dawsha-engine", async (req: Request, res: Response) => {
+    try {
+      const user = await sdk.authenticateRequest(req);
+      if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron-only" });
+      return res.json(await executeDawshaEngine(user.taskUid));
     } catch (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : String(error), context: { url: req.originalUrl }, timestamp: new Date().toISOString() });
     }
