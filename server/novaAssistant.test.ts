@@ -128,6 +128,17 @@ describe("NOVA Assistant", () => {
     expect(result.reply).not.toContain("credentialCiphertext");
   });
 
+  it("يعرض آخر التنبيهات من Telegram من دون استدعاء النموذج أو إرسال رسالة جديدة", async () => {
+    dbMock.listNotificationEvents.mockResolvedValue([{ eventType: "facebook_health_healthy", deliveryStatus: "sent" }]);
+
+    const result = await runNOVATurn({ ownerId: 7, content: "ما آخر التنبيهات؟", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(result.reply).toContain("facebook_health_healthy: sent");
+    expect(dbMock.createAssistantActionStep).toHaveBeenCalledWith(expect.objectContaining({ toolName: "get_notifications_overview" }));
+  });
+
   it("يحوّل أمر النشر إلى فحص حزم مقيد ولا ينفذ رفعًا", async () => {
     dbMock.listOwnedProjectVideoAssets.mockResolvedValue([{ project: { id: 88, title: "حزمة عربية", status: "approved", previewAcknowledgedAt: new Date() }, asset: { storageKey: "videos/ar.mp4", licenseType: "أصلي", licenseStatus: "approved", safetyStatus: "clear" } }]);
 
