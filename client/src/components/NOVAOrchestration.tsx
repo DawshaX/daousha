@@ -15,6 +15,9 @@ export default function NOVAOrchestration() {
   const [referenceQuery, setReferenceQuery] = useState("");
   const [pinterestReferenceTitle, setPinterestReferenceTitle] = useState("");
   const [pinterestReferenceUrl, setPinterestReferenceUrl] = useState("");
+  const [researchTitle, setResearchTitle] = useState("");
+  const [researchFinding, setResearchFinding] = useState("");
+  const [researchSourceUrl, setResearchSourceUrl] = useState("");
   const memories = trpc.nova.memories.useQuery();
   const playbooks = trpc.nova.playbooks.useQuery();
   const pairing = trpc.nova.telegramPairingStatus.useQuery();
@@ -49,6 +52,10 @@ export default function NOVAOrchestration() {
     onSuccess: () => { setPinterestReferenceTitle(""); setPinterestReferenceUrl(""); utils.daousha.sources.invalidate(); toast.success("سُجل مرجع Pinterest للمراجعة البصرية فقط."); },
     onError: error => toast.error(error.message),
   });
+  const addResearchNote = trpc.nova.addKnowledge.useMutation({
+    onSuccess: () => { setResearchTitle(""); setResearchFinding(""); setResearchSourceUrl(""); toast.success("حُفظت ملاحظة البحث في قاعدة معرفة NOVA."); },
+    onError: error => toast.error(error.message),
+  });
   const pinterestUrlIsValid = /^https?:\/\/(?:[a-z]{2,3}\.)?pinterest\.[a-z.]+\/(?:pin|ideas)\/|^https?:\/\/pin\.it\//i.test(pinterestReferenceUrl.trim());
 
   return <section className="grid gap-5 xl:grid-cols-2" dir="rtl">
@@ -79,6 +86,13 @@ export default function NOVAOrchestration() {
           <p className="text-xs font-semibold text-zinc-200">مرجع Pinterest بصري</p>
           <p className="mt-1 text-[11px] leading-5 text-zinc-500">سجّل Pin أو Idea كمصدر إلهام موثق فقط. لا يحمّل NOVA الوسائط ولا يقصها أو يعيد توزيعها.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1.3fr_auto]"><Input value={pinterestReferenceTitle} onChange={event => setPinterestReferenceTitle(event.target.value)} placeholder="اسم الفكرة أو التركيب" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Input value={pinterestReferenceUrl} onChange={event => setPinterestReferenceUrl(event.target.value)} dir="ltr" placeholder="https://www.pinterest.com/pin/..." className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Button size="sm" variant="outline" className="h-8 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={!pinterestUrlIsValid || pinterestReferenceTitle.trim().length < 2 || addPinterestReference.isPending} onClick={() => addPinterestReference.mutate({ name: `Pinterest — ${pinterestReferenceTitle.trim()}`, url: pinterestReferenceUrl.trim(), sourceKind: "reference", language: "both", notes: "مرجع إلهام بصري فقط. لا يمنح ترخيصًا لتنزيل Pin أو استخدامه أو إعادة توزيعه؛ يجب إنتاج مشهد أصلي أو تسجيل مادة مرخصة منفصلة." })}>{addPinterestReference.isPending ? "جارٍ التسجيل…" : "تسجيل مرجع"}</Button></div>
+        </div>
+        <div className="rounded-lg border border-white/8 bg-black/20 p-3">
+          <p className="text-xs font-semibold text-zinc-200">نتيجة قراءة موثقة</p>
+          <p className="mt-1 text-[11px] leading-5 text-zinc-500">سجل ما قرأته من صفحة رسمية أو مصدر مرخص مع رابطه. لا يعتبر ذلك اعتمادًا للمادة أو تصريحًا بالنشر.</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2"><Input value={researchTitle} onChange={event => setResearchTitle(event.target.value)} placeholder="عنوان النتيجة" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Input value={researchSourceUrl} onChange={event => setResearchSourceUrl(event.target.value)} dir="ltr" placeholder="https://source.example/..." className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /></div>
+          <Textarea value={researchFinding} onChange={event => setResearchFinding(event.target.value)} placeholder="ماذا أثبت المصدر؟ اكتب ملخصًا قصيرًا قابلًا للمراجعة." className="mt-2 min-h-20 border-white/10 bg-black/20 text-xs text-zinc-100" />
+          <Button size="sm" variant="outline" className="mt-2 h-8 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={researchTitle.trim().length < 2 || researchFinding.trim().length < 5 || !/^https:\/\//i.test(researchSourceUrl.trim()) || addResearchNote.isPending} onClick={() => addResearchNote.mutate({ category: "rights", title: researchTitle.trim(), content: researchFinding.trim(), sourceUrl: researchSourceUrl.trim() })}>{addResearchNote.isPending ? "جارٍ الحفظ…" : "حفظ نتيجة القراءة"}</Button>
         </div>
         {(sources.data ?? []).filter(source => source.sourceKind === "asset" || source.sourceKind === "audio").slice(0, 5).map(source => (
           <div key={source.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">

@@ -18,6 +18,10 @@ describe("NOVA Orchestration source catalog", () => {
     expect(source).toContain("pinterestUrlIsValid");
     expect(source).toContain('sourceKind: "reference"');
     expect(source).toContain("لا يمنح ترخيصًا لتنزيل Pin أو استخدامه أو إعادة توزيعه");
+    expect(source).toContain("نتيجة قراءة موثقة");
+    expect(source).toContain("trpc.nova.addKnowledge.useMutation");
+    expect(source).toContain('category: "rights"');
+    expect(source).toContain("لا يعتبر ذلك اعتمادًا للمادة أو تصريحًا بالنشر");
     expect(source).not.toContain("yt-dlp");
   });
 });
