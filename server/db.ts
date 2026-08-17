@@ -37,6 +37,7 @@ import {
 import { ENV } from "./_core/env";
 import { isOwnedLinkedVideo } from "./projectAssetGuard";
 import { describeTwoFormatPackage } from "../shared/projectPackage";
+import { buildDawshaPipelineTasks } from "./dawshaEngine";
 import { filterOperationalProjectVideoAssets, isOperationalProject } from "./packageOperationalGuard";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -102,6 +103,19 @@ export async function createProject(input: typeof videoProjects.$inferInsert) {
   const result = await db!.insert(videoProjects).values(input);
   const id = Number(result[0].insertId);
   return (await db!.select().from(videoProjects).where(eq(videoProjects.id, id)).limit(1))[0];
+}
+
+export async function createDawshaPipeline(input: { ownerId: number; title: string; brief?: string; targetLanguage: "ar" | "en" | "both"; trendSourceUrl?: string }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const tasks = buildDawshaPipelineTasks({ trendSourceUrl: input.trendSourceUrl, targetLanguage: input.targetLanguage });
+  return db!.transaction(async tx => {
+    const result = await tx.insert(videoProjects).values({ ownerId: input.ownerId, title: input.title, brief: input.brief, targetLanguage: input.targetLanguage, contentFormat: "short", status: "research" });
+    const projectId = Number(result[0].insertId);
+    await tx.insert(workflowTasks).values(tasks.map(task => ({ ownerId: input.ownerId, projectId, ...task })));
+    const project = (await tx.select().from(videoProjects).where(eq(videoProjects.id, projectId)).limit(1))[0];
+    return { project, tasks };
+  });
 }
 
 export async function createTwoFormatProjectPackage(input: { ownerId: number; title: string; brief?: string; targetLanguage: "ar" | "en" | "both" }) {

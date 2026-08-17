@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const dbMock = {
   createProject: vi.fn(),
+  createDawshaPipeline: vi.fn(),
   createSource: vi.fn(),
   reviewSource: vi.fn(),
   createAsset: vi.fn(),
@@ -27,6 +28,7 @@ describe("core content procedures", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     dbMock.createProject.mockResolvedValue({ id: 11, title: "فكرة أصلية" });
+    dbMock.createDawshaPipeline.mockResolvedValue({ project: { id: 16, title: "تنبيه معرفي" }, tasks: [{ taskKind: "trend_scan", status: "queued" }, { taskKind: "rights_check", status: "blocked" }, { taskKind: "publish", status: "blocked" }] });
     dbMock.createSource.mockResolvedValue({ id: 12, name: "مرجع موثوق", trustStatus: "proposed" });
     dbMock.reviewSource.mockResolvedValue({ id: 12, name: "مرجع موثوق", trustStatus: "approved" });
     dbMock.createAsset.mockResolvedValue({ id: 13, title: "صوت أصلي", licenseStatus: "held", safetyStatus: "review" });
@@ -47,6 +49,14 @@ describe("core content procedures", () => {
     await expect(caller.daousha.addSource({ name: "مرجع موثوق", url: "https://example.com/source", sourceKind: "reference", language: "both" })).resolves.toMatchObject({ trustStatus: "proposed" });
     expect(dbMock.createProject).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, title: "فكرة أصلية" }));
     expect(dbMock.createSource).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, trustStatus: "proposed" }));
+  });
+
+  it("starts a DAWSHA pipeline under the authenticated owner and records its constrained stages", async () => {
+    const caller = appRouter.createCaller({ user: { id: 7 } } as any);
+
+    await expect(caller.daousha.startDawshaPipeline({ title: "تنبيه معرفي", targetLanguage: "both" })).resolves.toMatchObject({ project: { id: 16 } });
+    expect(dbMock.createDawshaPipeline).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, title: "تنبيه معرفي", targetLanguage: "both" }));
+    expect(dbMock.createChangeLogEntry).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, category: "workflow", actorType: "user", details: expect.stringContaining("rights_check:blocked") }));
   });
 
   it("registers assets for review and records auditable human source and asset decisions", async () => {

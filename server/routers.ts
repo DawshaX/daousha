@@ -135,6 +135,13 @@ export const appRouter = router({
     createProject: protectedProcedure
       .input(z.object({ title: z.string().trim().min(3).max(255), brief: z.string().trim().max(12000).optional(), targetLanguage: z.enum(["ar", "en", "both"]).default("both"), contentFormat: z.enum(["short", "long"]).default("short"), parentProjectId: z.number().int().positive().optional() }))
       .mutation(({ ctx, input }) => db.createProject({ ownerId: ctx.user.id, ...input })),
+    startDawshaPipeline: protectedProcedure
+      .input(z.object({ title: z.string().trim().min(3).max(255), brief: z.string().trim().max(12000).optional(), targetLanguage: z.enum(["ar", "en", "both"]).default("both"), trendSourceUrl: z.string().url().max(1500).optional() }))
+      .mutation(async ({ ctx, input }) => {
+        const pipeline = await db.createDawshaPipeline({ ownerId: ctx.user.id, ...input });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: `بدء مسار DAWSHA المركزي: ${pipeline.project.title}`, details: `المشروع #${pipeline.project.id} | المراحل: ${pipeline.tasks.map(task => `${task.taskKind}:${task.status}`).join("، ")}`, actorType: "user" });
+        return pipeline;
+      }),
     createTwoFormatProjectPackage: protectedProcedure
       .input(z.object({ title: z.string().trim().min(3).max(220), brief: z.string().trim().max(12000).optional(), targetLanguage: z.enum(["ar", "en", "both"]).default("both") }))
       .mutation(async ({ ctx, input }) => {

@@ -191,6 +191,11 @@ function StatZero({ label, sublabel, value = "0" }: { label: string; sublabel: s
 function Dashboard() {
   const { data: dashboard } = trpc.daousha.dashboard.useQuery();
   const stats = dashboard?.stats;
+  const engineTasks = [...(dashboard?.tasks ?? [])].sort((left, right) => right.id - left.id);
+  const engineTask = engineTasks.find(task => task.status === "running") ?? engineTasks.find(task => task.status === "blocked") ?? engineTasks.find(task => task.status === "queued") ?? engineTasks[0];
+  const engineProject = engineTask ? dashboard?.projects.find(project => project.id === engineTask.projectId) : undefined;
+  const taskLabel: Record<string, string> = { trend_scan: "رصد الترند", script: "السكربت", translation: "الترجمة", rights_check: "الحقوق", safety_check: "السلامة", render: "الإنتاج", publish: "النشر" };
+  const taskStateLabel: Record<string, string> = { queued: "بانتظار التنفيذ", running: "قيد العمل", completed: "مكتمل", blocked: "محجوب", failed: "تعذر" };
   return (
     <Frame section="dashboard">
       <section className="relative overflow-hidden rounded-2xl border border-red-500/20 bg-[radial-gradient(circle_at_82%_22%,rgba(239,68,68,.20),transparent_27%),linear-gradient(118deg,rgba(19,19,22,.97),rgba(8,8,10,.97))] p-6 sm:p-8">
@@ -232,6 +237,32 @@ function Dashboard() {
       </section>
 
       <LaunchConsole />
+
+      <Card className="overflow-hidden border-red-500/20 bg-[linear-gradient(110deg,rgba(54,8,12,.45),rgba(12,12,14,.88))] shadow-[0_0_38px_rgba(239,68,68,.07)]">
+        <CardHeader className="flex-row items-start justify-between space-y-0 border-b border-white/7 pb-4">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-base text-white"><Bot className="h-4 w-4 text-red-400" /> محرك DAWSHA المركزي</CardTitle>
+            <CardDescription className="mt-1 text-zinc-500">قراءة مباشرة لمهام دورة المحتوى المسجلة؛ لا يفتح العرض إنتاجًا أو نشرًا.</CardDescription>
+          </div>
+          <Badge variant="outline" className="border-red-500/25 bg-red-500/10 text-red-200">{engineTasks.length} مهمة</Badge>
+        </CardHeader>
+        <CardContent className="grid gap-3 p-5 md:grid-cols-[.9fr_1.15fr_1.55fr]">
+          <div className="rounded-xl border border-white/8 bg-black/20 p-4">
+            <p className="text-[11px] font-medium tracking-wide text-zinc-500">المشروع الحالي</p>
+            <p className="mt-2 text-sm font-semibold text-white">{engineProject?.title ?? "لا يوجد مسار DAWSHA مسجل بعد"}</p>
+            <p className="mt-2 text-[11px] text-zinc-500">يُنشأ من NOVA أو من واجهة التطبيق، ثم يتابع عبر نفس سجل المراحل.</p>
+          </div>
+          <div className="rounded-xl border border-white/8 bg-black/20 p-4">
+            <p className="text-[11px] font-medium tracking-wide text-zinc-500">المرحلة / آخر مهمة</p>
+            <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-white"><ListChecks className="h-4 w-4 text-red-400" /> {engineTask ? taskLabel[engineTask.taskKind] ?? engineTask.taskKind : "—"}</p>
+            <Badge variant="outline" className="mt-3 border-white/10 text-[10px] text-zinc-300">{engineTask ? taskStateLabel[engineTask.status] ?? engineTask.status : "لا توجد مهمة"}</Badge>
+          </div>
+          <div className="rounded-xl border border-amber-500/15 bg-amber-500/[0.045] p-4">
+            <p className="text-[11px] font-medium tracking-wide text-amber-200/70">سبب التعليق أو التوجيه التالي</p>
+            <p className="mt-2 text-xs leading-6 text-amber-50/85">{engineTask?.detail ?? "ابدأ من NOVA بعبارة: ابدأ محرك DAWSHA عن [الموضوع]. ستُسجل المراحل، وتبقى الحقوق والسلامة والإنتاج والنشر مقيدة حتى استيفاء الشروط."}</p>
+          </div>
+        </CardContent>
+      </Card>
 
       <section className="grid gap-5 xl:grid-cols-[1.25fr_.75fr]">
         <Card className="border-white/8 bg-zinc-950/60">

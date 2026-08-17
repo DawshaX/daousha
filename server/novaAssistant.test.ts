@@ -11,6 +11,7 @@ const dbMock = {
   updateAssistantActionStep: vi.fn(),
   updateAssistantActionPlan: vi.fn(),
   createProject: vi.fn(),
+  createDawshaPipeline: vi.fn(),
   createChangeLogEntry: vi.fn(),
   createSource: vi.fn(),
   createAsset: vi.fn(),
@@ -76,6 +77,7 @@ describe("NOVA Assistant", () => {
     dbMock.updateAssistantActionPlan.mockResolvedValue({ id: 41 });
     dbMock.updateAssistantActionStep.mockResolvedValue({ id: 42 });
     dbMock.createProject.mockResolvedValue({ id: 88, title: "فكرة تحقق أصلية" });
+    dbMock.createDawshaPipeline.mockResolvedValue({ project: { id: 90, title: "معلومة موثوقة" }, tasks: [{ taskKind: "trend_scan", status: "queued" }, { taskKind: "rights_check", status: "blocked" }, { taskKind: "publish", status: "blocked" }] });
     dbMock.createChangeLogEntry.mockResolvedValue({ id: 89 });
     dbMock.getDashboardData.mockResolvedValue({ stats: { activeProjects: 2, reviewProjects: 0, activeSchedules: 6 }, connections: [{ platform: "youtube", status: "authorized" }], schedules: [{ projectId: 81, platform: "youtube", status: "active", scheduleCronTaskUid: "heartbeat-test-81" }] });
     dbMock.listProjects.mockResolvedValue([]);
@@ -110,6 +112,15 @@ describe("NOVA Assistant", () => {
     expect(dbMock.updateAssistantActionStep).toHaveBeenLastCalledWith(7, 42, expect.objectContaining({ status: "completed" }));
     expect(dbMock.createAssistantMessage).toHaveBeenCalledWith(expect.objectContaining({ displayKind: "plan", content: expect.stringContaining("### خطة NOVA") }));
     expect(dbMock.createAssistantMessage).toHaveBeenCalledWith(expect.objectContaining({ displayKind: "tool_result", content: expect.stringContaining("لم يُنشأ أي جدول أو نشر") }));
+  });
+
+  it("يبدأ محرك DAWSHA الحتمي من Telegram من دون إنتاج أو نشر مباشر", async () => {
+    const result = await runNOVATurn({ ownerId: 7, origin: "telegram", content: "ابدأ محرك DAWSHA عن معلومة موثوقة" });
+
+    expect(result.status).toBe("completed");
+    expect(dbMock.createDawshaPipeline).toHaveBeenCalledWith(expect.objectContaining({ ownerId: 7, title: "معلومة موثوقة", targetLanguage: "both" }));
+    expect(dbMock.createProject).not.toHaveBeenCalled();
+    expect(result.reply).toContain("لم يُنتج فيديو");
   });
 
   it("يجيب عن حالة القنوات من المصدر التشغيلي حتى إذا تعذر محلل اللغة", async () => {
