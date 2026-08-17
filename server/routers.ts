@@ -324,6 +324,25 @@ export const appRouter = router({
       await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "integration", summary: "تفعيل مراقبة اتصال Instagram", details: "فحص هوية وتجديد رمز Instagram كل 6 ساعات؛ لا ينشئ أو ينشر أي Reel.", actorType: "user" });
       return { monitor: saved, nextExecutionAt };
     }),
+    sourceHealthMonitor: protectedProcedure.query(({ ctx }) => db.getSourceHealthMonitor(ctx.user.id)),
+    activateSourceHealthMonitor: protectedProcedure.mutation(async ({ ctx }) => {
+      const approvedSources = (await db.listSources(ctx.user.id)).filter(source => source.trustStatus === "approved");
+      if (!approvedSources.length) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "اعتمد مصدرًا واحدًا على الأقل قبل تفعيل مراقبة المصادر." });
+      const monitor = await db.getSourceHealthMonitor(ctx.user.id);
+      let taskUid = monitor?.scheduleCronTaskUid;
+      let nextExecutionAt: string | null | undefined;
+      if (taskUid) {
+        const task = await updateHeartbeatJob(taskUid, { enable: true }, readSessionToken(ctx.req.headers.cookie));
+        nextExecutionAt = task.nextExecutionAt;
+      } else {
+        const task = await createHeartbeatJob({ name: `xdaw-source-health-${ctx.user.id}`, cron: "0 30 */12 * * *", path: "/api/scheduled/source-health-monitor", description: "XDAW NOVA read-only owner-approved source availability monitor" }, readSessionToken(ctx.req.headers.cookie));
+        taskUid = task.taskUid;
+        nextExecutionAt = task.nextExecutionAt;
+      }
+      const saved = await db.upsertSourceHealthMonitor({ ownerId: ctx.user.id, scheduleCronTaskUid: taskUid });
+      await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "source", summary: "تفعيل مراقبة المصادر المعتمدة", details: "فحص إتاحة الروابط كل 12 ساعة دون جلب محتوى أو إضافة معرفة تلقائيًا.", actorType: "user" });
+      return { monitor: saved, nextExecutionAt };
+    }),
     integrations: protectedProcedure.query(async ({ ctx }) => {
       const [connections, assets, youtubeHealthMonitor, instagramHealthMonitor] = await Promise.all([db.listChannelConnections(ctx.user.id), db.listAssets(ctx.user.id), db.getConnectionHealthMonitor(ctx.user.id, "youtube"), db.getConnectionHealthMonitor(ctx.user.id, "instagram")]);
       return {

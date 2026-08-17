@@ -25,6 +25,7 @@ import {
   publishingPolicies,
   publishingRuns,
   publishingSchedules,
+  sourceHealthMonitors,
   systemChangeLog,
   telegramOwnerBindings,
   telegramWebhookUpdates,
@@ -497,6 +498,43 @@ export async function markDomainMonitorNotified(id: number, status: "pending" | 
   const db = await getDb();
   if (!db) databaseUnavailable();
   await db!.update(domainMonitors).set({ lastNotifiedStatus: status, lastNotificationAt: new Date() }).where(eq(domainMonitors.id, id));
+}
+
+export async function getSourceHealthMonitor(ownerId: number) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(sourceHealthMonitors).where(eq(sourceHealthMonitors.ownerId, ownerId)).limit(1))[0] ?? null;
+}
+
+export async function getSourceHealthMonitorByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  return (await db!.select().from(sourceHealthMonitors).where(eq(sourceHealthMonitors.scheduleCronTaskUid, taskUid)).limit(1))[0] ?? null;
+}
+
+export async function upsertSourceHealthMonitor(input: { ownerId: number; scheduleCronTaskUid: string }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  const existing = await getSourceHealthMonitor(input.ownerId);
+  if (existing) {
+    await db!.update(sourceHealthMonitors).set({ scheduleCronTaskUid: input.scheduleCronTaskUid }).where(eq(sourceHealthMonitors.id, existing.id));
+    return getSourceHealthMonitor(input.ownerId);
+  }
+  const result = await db!.insert(sourceHealthMonitors).values(input);
+  return (await db!.select().from(sourceHealthMonitors).where(eq(sourceHealthMonitors.id, Number(result[0].insertId))).limit(1))[0] ?? null;
+}
+
+export async function updateSourceHealthMonitorCheck(id: number, input: { status: "healthy" | "degraded"; summary: string }) {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(sourceHealthMonitors).set({ status: input.status, lastSummary: input.summary.slice(0, 4_000), lastCheckedAt: new Date() }).where(eq(sourceHealthMonitors.id, id));
+  return (await db!.select().from(sourceHealthMonitors).where(eq(sourceHealthMonitors.id, id)).limit(1))[0] ?? null;
+}
+
+export async function markSourceHealthMonitorNotified(id: number, status: "healthy" | "degraded") {
+  const db = await getDb();
+  if (!db) databaseUnavailable();
+  await db!.update(sourceHealthMonitors).set({ lastNotifiedStatus: status }).where(eq(sourceHealthMonitors.id, id));
 }
 
 export async function getConnectionHealthMonitor(ownerId: number, platform: "youtube" | "facebook" | "instagram" | "tiktok") {

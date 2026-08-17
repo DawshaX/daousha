@@ -15,6 +15,7 @@ export default function NOVAOrchestration() {
   const memories = trpc.nova.memories.useQuery();
   const playbooks = trpc.nova.playbooks.useQuery();
   const pairing = trpc.nova.telegramPairingStatus.useQuery();
+  const sourceHealth = trpc.daousha.sourceHealthMonitor.useQuery();
   const addMemory = trpc.nova.addMemory.useMutation({
     onSuccess: () => { setMemoryTitle(""); setMemoryContent(""); utils.nova.memories.invalidate(); toast.success("حُفظت الذاكرة للمراجعة والاستخدام داخل NOVA."); },
     onError: error => toast.error(error.message),
@@ -34,6 +35,10 @@ export default function NOVAOrchestration() {
   const configureTelegram = trpc.nova.configureTelegramWebhook.useMutation({ onSuccess: () => toast.success("تم ربط أوامر Telegram المحكومة بالنطاق المنشور."), onError: error => toast.error(error.message) });
   const createPairing = trpc.nova.createTelegramPairing.useMutation({
     onSuccess: result => { setPairCommand(result.command); pairing.refetch(); toast.success("أُنشئ رمز ربط صالح لعشر دقائق."); },
+    onError: error => toast.error(error.message),
+  });
+  const activateSourceHealth = trpc.daousha.activateSourceHealthMonitor.useMutation({
+    onSuccess: result => { sourceHealth.refetch(); toast.success(`فُعلت مراقبة المصادر. الموعد التالي: ${result.nextExecutionAt ? new Date(result.nextExecutionAt).toLocaleString("ar-EG") : "سيظهر بعد جدولة Heartbeat"}.`); },
     onError: error => toast.error(error.message),
   });
 
@@ -58,6 +63,7 @@ export default function NOVAOrchestration() {
       <CardContent className="space-y-3">
         <Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-red-500/10" disabled={configureTelegram.isPending} onClick={() => configureTelegram.mutate({ publicBaseUrl: window.location.origin })}><ShieldCheck className="ml-2 h-4 w-4" /> تفعيل Webhook Telegram</Button>
         <div className="rounded-xl border border-white/8 bg-black/20 p-3"><p className="text-xs font-semibold text-zinc-200">ربط محادثتك بـNOVA</p><p className="mt-1 text-[11px] leading-5 text-zinc-500">ينشئ رمزًا صالحًا لعشر دقائق. أرسله للبوت كما هو، ثم تصبح محادثتك هي الواجهة المعتمدة.</p><Button size="sm" className="mt-3 bg-red-600 hover:bg-red-500" disabled={createPairing.isPending} onClick={() => createPairing.mutate()}>{pairing.data?.status === "paired" ? "إعادة ربط Telegram" : "إنشاء رمز الربط"}</Button>{pairCommand ? <button onClick={() => { navigator.clipboard.writeText(pairCommand); toast.success("نُسخ الأمر."); }} className="mt-3 flex w-full items-center justify-between rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-2 font-mono text-xs text-red-100"><span>{pairCommand}</span><Copy className="h-3.5 w-3.5" /></button> : null}{pairing.data?.status === "paired" ? <p className="mt-2 text-xs text-emerald-300">محادثة Telegram موثقة ومربوطة.</p> : null}</div>
+        <div className="rounded-xl border border-white/8 bg-black/20 p-3"><p className="text-xs font-semibold text-zinc-200">مراقبة المصادر المعتمدة</p><p className="mt-1 text-[11px] leading-5 text-zinc-500">تفحص إتاحة الروابط المعتمدة كل 12 ساعة فقط؛ لا تجلب المقالات ولا تضيف معرفة تلقائيًا.</p><div className="mt-3 flex items-center justify-between gap-2"><span className="text-[10px] text-zinc-600">{sourceHealth.data ? `الحالة: ${sourceHealth.data.status}` : "غير مفعلة"}</span><Button size="sm" variant="outline" className="h-7 border-red-500/30 bg-red-500/5 px-2 text-xs text-red-100 hover:bg-red-500/15" disabled={activateSourceHealth.isPending} onClick={() => activateSourceHealth.mutate()}>{activateSourceHealth.isPending ? "جارٍ التفعيل…" : "تفعيل المراقبة"}</Button></div></div>
         <Button variant="outline" className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-red-500/10" disabled={createPlaybook.isPending} onClick={() => createPlaybook.mutate({ title: "تجهيز حزمة مراجعة", description: "مراجعة حالة المشروع والأصول قبل بوابة المراجعة.", impact: "draft", steps: [{ title: "عرض الحالة التشغيلية", toolName: "get_operational_overview" }, { title: "تسجيل مسودة مشروع عند الحاجة", toolName: "create_project_draft", inputTemplate: "تُستخدم فقط بعد طلب المالك." }] })}><Plus className="ml-2 h-4 w-4" /> إضافة وصفة مراجعة</Button>
         <div className="space-y-2">{(playbooks.data ?? []).map(playbook => <div key={playbook.id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3"><div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-zinc-200">{playbook.title}</p><ShieldCheck className="h-4 w-4 text-red-300" /></div><p className="mt-1 text-xs text-zinc-500">{playbook.description}</p><div className="mt-2 flex items-center justify-between gap-2"><p className="text-[10px] text-zinc-600">{playbook.steps.length} خطوات · {playbook.impact}</p><Button size="sm" variant="outline" className="h-7 border-red-500/30 bg-red-500/5 px-2 text-xs text-red-100 hover:bg-red-500/15" disabled={runPlaybook.isPending} onClick={() => runPlaybook.mutate({ playbookId: playbook.id })}><Play className="ml-1 h-3.5 w-3.5" /> تشغيل محكوم</Button></div></div>)}</div>
       </CardContent>

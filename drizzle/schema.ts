@@ -26,6 +26,19 @@ export const contentSources = mysqlTable("content_sources", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+/** Read-only health monitoring for owner-approved content sources. Never imports source content automatically. */
+export const sourceHealthMonitors = mysqlTable("source_health_monitors", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }).notNull().unique(),
+  status: mysqlEnum("status", ["unknown", "healthy", "degraded"]).default("unknown").notNull(),
+  lastCheckedAt: timestamp("lastCheckedAt"),
+  lastSummary: text("lastSummary"),
+  lastNotifiedStatus: varchar("lastNotifiedStatus", { length: 32 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("source_health_monitors_owner_status_idx").on(table.ownerId, table.status)]);
+
 export const contentAssets = mysqlTable("content_assets", {
   id: int("id").autoincrement().primaryKey(),
   ownerId: int("ownerId").notNull(),
