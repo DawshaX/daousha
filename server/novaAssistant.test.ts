@@ -110,6 +110,22 @@ describe("NOVA Assistant", () => {
     expect(result.reply).toContain("الجداول النشطة 6");
   });
 
+  it("يعرض سياسة التفويض والتجديد من Telegram دون استدعاء نموذج اللغة أو كشف رموز", async () => {
+    dbMock.listChannelConnections.mockResolvedValue([
+      { platform: "youtube", status: "authorized" },
+      { platform: "facebook", status: "authorized" },
+      { platform: "telegram", status: "authorized" },
+    ]);
+
+    const result = await runNOVATurn({ ownerId: 7, content: "ما حالة التفويض وتجديد الرموز؟", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(result.reply).toContain("تجديد YouTube الخادمي");
+    expect(result.reply).toContain("TikTok خارج التشغيل الإنتاجي");
+    expect(result.reply).not.toContain("credentialCiphertext");
+  });
+
   it("يحوّل أمر النشر إلى فحص حزم مقيد ولا ينفذ رفعًا", async () => {
     dbMock.listOwnedProjectVideoAssets.mockResolvedValue([{ project: { id: 88, title: "حزمة عربية", status: "approved", previewAcknowledgedAt: new Date() }, asset: { storageKey: "videos/ar.mp4", licenseType: "أصلي", licenseStatus: "approved", safetyStatus: "clear" } }]);
 
