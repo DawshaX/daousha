@@ -13,6 +13,7 @@ export default function NOVAOrchestration() {
   const [memoryContent, setMemoryContent] = useState("");
   const [pairCommand, setPairCommand] = useState("");
   const [referenceQuery, setReferenceQuery] = useState("");
+  const [referenceProvider, setReferenceProvider] = useState<"pexels" | "pixabay" | "mixkit">("pexels");
   const [pinterestReferenceTitle, setPinterestReferenceTitle] = useState("");
   const [pinterestReferenceUrl, setPinterestReferenceUrl] = useState("");
   const [researchTitle, setResearchTitle] = useState("");
@@ -57,6 +58,11 @@ export default function NOVAOrchestration() {
     onError: error => toast.error(error.message),
   });
   const pinterestUrlIsValid = /^https?:\/\/(?:[a-z]{2,3}\.)?pinterest\.[a-z.]+\/(?:pin|ideas)\/|^https?:\/\/pin\.it\//i.test(pinterestReferenceUrl.trim());
+  const licensedReferenceUrl = referenceProvider === "pexels"
+    ? `https://www.pexels.com/search/videos/${encodeURIComponent(referenceQuery.trim())}/`
+    : referenceProvider === "pixabay"
+      ? `https://pixabay.com/videos/search/${encodeURIComponent(referenceQuery.trim())}/`
+      : `https://mixkit.co/free-stock-video/search/${encodeURIComponent(referenceQuery.trim())}/`;
 
   return <section className="grid gap-5 xl:grid-cols-2" dir="rtl">
     <Card className="border-white/8 bg-zinc-950/65">
@@ -79,8 +85,8 @@ export default function NOVAOrchestration() {
       <CardContent className="space-y-2">
         <div className="rounded-lg border border-red-500/15 bg-red-500/[0.03] p-3">
           <p className="text-xs font-semibold text-zinc-200">بحث مرجعي مرخّص</p>
-          <p className="mt-1 text-[11px] leading-5 text-zinc-500">يفتح البحث في Pexels فقط لتصفح اللقطات وترخيصها يدويًا؛ لا يحمل NOVA أي ملف ولا يسجله كمادة أو يرسل شيئًا للنشر.</p>
-          <div className="mt-3 flex gap-2"><Input value={referenceQuery} onChange={event => setReferenceQuery(event.target.value)} placeholder="مثال: calm sunrise" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Button size="sm" variant="outline" className="h-8 shrink-0 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={referenceQuery.trim().length < 2} onClick={() => window.open(`https://www.pexels.com/search/videos/${encodeURIComponent(referenceQuery.trim())}/`, "_blank", "noopener,noreferrer")}>فتح المرجع</Button></div>
+          <p className="mt-1 text-[11px] leading-5 text-zinc-500">اختر Pexels أو Pixabay أو Mixkit لتصفح اللقطات وترخيصها يدويًا؛ لا يحمل NOVA أي ملف ولا يسجله كمادة أو يرسل شيئًا للنشر.</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-[.7fr_1fr_auto]"><select value={referenceProvider} onChange={event => setReferenceProvider(event.target.value as typeof referenceProvider)} className="h-8 rounded-md border border-white/10 bg-black/20 px-2 text-xs text-zinc-100" aria-label="مصدر البحث المرجعي"><option value="pexels">Pexels</option><option value="pixabay">Pixabay</option><option value="mixkit">Mixkit</option></select><Input value={referenceQuery} onChange={event => setReferenceQuery(event.target.value)} placeholder="مثال: calm sunrise" className="h-8 border-white/10 bg-black/20 text-xs text-zinc-100" /><Button size="sm" variant="outline" className="h-8 shrink-0 border-red-500/30 bg-red-500/5 text-xs text-red-100 hover:bg-red-500/15" disabled={referenceQuery.trim().length < 2} onClick={() => window.open(licensedReferenceUrl, "_blank", "noopener,noreferrer")}>فتح المرجع</Button></div>
         </div>
         <div className="rounded-lg border border-white/8 bg-black/20 p-3">
           <p className="text-xs font-semibold text-zinc-200">مرجع Pinterest بصري</p>
