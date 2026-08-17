@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { buildChannelRenewalGuidance } from "./channelRenewalPolicy";
 import { platformReferences } from "../shared/daousha";
 import * as db from "./db";
 import { configureTelegramCommandWebhook } from "./telegram";
@@ -371,6 +372,7 @@ export const appRouter = router({
         youtubeHealthMonitor,
         instagramHealthMonitor,
         facebookHealthMonitor,
+        renewalGuidance: buildChannelRenewalGuidance(connections),
         distributionReadiness: resolveDistributionReadiness(connections),
         telegramConfigured: telegramIsConfigured(),
         youtubeClientConfigured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET),

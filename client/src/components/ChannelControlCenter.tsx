@@ -242,6 +242,11 @@ export default function ChannelControlCenter() {
         </CardContent>
       </Card>
 
+      <Card className="border-white/8 bg-zinc-950/60">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-base text-white"><ShieldCheck className="h-5 w-5 text-red-400" /> تجديد التفويضات وحدود الاستمرارية</CardTitle><CardDescription>المحرك لا يفترض تجديداً غير مسموح به؛ يوضح لكل قناة ما يُجدد خادمياً وما يتطلب OAuth جديداً.</CardDescription></CardHeader>
+        <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{integrations?.renewalGuidance?.map(item => <div key={item.platform} className="rounded-xl border border-white/8 bg-black/25 p-3"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-zinc-100">{item.title}</p><Badge variant="outline" className="border-white/10 text-[10px] text-zinc-400">{item.platform}</Badge></div><p className="mt-2 text-xs leading-5 text-zinc-500">{item.detail}</p></div>) ?? <p className="text-sm text-zinc-500">جارٍ قراءة سياسة التجديد…</p>}</CardContent>
+      </Card>
+
       <Card className="border-red-500/20 bg-[linear-gradient(145deg,rgba(69,10,10,.32),rgba(9,9,11,.8))]">
         <CardHeader className="flex-row items-start justify-between space-y-0">
           <div>

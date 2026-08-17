@@ -41,4 +41,10 @@ describe("ChannelControlCenter distribution panel", () => {
     expect(source).toContain("activateFacebookHealthMonitor");
     expect(source).toContain("لا يرفع أو ينشر هذا الفحص أي فيديو");
   });
+
+  it("renders channel renewal guidance rather than implying every provider can refresh silently", async () => {
+    const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain("تجديد التفويضات وحدود الاستمرارية");
+    expect(source).toContain("integrations?.renewalGuidance");
+  });
 });
