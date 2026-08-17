@@ -11,5 +11,9 @@ describe("Asset Vault rights evidence", () => {
     expect(source).toContain('placeholder="رابط الأصل"');
     expect(source).toContain('placeholder="رابط الترخيص"');
     expect(source).toContain("تبقى المادة معلقة حتى اعتماد الحقوق والسلامة");
+    expect(source).toContain("ربط مادة بحزمة إنتاج");
+    expect(source).toContain("trpc.daousha.linkAssetToProject.useMutation");
+    expect(source).toContain("ربط بالمشروع");
+    expect(source).toContain("ما زالت الحقوق والسلامة والمراجعة مطلوبة");
   });
 });

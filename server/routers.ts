@@ -204,6 +204,14 @@ export const appRouter = router({
         await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "safety_rule", summary: `قرار مراجعة للمادة: ${asset.title}`, details: `الحقوق: ${input.licenseStatus} | السلامة: ${input.safetyStatus}`, actorType: "user" });
         return asset;
       }),
+    linkAssetToProject: protectedProcedure
+      .input(z.object({ projectId: z.number().int().positive(), assetId: z.number().int().positive(), clipRole: z.enum(["primary", "broll", "audio", "reference"]).default("primary") }))
+      .mutation(async ({ ctx, input }) => {
+        const link = await db.linkOwnedAssetToProject(ctx.user.id, input.projectId, input.assetId, input.clipRole);
+        if (!link) throw new TRPCError({ code: "NOT_FOUND", message: "اختر مشروعًا تشغيليًا ومادة من نطاقك نفسه." });
+        await db.createChangeLogEntry({ ownerId: ctx.user.id, category: "workflow", summary: "ربط مادة بحزمة إنتاج", details: `المشروع: ${input.projectId} | المادة: ${input.assetId} | الدور: ${input.clipRole}. لا يغيّر ذلك قرار الحقوق أو السلامة أو النشر.`, actorType: "user" });
+        return link;
+      }),
     sources: protectedProcedure.query(({ ctx }) => db.listSources(ctx.user.id)),
     addSource: protectedProcedure
       .input(z.object({ name: z.string().trim().min(2).max(180), url, sourceKind: z.enum(["trend", "asset", "audio", "reference"]), language: z.enum(["ar", "en", "both"]).default("both"), notes: z.string().trim().max(4000).optional() }))
