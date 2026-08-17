@@ -15,6 +15,7 @@ const dbMock = {
   createSource: vi.fn(),
   createAsset: vi.fn(),
   getDashboardData: vi.fn(),
+  listProjects: vi.fn(),
   getConnectionHealthMonitor: vi.fn(),
   listNotificationEvents: vi.fn(),
   listChannelConnections: vi.fn(),
@@ -72,6 +73,7 @@ describe("NOVA Assistant", () => {
     dbMock.createProject.mockResolvedValue({ id: 88, title: "فكرة تحقق أصلية" });
     dbMock.createChangeLogEntry.mockResolvedValue({ id: 89 });
     dbMock.getDashboardData.mockResolvedValue({ stats: { activeProjects: 2, reviewProjects: 0, activeSchedules: 6 }, connections: [{ platform: "youtube", status: "authorized" }] });
+    dbMock.listProjects.mockResolvedValue([]);
     dbMock.getConnectionHealthMonitor.mockResolvedValue({ platform: "youtube", status: "healthy" });
     dbMock.listNotificationEvents.mockResolvedValue([]);
     dbMock.listChannelConnections.mockResolvedValue([{ platform: "youtube", status: "authorized" }]);
@@ -117,6 +119,17 @@ describe("NOVA Assistant", () => {
     expect(llmMock.invokeLLM).not.toHaveBeenCalled();
     expect(result.reply).toContain("حزمة عربية");
     expect(result.reply).toContain("هذا فحص فقط");
+  });
+
+  it("يعرض عناصر المراجعة من أمر Telegram حتميًا من دون استدعاء النموذج أو اعتماد مشروع", async () => {
+    dbMock.listProjects.mockResolvedValue([{ id: 81, title: "حلقة التحقق", status: "review", previewAcknowledgedAt: null }]);
+
+    const result = await runNOVATurn({ ownerId: 7, content: "ما الذي يحتاج مراجعة الآن؟", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(result.reply).toContain("حلقة التحقق");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(dbMock.createAssistantActionStep).toHaveBeenCalledWith(expect.objectContaining({ toolName: "get_review_overview" }));
   });
 
   it("ينشئ مسودة من أمر مباشر من دون استدعاء نموذج اللغة", async () => {
