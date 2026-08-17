@@ -15,5 +15,9 @@ describe("Asset Vault rights evidence", () => {
     expect(source).toContain("trpc.daousha.linkAssetToProject.useMutation");
     expect(source).toContain("ربط بالمشروع");
     expect(source).toContain("ما زالت الحقوق والسلامة والمراجعة مطلوبة");
+    expect(source).toContain("أصل موثق");
+    expect(source).toContain("الأصل غير مسجل");
+    expect(source).toContain("ترخيص موثق");
+    expect(source).toContain("الترخيص غير موثق برابط");
   });
 });
