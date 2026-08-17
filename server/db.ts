@@ -1,10 +1,12 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, like, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   analyticsSnapshots,
   assistantActionPlans,
   assistantActionSteps,
+  assistantAttachments,
   assistantAuditEvents,
+  assistantKnowledgeItems,
   assistantMemories,
   assistantMessages,
   assistantSessions,
@@ -666,6 +668,10 @@ export async function createContentPlaybook(input: { ownerId: number; title: str
 export async function createPlaybookRun(input: { ownerId: number; playbookId: number; sessionId?: number; status: "queued" | "running" | "completed" | "blocked" | "failed"; resultSummary?: string }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(playbookRuns).values({ ...input, completedAt: ["completed", "blocked", "failed"].includes(input.status) ? new Date() : null }); const id = Number(result[0].insertId); return (await db!.select().from(playbookRuns).where(eq(playbookRuns.id, id)).limit(1))[0]; }
 export async function recordTelegramWebhookUpdate(input: { updateId: number; ownerId: number; chatId: string }) { const db = await getDb(); if (!db) databaseUnavailable(); try { const result = await db!.insert(telegramWebhookUpdates).values(input); const id = Number(result[0].insertId); return { created: true, row: (await db!.select().from(telegramWebhookUpdates).where(eq(telegramWebhookUpdates.id, id)).limit(1))[0] }; } catch { return { created: false, row: (await db!.select().from(telegramWebhookUpdates).where(eq(telegramWebhookUpdates.updateId, input.updateId)).limit(1))[0] }; } }
 export async function updateTelegramWebhookUpdate(updateId: number, status: "completed" | "ignored" | "failed", detail: string) { const db = await getDb(); if (!db) databaseUnavailable(); await db!.update(telegramWebhookUpdates).set({ status, detail }).where(eq(telegramWebhookUpdates.updateId, updateId)); }
+export async function createAssistantAttachment(input: { ownerId: number; sessionId: number; storageKey: string; url: string; filename: string; mimeType: string; sizeBytes: number }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(assistantAttachments).values(input); const id = Number(result[0].insertId); return (await db!.select().from(assistantAttachments).where(eq(assistantAttachments.id, id)).limit(1))[0]; }
+export async function listAssistantAttachments(ownerId: number, sessionId: number) { const db = await getDb(); if (!db) databaseUnavailable(); return db!.select().from(assistantAttachments).where(and(eq(assistantAttachments.ownerId, ownerId), eq(assistantAttachments.sessionId, sessionId))).orderBy(desc(assistantAttachments.createdAt)); }
+export async function createAssistantKnowledgeItem(input: { ownerId: number; category: "identity" | "rights" | "safety" | "workflow" | "distribution"; title: string; content: string; sourceUrl?: string }) { const db = await getDb(); if (!db) databaseUnavailable(); const result = await db!.insert(assistantKnowledgeItems).values(input); const id = Number(result[0].insertId); return (await db!.select().from(assistantKnowledgeItems).where(eq(assistantKnowledgeItems.id, id)).limit(1))[0]; }
+export async function searchAssistantKnowledge(ownerId: number, query: string) { const db = await getDb(); if (!db) databaseUnavailable(); const needle = `%${query.trim().slice(0, 120)}%`; return db!.select().from(assistantKnowledgeItems).where(and(eq(assistantKnowledgeItems.ownerId, ownerId), eq(assistantKnowledgeItems.status, "active"), or(like(assistantKnowledgeItems.title, needle), like(assistantKnowledgeItems.content, needle)))).orderBy(desc(assistantKnowledgeItems.updatedAt)).limit(20); }
 
 export async function getDashboardData(ownerId: number) {
   const db = await getDb();

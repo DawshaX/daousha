@@ -29,6 +29,7 @@ import { derivePerformanceImprovementSuggestion } from "../shared/performanceImp
 import { performanceExperimentAdvice, summarizePerformance } from "../shared/performanceSummary";
 import { describeUploadFailure } from "./uploadFailureDetail";
 import { createNOVASession, getNOVAWorkspace, runNOVATurn } from "./novaAssistant";
+import { safeNOVAAttachmentFilename, validateNOVAAttachment } from "./assistantAttachmentGuards";
 
 const url = z.string().url().max(1500);
 const projectStatus = z.enum(["idea", "research", "script", "production", "review", "approved", "scheduled", "published", "blocked"]);
@@ -48,6 +49,21 @@ export const appRouter = router({
     }),
   }),
   nova: router({
+    attachments: protectedProcedure.input(z.object({ sessionId: z.number().int().positive() })).query(async ({ ctx, input }) => {
+      const session = await db.getOwnedAssistantSession(ctx.user.id, input.sessionId); if (!session) throw new TRPCError({ code: "NOT_FOUND" });
+      return db.listAssistantAttachments(ctx.user.id, input.sessionId);
+    }),
+    uploadAttachment: protectedProcedure.input(z.object({ sessionId: z.number().int().positive(), filename: z.string().trim().min(1).max(120), mimeType: z.string().trim().max(120), base64: z.string().min(4).max(5_600_000) })).mutation(async ({ ctx, input }) => {
+      const session = await db.getOwnedAssistantSession(ctx.user.id, input.sessionId); if (!session) throw new TRPCError({ code: "NOT_FOUND" });
+      const bytes = validateNOVAAttachment(input.mimeType, input.base64);
+      const safeName = safeNOVAAttachmentFilename(input.filename); const stored = await storagePut(`assistant/${ctx.user.id}/${input.sessionId}/${safeName}`, bytes, input.mimeType);
+      const attachment = await db.createAssistantAttachment({ ownerId: ctx.user.id, sessionId: input.sessionId, storageKey: stored.key, url: stored.url, filename: input.filename, mimeType: input.mimeType, sizeBytes: bytes.length });
+      await db.createAssistantAuditEvent({ ownerId: ctx.user.id, sessionId: input.sessionId, actor: "user", action: "attachment_uploaded", target: input.filename, decision: "completed", detail: "رُفع مرفق إلى تخزين الجلسة دون حفظ محتواه في قاعدة البيانات." }); return attachment;
+    }),
+    addKnowledge: protectedProcedure.input(z.object({ category: z.enum(["identity", "rights", "safety", "workflow", "distribution"]), title: z.string().trim().min(2).max(255), content: z.string().trim().min(5).max(12_000), sourceUrl: z.string().url().max(700).optional() })).mutation(async ({ ctx, input }) => {
+      const item = await db.createAssistantKnowledgeItem({ ownerId: ctx.user.id, ...input }); await db.createAssistantAuditEvent({ ownerId: ctx.user.id, actor: "user", action: "knowledge_added", target: item.title, decision: "completed", detail: `أضيفت معرفة ضمن ${input.category}.` }); return item;
+    }),
+    searchKnowledge: protectedProcedure.input(z.object({ query: z.string().trim().min(1).max(120) })).query(({ ctx, input }) => db.searchAssistantKnowledge(ctx.user.id, input.query)),
     configureTelegramWebhook: protectedProcedure.input(z.object({ publicBaseUrl: z.string().url() })).mutation(async ({ ctx, input }) => {
       const result = await configureTelegramCommandWebhook(input.publicBaseUrl);
       await db.createAssistantAuditEvent({ ownerId: ctx.user.id, actor: "user", action: "telegram_webhook_configured", target: "telegram", decision: "completed", detail: "تم تفعيل Webhook أوامر Telegram للمالك." });

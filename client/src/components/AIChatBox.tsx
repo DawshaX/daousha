@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Loader2, Send, User, Sparkles } from "lucide-react";
+import { Loader2, Mic, MicOff, Send, User, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Streamdown } from "streamdown";
 
@@ -57,6 +57,9 @@ export type AIChatBoxProps = {
    * Click to send directly
    */
   suggestedPrompts?: string[];
+  /** Enables browser speech recognition only after the user presses the microphone button. */
+  enableVoiceInput?: boolean;
+  voiceLanguage?: string;
 };
 
 /**
@@ -119,12 +122,16 @@ export function AIChatBox({
   height = "600px",
   emptyStateMessage = "Start a conversation with AI",
   suggestedPrompts,
+  enableVoiceInput = false,
+  voiceLanguage = "ar-EG",
 }: AIChatBoxProps) {
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputAreaRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceHint, setVoiceHint] = useState("");
 
   // Filter out system messages
   const displayMessages = messages.filter((msg) => msg.role !== "system");
@@ -185,6 +192,16 @@ export function AIChatBox({
       e.preventDefault();
       handleSubmit(e);
     }
+  };
+
+  const startVoiceInput = () => {
+    type RecognitionResultEvent = Event & { results: ArrayLike<ArrayLike<{ transcript: string }>> };
+    type Recognition = { lang: string; interimResults: boolean; continuous: boolean; start: () => void; onresult: ((event: RecognitionResultEvent) => void) | null; onerror: (() => void) | null; onend: (() => void) | null; };
+    const RecognitionCtor = (window as Window & { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition }).SpeechRecognition ?? (window as Window & { webkitSpeechRecognition?: new () => Recognition }).webkitSpeechRecognition;
+    if (!RecognitionCtor) { setVoiceHint("إدخال الصوت غير متاح في هذا المتصفح؛ اكتب طلبك نصيًا."); return; }
+    const recognition = new RecognitionCtor(); recognition.lang = voiceLanguage; recognition.interimResults = false; recognition.continuous = false;
+    recognition.onresult = event => { const transcript = Array.from(event.results).map(item => item[0]?.transcript ?? "").join(" ").trim(); if (transcript) setInput(current => `${current}${current ? " " : ""}${transcript}`); setVoiceHint(""); };
+    recognition.onerror = () => setVoiceHint("تعذر التقاط الصوت؛ تحقق من إذن الميكروفون ثم أعد المحاولة."); recognition.onend = () => setIsListening(false); setIsListening(true); recognition.start();
   };
 
   return (
@@ -317,6 +334,7 @@ export function AIChatBox({
           className="flex-1 max-h-32 resize-none min-h-9"
           rows={1}
         />
+        {enableVoiceInput ? <Button type="button" size="icon" variant="outline" title="تحويل الكلام إلى نص" onClick={startVoiceInput} disabled={isLoading} className="shrink-0 h-[38px] w-[38px] border-white/10">{isListening ? <MicOff className="size-4 text-red-300" /> : <Mic className="size-4" />}</Button> : null}
         <Button
           type="submit"
           size="icon"
@@ -330,6 +348,7 @@ export function AIChatBox({
           )}
         </Button>
       </form>
+      {voiceHint ? <p className="px-4 pb-3 text-xs text-amber-300">{voiceHint}</p> : null}
     </div>
   );
 }

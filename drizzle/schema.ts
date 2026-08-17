@@ -383,5 +383,31 @@ export const telegramWebhookUpdates = mysqlTable("telegram_webhook_updates", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("telegram_webhook_updates_owner_created_idx").on(table.ownerId, table.createdAt)]);
 
+/** Metadata for user-provided NOVA session files; bytes live only in S3. */
+export const assistantAttachments = mysqlTable("assistant_attachments", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  sessionId: int("sessionId").notNull(),
+  storageKey: varchar("storageKey", { length: 500 }).notNull(),
+  url: varchar("url", { length: 700 }).notNull(),
+  filename: varchar("filename", { length: 255 }).notNull(),
+  mimeType: varchar("mimeType", { length: 120 }).notNull(),
+  sizeBytes: int("sizeBytes").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [index("assistant_attachments_session_created_idx").on(table.sessionId, table.createdAt), index("assistant_attachments_owner_created_idx").on(table.ownerId, table.createdAt)]);
+
+/** Owner-curated operational knowledge, searchable without external browsing or hidden prompt data. */
+export const assistantKnowledgeItems = mysqlTable("assistant_knowledge_items", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  category: mysqlEnum("category", ["identity", "rights", "safety", "workflow", "distribution"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  sourceUrl: varchar("sourceUrl", { length: 700 }),
+  status: mysqlEnum("status", ["active", "archived"]).default("active").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("assistant_knowledge_owner_category_updated_idx").on(table.ownerId, table.category, table.updatedAt)]);
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;

@@ -120,6 +120,13 @@
       "when": 1786925142783,
       "tag": "0016_naive_chronomancer",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1786925997251,
+      "tag": "0017_rich_magneto",
+      "breakpoints": true
     }
   ]
 }
