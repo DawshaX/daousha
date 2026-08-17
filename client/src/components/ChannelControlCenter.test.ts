@@ -42,6 +42,13 @@ describe("ChannelControlCenter distribution panel", () => {
     expect(source).toContain("لا يرفع أو ينشر هذا الفحص أي فيديو");
   });
 
+  it("shows Facebook's live authorization state instead of a stale expiry warning", async () => {
+    const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
+    expect(source).toContain('facebook?.status === "authorized"');
+    expect(source).toContain("رُبطت صفحة Facebook رسميًا");
+    expect(source).not.toContain("أظهر فحص القراءة المحدود في 15 أغسطس");
+  });
+
   it("renders channel renewal guidance rather than implying every provider can refresh silently", async () => {
     const source = await readFile(new URL("./ChannelControlCenter.tsx", import.meta.url), "utf8");
     expect(source).toContain("تجديد التفويضات وحدود الاستمرارية");
