@@ -254,9 +254,9 @@ function deterministicDraftProject(content: string): PlannedAssistantAction | un
 }
 
 function deterministicAdvisorDraft(content: string): PlannedAssistantAction | undefined {
-  const match = content.match(/^(?:مسودة|اكتب\s+(?:لي\s+)?مسودة|draft)\s+(Gemini|OpenAI)\s*(?:عن|for|:)?\s*(.{3,6000})$/i);
+  const match = content.match(/^(?:مسودة|اكتب\s+(?:لي\s+)?مسودة|draft)\s+(Gemini|جيميني|OpenAI|ChatGPT|شات\s*جي\s*بي\s*تي|جي\s*بي\s*تي)\s*(?:عن|for|:)?\s*(.{3,6000})$/i);
   if (!match) return undefined;
-  const provider = match[1].toLowerCase() as NOVAAdvisorProvider;
+  const provider: NOVAAdvisorProvider = /gemini|جيميني/i.test(match[1]) ? "gemini" : "openai";
   const brief = match[2].replace(/[.؟!]+$/, "").trim();
   return {
     response: `سأنشئ مسودة إرشادية عبر ${provider === "gemini" ? "Gemini" : "OpenAI"}. لن تُنشئ المسودة نشرًا أو جدولة أو تغييرًا في الحقوق أو السياسة.`,

@@ -158,6 +158,14 @@ describe("NOVA Assistant", () => {
     expect(dbMock.createPublishingRun).not.toHaveBeenCalled();
   });
 
+  it("يفهم اسم Gemini العربي في أمر المسودة الموحد", async () => {
+    const result = await runNOVATurn({ ownerId: 7, origin: "telegram", content: "مسودة جيميني عن ذكر صباحي قصير" });
+
+    expect(result.status).toBe("completed");
+    expect(advisorMock.createNOVAAdvisorDraft).toHaveBeenCalledWith({ provider: "gemini", prompt: "ذكر صباحي قصير", language: "both" });
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+  });
+
   it("يقدم إرشادًا آمنًا قابلًا للتدقيق إذا تعذر محلل طلب غير حتمي بدل إنهاء الجلسة بالفشل", async () => {
     llmMock.invokeLLM.mockRejectedValue(new Error("service unavailable"));
     const result = await runNOVATurn({ ownerId: 7, content: "فسر لي خطوة جديدة غير مصنفة" });
