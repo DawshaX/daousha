@@ -133,7 +133,11 @@ function canCreateSource(input: PlannedAssistantAction) {
 }
 
 function containsSensitiveMemoryInput(value: string) {
-  return /(password|secret|api[_ -]?key|access[_ -]?token|otp|رمز\s*(?:تحقق|دخول)|كلمة\s*مرور)/i.test(value);
+  return /(password|secret|api[_ -]?key|access[_ -]?token|otp|رمز\s*(?:تحقق|دخول)|كلمة\s*مرور|sk-[a-z0-9_-]{12,}|AIza[a-z0-9_-]{10,})/i.test(value);
+}
+
+function redactSensitiveInput(value: string) {
+  return containsSensitiveMemoryInput(value) ? "[محتوى حساس محجوب: لا تُخزن كلمات المرور أو مفاتيح الوصول أو رموز التحقق في NOVA.]" : value;
 }
 
 function safeAction(input: PlannedAssistantAction) {
@@ -189,6 +193,16 @@ function deterministicMemoryDraft(content: string): PlannedAssistantAction | und
     planSummary: "حفظ تفضيل أو قرار صريح في ذاكرة NOVA المالك-المقيدة.",
     toolName: "create_memory_draft", impact: "draft", requiresApproval: false,
     title: `ذاكرة NOVA: ${memory.slice(0, 100)}`, brief: memory, sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
+  };
+}
+
+function deterministicSensitiveInputBlock(content: string): PlannedAssistantAction | undefined {
+  if (!containsSensitiveMemoryInput(content)) return undefined;
+  return {
+    response: "حُجب المحتوى الحساس قبل تحليله أو إرساله إلى أي مزود. لن أحفظ كلمات مرور أو رموز وصول أو رموز تحقق. لا تشارك كلمات المرور أو مفاتيح الوصول أو رموز التحقق في NOVA أو Telegram. استخدم صفحة الأسرار المحمية عند الحاجة.",
+    planSummary: "حجب محتوى حساس قبل التحليل أو التنفيذ، مع حفظ سجل منقح فقط.",
+    toolName: "respond_only", impact: "read", requiresApproval: false,
+    title: "", brief: "", sourceName: "", sourceUrl: "", licenseType: "", assetTitle: "",
   };
 }
 
@@ -551,17 +565,19 @@ export async function getNOVAWorkspace(ownerId: number, requestedSessionId?: num
 export async function runNOVATurn(input: { ownerId: number; content: string; sessionId?: number; origin?: "web" | "telegram" }) {
   const content = input.content.trim();
   if (!content || content.length > MAX_MESSAGE_LENGTH) throw new Error("رسالة NOVA يجب أن تحتوي على نص واضح ضمن الحد المسموح.");
+  const storedContent = redactSensitiveInput(content);
   const session = input.sessionId ? await db.getOwnedAssistantSession(input.ownerId, input.sessionId) : undefined;
   if (input.sessionId && !session) throw new Error("جلسة NOVA غير موجودة أو لا تخص حسابك.");
-  const resolvedSession = session ?? await createNOVASession(input.ownerId, titleFromMessage(content), input.origin ?? "web");
+  const resolvedSession = session ?? await createNOVASession(input.ownerId, titleFromMessage(storedContent), input.origin ?? "web");
   if (resolvedSession.status !== "active") throw new Error("هذه الجلسة مؤرشفة. افتح جلسة جديدة للمتابعة.");
 
-  await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: resolvedSession.id, role: "user", content });
+  await db.createAssistantMessage({ ownerId: input.ownerId, sessionId: resolvedSession.id, role: "user", content: storedContent });
   await db.createAssistantAuditEvent({ ownerId: input.ownerId, sessionId: resolvedSession.id, actor: "user", action: "assistant_turn_requested", target: `session:${resolvedSession.id}`, decision: "allowed", detail: "تم استلام طلب جديد داخل NOVA Assistant." });
 
   const history = await db.listAssistantMessages(input.ownerId, resolvedSession.id);
   let planned: PlannedAssistantAction;
-  const deterministic = deterministicRestrictedAction(content)
+  const deterministic = deterministicSensitiveInputBlock(content)
+    ?? deterministicRestrictedAction(content)
     ?? deterministicStartHelp(content)
     ?? deterministicAuthorizationGuidance(content)
     ?? deterministicNotificationsOverview(content)

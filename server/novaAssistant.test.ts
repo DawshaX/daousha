@@ -168,6 +168,19 @@ describe("NOVA Assistant", () => {
     expect(dbMock.createAssistantAuditEvent).toHaveBeenCalledWith(expect.objectContaining({ action: "assistant_plan_degraded", decision: "completed" }));
   });
 
+  it("يحجب سرًا من Telegram قبل التحليل ويحفظ في الجلسة نصًا منقحًا فقط", async () => {
+    const secret = "sk-example-secret-value-123456789";
+    const result = await runNOVATurn({ ownerId: 7, origin: "telegram", content: `api_key هو ${secret}` });
+
+    expect(result.status).toBe("completed");
+    expect(result.reply).toContain("حُجب المحتوى الحساس");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(advisorMock.createNOVAAdvisorDraft).not.toHaveBeenCalled();
+    const savedContents = dbMock.createAssistantMessage.mock.calls.map(call => call[0]?.content).join("\n");
+    expect(savedContents).not.toContain(secret);
+    expect(savedContents).toContain("محتوى حساس محجوب");
+  });
+
   it("يعرض آخر التنبيهات من Telegram من دون استدعاء النموذج أو إرسال رسالة جديدة", async () => {
     dbMock.listNotificationEvents.mockResolvedValue([{ eventType: "facebook_health_healthy", deliveryStatus: "sent" }]);
 
