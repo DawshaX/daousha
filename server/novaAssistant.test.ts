@@ -17,6 +17,10 @@ const dbMock = {
   getDashboardData: vi.fn(),
   getConnectionHealthMonitor: vi.fn(),
   listNotificationEvents: vi.fn(),
+  listChannelConnections: vi.fn(),
+  listPublishingRuns: vi.fn(),
+  getPublishingPolicy: vi.fn(),
+  listOwnedProjectVideoAssets: vi.fn(),
   listAssistantSessions: vi.fn(),
   listAssistantActionPlans: vi.fn(),
   listAssistantActionSteps: vi.fn(),
@@ -64,6 +68,10 @@ describe("NOVA Assistant", () => {
     dbMock.getDashboardData.mockResolvedValue({ stats: { activeProjects: 2, reviewProjects: 0, activeSchedules: 6 }, connections: [{ platform: "youtube", status: "authorized" }] });
     dbMock.getConnectionHealthMonitor.mockResolvedValue({ platform: "youtube", status: "healthy" });
     dbMock.listNotificationEvents.mockResolvedValue([]);
+    dbMock.listChannelConnections.mockResolvedValue([{ platform: "youtube", status: "authorized" }]);
+    dbMock.listPublishingRuns.mockResolvedValue([]);
+    dbMock.getPublishingPolicy.mockResolvedValue({ mode: "guarded_auto", publicPublishingEnabled: true, killSwitchEnabled: false, requirePrivateCanary: true, minIntervalMinutes: 10, maxPublicationsPerDay: 6, lastPublishedAt: null });
+    dbMock.listOwnedProjectVideoAssets.mockResolvedValue([]);
     llmMock.invokeLLM.mockResolvedValue(modelPlan());
   });
 
@@ -86,6 +94,17 @@ describe("NOVA Assistant", () => {
     expect(llmMock.invokeLLM).not.toHaveBeenCalled();
     expect(dbMock.getDashboardData).toHaveBeenCalledWith(7);
     expect(result.reply).toContain("الجداول النشطة 6");
+  });
+
+  it("يحوّل أمر النشر إلى فحص حزم مقيد ولا ينفذ رفعًا", async () => {
+    dbMock.listOwnedProjectVideoAssets.mockResolvedValue([{ project: { id: 88, title: "حزمة عربية", status: "approved", previewAcknowledgedAt: new Date() }, asset: { storageKey: "videos/ar.mp4", licenseType: "أصلي", licenseStatus: "approved", safetyStatus: "clear" } }]);
+
+    const result = await runNOVATurn({ ownerId: 7, content: "انشرلي فيديو الآن على كل المنصات", origin: "telegram" });
+
+    expect(result.status).toBe("completed");
+    expect(llmMock.invokeLLM).not.toHaveBeenCalled();
+    expect(result.reply).toContain("حزمة عربية");
+    expect(result.reply).toContain("هذا فحص فقط");
   });
 
   it("يحجب أي طلب عالي الأثر حتى لو طلب نموذج اللغة أداة تنفيذية", async () => {
