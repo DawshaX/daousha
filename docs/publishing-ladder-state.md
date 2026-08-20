@@ -1,3 +1,9 @@
+## دورة 2026-08-20 (05:05 UTC / 8:05 صباحًا القاهرة)
+- لا نشر هذه الدورة: حصة توليد الصور المجانية نفدت (20/20 — أُنْفدت في دورة 03:35 UTC مع ep26)، وsecrets.txt غائب (YT/FB/Telegram معطلة)، وحد «قطعتين بفارق ≥4 ساعات» يمنع IG قبل ~07:21 UTC بعد منشور ep26 (03:21 UTC)
+- ep27 تبقى produced-partial: سيناريو AR+EN + narration27-ar (45.8s) + narration27-en (45.4s) — تبقى 8 صور (4 AR + 4 EN) ثم بناء الفيديوين ونشر AR+EN على IG في الدورة التالية
+- لا أخطاء نشر → streakSafe 21، streakRisky 0، level 2، dailyCap 6
+- TikTok: «No access — login required» مجددًا؛ الحالة تبقى Production / In review منذ 2026-08-14
+
 ## دورة 2026-08-20 (03:35 UTC / 6:35 صباحًا القاهرة)
 - الحلقة 26 "جبالك أخفى مما تظن! 3 أسرار صادمة عن أعظم جبال الأرض": produced كامل (1080x1920، 44.7s، narration26 Charon + 4 صور 1440x2560) في test_run/ وdocs/episode26/ + نشر IG https://www.instagram.com/reel/DcPyNOID91y/
 - لا أخطاء نشر؛ YT/FB/Telegram معطلة بيئيًا فقط (secrets.txt غائب منذ 2026-08-15) → streakSafe 20، streakRisky 0
@@ -9,12 +15,16 @@
 This file is the single source of truth for the escalating daily publishing cap. Update after every publish run.
 - level: 2 (streakSafe reached 5 on 2026-08-16 run — ladder rule promotes dailyCap 4→6)
 - dailyCap: 6
-- streakSafe: 20 (2026-08-20 03:35 UTC / 6:35am Cairo run: ep26 fully produced (script + Charon narration26 46.2s + 4 scenes 1440x2560 + final video 1080x1920 44.7s) and published on Instagram https://www.instagram.com/reel/DcPyNOID91y/ ; no platform errors; YT/FB/Telegram deferred for environmental reason only — secrets.txt still missing, same as prior runs)
+- streakSafe: 21 (2026-08-20 05:05 UTC run — no publish: free image quota exhausted (20/20, used by ep26 at 03:35 UTC run), secrets.txt missing since 2026-08-15 (YT/FB/Telegram), IG 4h cooldown until ~07:21 UTC after ep26 post at 03:21 UTC; ep27 stays produced-partial (script AR+EN + narrations 27-ar 45.8s / 27-en 45.4s — needs 8 scenes then 2 videos + IG AR/EN publish next run). 2026-08-20 03:35 UTC / 6:35am Cairo run: ep26 fully produced (script + Charon narration26 46.2s + 4 scenes 1440x2560 + final video 1080x1920 44.7s) and published on Instagram https://www.instagram.com/reel/DcPyNOID91y/ ; no platform errors; YT/FB/Telegram deferred for environmental reason only — secrets.txt still missing, same as prior runs)
 - streakRisky: 0
 - lastPublishDate: 2026-08-20
 - note: ep21 published 21:16 UTC (after 12am Cairo start of Aug 20 local time; logged under Aug 19 run)
 - lastPublishUrl: https://www.instagram.com/reel/DcPyNOID91y/ (episode 26, IG run 2026-08-20 03:35 UTC / 6:35am Cairo)
 - history:
+  - date: 2026-08-20 (05:05 UTC / 8:05am Cairo — scheduled run, no new publish)
+    No production or publishing this run: free image quota 20/20 exhausted at 03:35 UTC run (ep26 4 scenes); episode 27 stays produced-partial (script AR+EN + narrations 27-ar 45.8s / 27-en 45.4s — needs 8 scenes then 2 videos + IG publish AR/EN); YT/FB/Telegram deferred (secrets.txt missing since 2026-08-15); Instagram 4h cooldown after ep26 post at 03:21 UTC prevents IG post before ~07:21 UTC.
+    TikTok: "No access — login required" again; state stays Production / In review since 2026-08-14.
+    No platform errors this run → streakSafe incremented (20→21).
   - date: 2026-08-20 (~07:06 Cairo / 04:06 UTC — scheduled run, no new publish)
     episode 27 "أسرع من الضوء؟ 3 حقائق صادمة عن السرعة ستفجّر عقلك" (AR + EN versions requested): produced-partial — script (AR+EN) + narration27-ar.wav (45.8s Charon) + narration27-en.wav (45.4s Charon) done in test_run/ & docs/episode27/; 8 scenes (4 AR + 4 EN, 9:16) deferred: free image quota 20/20 exhausted today — generate in next scheduled run, then build both final videos and publish (AR + EN) on IG; YT/FB/Telegram deferred (secrets.txt missing since 2026-08-15).
     TikTok: "No access — login required" again; state stays Production / In review since 2026-08-14.
