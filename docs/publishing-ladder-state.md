@@ -2,12 +2,18 @@
 This file is the single source of truth for the escalating daily publishing cap. Update after every publish run.
 - level: 2 (streakSafe reached 5 on 2026-08-16 run — ladder rule promotes dailyCap 4→6)
 - dailyCap: 6
-- streakSafe: 18 (2026-08-19 21:16 UTC / ~6:49pm Cairo run: ep20 fully produced (script + Charon narration20 31.5s + 4 scenes 1440x2560 + final video 1080x1920 30.0s) and published on Instagram https://www.instagram.com/reel/DcOi8dzii3P/ ; no platform errors; YT/FB/Telegram deferred for environmental reason only — secrets.txt still missing, same as prior runs)
+- streakSafe: 19 (2026-08-20 02:08 UTC / 5:08am Cairo run: ep23 fully produced (script + Charon narration23 40.3s + 4 scenes 1440x2560 + final video 1080x1920 38.8s) and published on Instagram https://www.instagram.com/reel/DcPp7Srj48d/ ; no platform errors; YT/FB/Telegram deferred for environmental reason only — secrets.txt still missing, same as prior runs)
 - streakRisky: 0
 - lastPublishDate: 2026-08-19
 - note: ep21 published 21:16 UTC (after 12am Cairo start of Aug 20 local time; logged under Aug 19 run)
-- lastPublishUrl: https://www.instagram.com/reel/DcPIZ58gChY/ (episode 21, IG run 2026-08-19 21:16 UTC / 12:16am Cairo)
-- pendingFullPublish: ep5, ep6, ep7, ep8, ep9, ep10, ep11, ep12, ep13, ep14, ep15, ep16, ep17, ep18 (all produced; YT/FB/Telegram await secrets.txt restoration; ep16+ep17+ep18 already published on IG; ep20+ep21 published on IG; YT/FB/Telegram publish awaiting secrets.txt restoration)
+- lastPublishUrl: https://www.instagram.com/reel/DcPp7Srj48d/ (episode 23, IG run 2026-08-20 02:08 UTC / 5:08am Cairo)
+- pendingFullPublish: ep5, ep6, ep7, ep8, ep9, ep10, ep11, ep12, ep13, ep14, ep15, ep16, ep17, ep18, ep19, ep20, ep21, ep22 (all produced/partially published; YT/FB/Telegram await secrets.txt restoration)
+
+## دورة 2026-08-20 (02:08 UTC / 5:08 فجرًا القاهرة)
+- الحلقة 23 "الفراغ ليس فارغًا! 3 حقائق صادمة عن الفضاء": produced كامل (1080x1920، 38.8s، narration23 Charon 40.3s، 4 صور 1440x2560) في test_run/ وdocs/episode23/ + نشر IG https://www.instagram.com/reel/DcPp7Srj48d/
+- لا أخطاء نشر؛ YT/FB/Telegram معطلة بيئيًا فقط (secrets.txt غائب منذ 2026-08-15) → streakSafe 19، streakRisky 0
+- topic_library.json: ep23 = produced؛ الحلقة التالية queued = ep26 (الجبال) — بعد استبدال موضوعي ep26 (القمر — مكرر مع ep19/21) وep27 (الصوت — مكرر مع ep20) بموضوعين جديدين (الجبال، السرعة)
+- TikTok: صفحة المطورين "No access — login required"؛ الحالة المسجلة تبقى Production / In review منذ 2026-08-14
 
 ## دورة 2026-08-19 (21:16 UTC / 12:16م ليلًا القاهرة)
 - الحلقة 21 "البرق يضرب نفس المكان! 3 حقائق صادمة ستصدمك": produced كامل (1080x1920، 35.7s، narration21 Charon 37.2s بوتيرة أبطأ، 4 صور 1440x2560) في test_run/ وdocs/episode21/ + نشر IG https://www.instagram.com/reel/DcPIZ58gChY/

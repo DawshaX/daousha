@@ -176,6 +176,18 @@ TikTok: صفحة المطورين تعرض «No access — You need to login» (
 |---|---|---|---|---|
 | 19 | القمر يبتعد عنا كل ثانية! 3 أسرار عن القمر لم تسمعها | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcN3RU1EY53/ | — pending (نفس السبب) |
 الحلقة 19: produced كامل في هذه الدورة (1080x1920، 36.4s، narration19.wav Charon 37.9s، 4 صور 1440x2560) في test_run/ وdocs/episode19/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/FdzlZQGpIBMOyXjq.mp4. topic_library.json محدثة: ep19 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep19 (كلها produced).
+## النشر — 2026-08-20 (02:08 UTC / 5:08 فجرًا القاهرة — تشغيل مجدول، الحلقة 23)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 23 | الفراغ ليس فارغًا! 3 حقائق صادمة عن الفضاء | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcPp7Srj48d/ | — pending (نفس السبب) |
+الحلقة 23: produced كامل في هذه الدورة (1080x1920، 38.8s، narration23.wav Charon 40.3s، 4 صور 1440x2560) في test_run/ وdocs/episode23/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/TWPTIYbJLCOLanox.mp4. topic_library.json محدثة: ep23 = produced، واستُبدل موضوعا ep26 (القمر — مكرر مع ep19/21) وep27 (الصوت — مكرر مع ep20) بموضوعين جديدين (الجبال / السرعة) لتجنب التكرار. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt (نفس القيد منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep22 (كلها produced/منشورة جزئيًا).
+
+## TikTok — فحص 2026-08-20 (02:09 UTC / 5:09 فجرًا القاهرة)
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+## سجل تلجرام — 2026-08-20 (5:08 فجرًا القاهرة)
+لم يُرسل إشعار تلجرام في هذه الدورة (بوت xDaw_NOVA يتطلب secrets.txt الغائب منذ 2026-08-15). تقرير الدورة أُرسل للمستخدم داخل المحادثة.
+
 ## TikTok — فحص 2026-08-19 (09:19 UTC / 12:19م القاهرة)
 صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
 ## سجل تلجرام — 2026-08-19 (12:19م القاهرة)

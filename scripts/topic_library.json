@@ -139,19 +139,21 @@
   "status": "published",
   "published_at": "2026-08-20",
   "urls": {
-    "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
-    "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
-    "yt_ar": "https://www.youtube.com/watch?v=2OjsVKOGpWk",
-    "yt_en": "https://www.youtube.com/watch?v=UPZwEmHIY9c",
-    "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
-    "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
+   "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
+   "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
+   "yt_ar": "https://www.youtube.com/watch?v=2OjsVKOGpWk",
+   "yt_en": "https://www.youtube.com/watch?v=UPZwEmHIY9c",
+   "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
+   "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
   }
  },
  {
   "id": "ep23",
   "topic": "الجاذبية والصفر",
   "angle": "3 حقائق عن الفضاء والفراغ",
-  "status": "queued"
+  "status": "produced",
+  "produced_at": "2026-08-20 (02:08 UTC)",
+  "duration_s": 38.8
  },
  {
   "id": "ep24",
@@ -160,12 +162,12 @@
   "status": "published",
   "published_at": "2026-08-20",
   "urls": {
-    "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
-    "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
-    "yt_short_ar": "https://www.youtube.com/watch?v=D3uHnNSLZM0",
-    "yt_short_en": "https://www.youtube.com/watch?v=w9U-jPrNdCo",
-    "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
-    "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
+   "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
+   "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
+   "yt_short_ar": "https://www.youtube.com/watch?v=D3uHnNSLZM0",
+   "yt_short_en": "https://www.youtube.com/watch?v=w9U-jPrNdCo",
+   "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
+   "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
   }
  },
  {
@@ -175,24 +177,24 @@
   "status": "published",
   "published_at": "2026-08-20T15:35Z",
   "urls": {
-    "ig_ar": "https://www.instagram.com/reel/DcPmct4AFjb/",
-    "ig_en": "https://www.instagram.com/reel/DcPmjZnD3rD/",
-    "yt_short_ar": "https://www.youtube.com/watch?v=pftiChK59Y0",
-    "yt_short_en": "https://www.youtube.com/watch?v=JPN8fcXCLaY",
-    "fb_ar": "https://www.facebook.com/1265727539958933/videos/1760676461600436",
-    "fb_en": "https://www.facebook.com/1265727539958933/videos/1123935693417417"
+   "ig_ar": "https://www.instagram.com/reel/DcPmct4AFjb/",
+   "ig_en": "https://www.instagram.com/reel/DcPmjZnD3rD/",
+   "yt_short_ar": "https://www.youtube.com/watch?v=pftiChK59Y0",
+   "yt_short_en": "https://www.youtube.com/watch?v=JPN8fcXCLaY",
+   "fb_ar": "https://www.facebook.com/1265727539958933/videos/1760676461600436",
+   "fb_en": "https://www.facebook.com/1265727539958933/videos/1123935693417417"
   }
  },
  {
   "id": "ep26",
-  "topic": "القمر",
-  "angle": "3 أسرار عن القمر لم تسمعها",
+  "topic": "الجبال",
+  "angle": "3 أسرار عن أعظم جبال الأرض",
   "status": "queued"
  },
  {
   "id": "ep27",
-  "topic": "الصوت",
-  "angle": "3 حقائق عن الصوت ستندهش لها",
+  "topic": "السرعة",
+  "angle": "3 حقائق صادمة عن أسرع الأشياء في الكون",
   "status": "queued"
  }
 ]
