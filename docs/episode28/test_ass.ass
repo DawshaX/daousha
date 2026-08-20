@@ -1,0 +1,10 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: cap,Noto Naskh Arabic,80,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,-1,0,0,0,100,100,1,0,1,4,3,2,40,40,100,1
+[Events]
+Format: Layer, Start, End, Style, Text, MarginL, MarginR, MarginV, Effect
+Dialogue: 0,0:00.30,0:04.79,cap,,40,40,100,,تجربة نص عربي في أعلى الفيديو

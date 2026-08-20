@@ -1,0 +1,28 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: cap,DejaVu Sans,64,&H00FFFFFF,&H000000FF,&H00202020,&H80000000,-1,0,0,0,100,100,1,0,1,4,3,2,40,40,100,1
+
+[Events]
+Format: Layer, Start, End, Style, Text, MarginL, MarginR, MarginV, Effect
+Dialogue: 0,0:00.30,0:03.50,cap,,40,40,100,,What is the most expensive material
+Dialogue: 0,0:03.50,0:05.79,cap,,40,40,100,,in the entire universe?
+Dialogue: 0,0:05.79,0:08.00,cap,,40,40,100,,Worth trillions?!
+Dialogue: 0,0:08.00,0:12.00,cap,,40,40,100,,I'm sure you've never heard of it!
+Dialogue: 0,0:12.00,0:15.50,cap,,40,40,100,,Listen to these three facts!
+Dialogue: 0,0:15.50,0:17.50,cap,,40,40,100,,Fact one:
+Dialogue: 0,0:17.50,0:22.50,cap,,40,40,100,,One gram costs over 60 trillion dollars!
+Dialogue: 0,0:22.50,0:26.00,cap,,40,40,100,,Far pricier than any diamond!
+Dialogue: 0,0:26.00,0:28.00,cap,,40,40,100,,Fact two:
+Dialogue: 0,0:28.00,0:31.00,cap,,40,40,100,,All humanity's antimatter
+Dialogue: 0,0:31.00,0:34.00,cap,,40,40,100,,would not fill a teaspoon!
+Dialogue: 0,0:34.00,0:36.00,cap,,40,40,100,,Fact three:
+Dialogue: 0,0:36.00,0:40.00,cap,,40,40,100,,They annihilate in a flash of pure energy!
+Dialogue: 0,0:40.00,0:43.50,cap,,40,40,100,,You are goodness and light from God...
+Dialogue: 0,0:43.50,0:45.00,cap,,40,40,100,,Tell me in the comments:
+Dialogue: 0,0:45.00,0:48.00,cap,,40,40,100,,Will humanity ever harness it?
+Dialogue: 0,0:48.00,0:49.00,cap,,40,40,100,,Follow Dawsha!

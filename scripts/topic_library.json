@@ -208,5 +208,30 @@
     "instagram_ar": "https://www.instagram.com/reel/DcQhcr9gmqD/",
     "instagram_en": "https://www.instagram.com/reel/DcQhj4mim6k/",
     "production_note": "Produced with Pexels stock clips (image-gen quota exhausted 20/20 on 2026-08-20). Duration AR 43.5s / EN 43.1s, 1080x1920. Published on Instagram; YouTube/Facebook/Telegram unavailable (secrets.txt absent in scheduled session)."
+  },
+  {
+    "id": "ep28",
+    "topic": "أغلى مادة في الكون — المادة المضادة",
+    "angle": "3 حقائق صادمة عن المادة المضادة",
+    "status": "published-ig",
+    "links": {
+      "ar": "https://www.instagram.com/reel/DcQ4o6ACYRR/",
+      "en": "https://www.instagram.com/reel/DcRA7GElDHI/",
+      "ar_v1": "https://www.instagram.com/reel/DcQvoEQjDiB/",
+      "en_v1": "https://www.instagram.com/reel/DcQv02xmhc5/"
+    },
+    "cycle": "2026-08-20",
+    "style": "captions-overlay-sci-fi (Pexels)"
+  },
+  {
+    "id": "ep29",
+    "topic": "عالم عام 2099 — 3 حقائق صادمة عن المستقبل",
+    "angle": "مدن تحت قباب زجاجية، سيارات طائرة، وروبوتات ذكية",
+    "status": "published-ig-partial",
+    "links": {
+      "en_v2": "https://www.instagram.com/reel/DcRA7GElDHI/"
+    },
+    "cycle": "2026-08-20",
+    "style": "captions-overlay-sci-fi (Pexels)"
   }
 ]
