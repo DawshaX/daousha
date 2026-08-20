@@ -1,0 +1,210 @@
+[
+ {
+  "id": "ep1-done",
+  "topic": "الدماغ يعمل على ثلث طاقته فقط",
+  "angle": "3 حقائق صادمة عن الدماغ",
+  "status": "published"
+ },
+ {
+  "id": "ep2-done",
+  "topic": "القلب",
+  "angle": "3 حقائق ستصدمك عن القلب",
+  "status": "published"
+ },
+ {
+  "id": "ep3-done",
+  "topic": "العين تكذب عليك",
+  "angle": "3 حيل تخدع بها دماغك",
+  "status": "published"
+ },
+ {
+  "id": "ep4-done",
+  "topic": "أكاذيب الذاكرة",
+  "angle": "3 أكاذيب عن ذاكرتك",
+  "status": "published"
+ },
+ {
+  "id": "ep5",
+  "topic": "أسرار النوم",
+  "angle": "3 اكتشافات عن دماغك النائم",
+  "status": "produced"
+ },
+ {
+  "id": "ep6",
+  "topic": "النوم والأحلام",
+  "angle": "لماذا نحلم؟ 3 أسرار علمية",
+  "status": "published-ig"
+ },
+ {
+  "id": "ep7",
+  "topic": "الجاذبية الأرضية",
+  "angle": "3 أشياء لا تعرفها عن الجاذبية",
+  "status": "produced"
+ },
+ {
+  "id": "ep8",
+  "topic": "المحيطات",
+  "angle": "3 أسرار لم يكتشفها البشر في أعماق المحيطات",
+  "status": "published-ig"
+ },
+ {
+  "id": "ep9",
+  "topic": "الفضاء والشمس",
+  "angle": "3 حقائق صادمة عن شمسنا",
+  "status": "produced"
+ },
+ {
+  "id": "ep10",
+  "topic": "DNA",
+  "angle": "3 أسرار في حمضك النووي ستدهشك",
+  "status": "produced"
+ },
+ {
+  "id": "ep11",
+  "topic": "النمل",
+  "angle": "3 حقائق مذهلة عن عالم النمل",
+  "status": "produced"
+ },
+ {
+  "id": "ep12",
+  "topic": "الوقت",
+  "angle": "3 مفارقات غريبة عن الوقت",
+  "status": "produced"
+ },
+ {
+  "id": "ep13",
+  "topic": "اللغة العربية",
+  "angle": "3 حقائق عن أقوى لغة في التاريخ",
+  "status": "produced"
+ },
+ {
+  "id": "ep14",
+  "topic": "القطط",
+  "angle": "3 أسرار عن أذكى حيوان أليف",
+  "status": "published-ig"
+ },
+ {
+  "id": "ep15",
+  "topic": "التاريخ الإسلامي",
+  "angle": "3 اختراعات إسلامية غيّرت العالم",
+  "status": "published-ig",
+  "note": "2026-08-18: scenes 2-4 generated + final video produced (1080x1920, 30.9s) + published on Instagram https://www.instagram.com/reel/DcKnOPslFoe/ ; YT/FB/Telegram deferred (secrets.txt missing in scheduled sandbox)"
+ },
+ {
+  "id": "ep16",
+  "topic": "الماء",
+  "angle": "3 حقائق غريبة عن الماء لا تعرفها",
+  "status": "published-ig",
+  "produced_at": "2026-08-18",
+  "duration_s": 34.5
+ },
+ {
+  "id": "ep17",
+  "topic": "النحل",
+  "angle": "3 أسرار عن نحل العسل ستدهشك",
+  "status": "produced",
+  "produced_at": "2026-08-18",
+  "duration_s": 38.6
+ },
+ {
+  "id": "ep18",
+  "topic": "الحديد في جسمك",
+  "angle": "3 حقائق صادمة عن جسمك",
+  "status": "produced"
+ },
+ {
+  "id": "ep19",
+  "topic": "القمر",
+  "angle": "3 أسرار عن القمر لم تسمعها",
+  "status": "produced"
+ },
+ {
+  "id": "ep20",
+  "topic": "الصوت",
+  "angle": "3 حقائق عن الصوت ستندهش لها",
+  "status": "produced"
+ },
+ {
+  "id": "ep21",
+  "topic": "البرق",
+  "angle": "3 حقائق صادمة عن البرق",
+  "status": "produced",
+  "produced_at": "2026-08-19 (21:16 UTC / 12:16 AM Cairo)",
+  "duration_s": 35.7
+ },
+ {
+  "id": "ep22",
+  "topic": "العين المجردة",
+  "angle": "3 أشياء لا تراها عينك لكنها حولك",
+  "status": "published",
+  "published_at": "2026-08-20",
+  "urls": {
+   "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
+   "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
+   "yt_ar": "https://www.youtube.com/watch?v=2OjsVKOGpWk",
+   "yt_en": "https://www.youtube.com/watch?v=UPZwEmHIY9c",
+   "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
+   "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
+  }
+ },
+ {
+  "id": "ep23",
+  "topic": "الجاذبية والصفر",
+  "angle": "3 حقائق عن الفضاء والفراغ",
+  "status": "produced",
+  "produced_at": "2026-08-20 (02:08 UTC)",
+  "duration_s": 38.8
+ },
+ {
+  "id": "ep24",
+  "topic": "الدماغ والتعلم",
+  "angle": "3 أسرار عن التعلم السريع",
+  "status": "published",
+  "published_at": "2026-08-20",
+  "urls": {
+   "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
+   "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
+   "yt_short_ar": "https://www.youtube.com/watch?v=D3uHnNSLZM0",
+   "yt_short_en": "https://www.youtube.com/watch?v=w9U-jPrNdCo",
+   "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
+   "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
+  }
+ },
+ {
+  "id": "ep25",
+  "topic": "الطاقة الشمسية",
+  "angle": "3 حقائق عن طاقة الشمس الهائلة",
+  "status": "published",
+  "published_at": "2026-08-20T15:35Z",
+  "urls": {
+   "ig_ar": "https://www.instagram.com/reel/DcPmct4AFjb/",
+   "ig_en": "https://www.instagram.com/reel/DcPmjZnD3rD/",
+   "yt_short_ar": "https://www.youtube.com/watch?v=pftiChK59Y0",
+   "yt_short_en": "https://www.youtube.com/watch?v=JPN8fcXCLaY",
+   "fb_ar": "https://www.facebook.com/1265727539958933/videos/1760676461600436",
+   "fb_en": "https://www.facebook.com/1265727539958933/videos/1123935693417417"
+  }
+ },
+ {
+  "id": "ep26",
+  "topic": "الجبال",
+  "angle": "3 أسرار عن أعظم جبال الأرض",
+  "status": "published",
+  "published_at": "2026-08-20T10:42Z",
+  "urls": {
+   "ig_ar": "https://www.instagram.com/reel/DcQkSDYlahu/",
+   "ig_en": "https://www.instagram.com/reel/DcQkiRqieBB/",
+   "yt_short_ar": "https://www.youtube.com/watch?v=K_bXcqeATuQ",
+   "yt_short_en": "https://www.youtube.com/watch?v=qfblVQPqcJ0",
+   "fb_ar": "https://www.facebook.com/1265727539958933/videos/1040225065316466",
+   "fb_en": "https://www.facebook.com/1265727539958933/videos/1405765538407518"
+  }
+ },
+ {
+  "id": "ep27",
+  "topic": "السرعة",
+  "angle": "3 حقائق صادمة عن أسرع الأشياء في الكون",
+  "status": "queued",
+  "status_note": "script (AR+EN) + narration27-ar.wav (45.8s) + narration27-en.wav (45.4s) produced 2026-08-20. Images deferred: image quota 20/20 exhausted today — generate 8 images (4 AR + 4 EN, 9:16, scene1-4) in next scheduled run, then build both videos and publish."
+ }
+]
