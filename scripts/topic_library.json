@@ -136,7 +136,16 @@
   "id": "ep22",
   "topic": "العين المجردة",
   "angle": "3 أشياء لا تراها عينك لكنها حولك",
-  "status": "queued"
+  "status": "published",
+  "published_at": "2026-08-20",
+  "urls": {
+    "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
+    "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
+    "yt_ar": "https://www.youtube.com/watch?v=2OjsVKOGpWk",
+    "yt_en": "https://www.youtube.com/watch?v=UPZwEmHIY9c",
+    "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
+    "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
+  }
  },
  {
   "id": "ep23",
@@ -148,12 +157,42 @@
   "id": "ep24",
   "topic": "الدماغ والتعلم",
   "angle": "3 أسرار عن التعلم السريع",
-  "status": "queued"
+  "status": "published",
+  "published_at": "2026-08-20",
+  "urls": {
+    "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
+    "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
+    "yt_ar": "https://www.youtube.com/watch?v=2OjsVKOGpWk",
+    "yt_en": "https://www.youtube.com/watch?v=UPZwEmHIY9c",
+    "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
+    "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
+  }
  },
  {
   "id": "ep25",
   "topic": "الطاقة الشمسية",
   "angle": "3 حقائق عن طاقة الشمس الهائلة",
+  "status": "published",
+  "published_at": "2026-08-20T15:35Z",
+  "urls": {
+    "ig_ar": "https://www.instagram.com/reel/DcPmct4AFjb/",
+    "ig_en": "https://www.instagram.com/reel/DcPmjZnD3rD/",
+    "yt_ar": "https://www.youtube.com/watch?v=f1PDAWbaKzQ",
+    "yt_en": "https://www.youtube.com/watch?v=N4hu_dA9h-Q",
+    "fb_ar": "https://www.facebook.com/1265727539958933/videos/1760676461600436",
+    "fb_en": "https://www.facebook.com/1265727539958933/videos/1123935693417417"
+  }
+ },
+ {
+  "id": "ep26",
+  "topic": "القمر",
+  "angle": "3 أسرار عن القمر لم تسمعها",
+  "status": "queued"
+ },
+ {
+  "id": "ep27",
+  "topic": "الصوت",
+  "angle": "3 حقائق عن الصوت ستندهش لها",
   "status": "queued"
  }
 ]
