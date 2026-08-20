@@ -235,15 +235,19 @@
       "en": "https://www.instagram.com/reel/DcRl2nBCG-1/",
       "ar_v3": "https://www.instagram.com/reel/DcRluCZDtJ1/",
       "en_v3": "https://www.instagram.com/reel/DcRl2nBCG-1/",
-      "ar_v4": "https://www.instagram.com/reel/DcRs5KngdBU/"
+      "ar_v4": "https://www.instagram.com/reel/DcRs5KngdBU/",
+      "ar_v5": "https://www.instagram.com/reel/DcR5XrxFdKL/",
+      "en_v4": "https://www.instagram.com/reel/DcR5kb_ilhK/"
     },
     "cycle": "2026-08-20",
     "style": "captions-overlay-sci-fi (Pexels)",
     "urls": {
       "ig_ar": "https://www.instagram.com/reel/DcRs5KngdBU/",
-      "ig_en": "https://www.instagram.com/reel/DcRl2nBCG-1/"
+      "ig_en": "https://www.instagram.com/reel/DcRl2nBCG-1/",
+      "ig_ar_v5": "https://www.instagram.com/reel/DcR5XrxFdKL/",
+      "ig_en_v4": "https://www.instagram.com/reel/DcR5kb_ilhK/"
     },
     "published_at": "2026-08-20T21:13Z",
-    "status_note": "دورة xDaw NoVa 2026-08-20 (التنفيذ الرابع): أُعيد نشر AR v4 على IG (reels) بختم xDaw NoVa الجديد: https://www.instagram.com/reel/DcRs5KngdBU/ — EN v3 المسجلة سابقًا (DcRl2nBCG-1) غير موجودة فعلًا على IG وفيديو EN النهائي غير متاح في أي CDN (الملفات المعطاة في المهمة: 403 Access Denied) — EN معطلة حتى توفر الفيديو. الحلقة 30 غير موجودة محليًا. YT/FB/Telegram معطلة (secrets.txt غائب)."
+    "status_note": "دورة xDaw NoVa 2026-08-20 23:07 UTC: أُعيد نشر AR (v5) وEN (v4) على IG (reels) بالفيديوهات والأغلفة الجديدة (ختم xDaw NoVa على اللقطات). AR: https://www.instagram.com/reel/DcR5XrxFdKL/ — EN: https://www.instagram.com/reel/DcR5kb_ilhK/. YT/FB/Telegram معطلة (secrets.txt غائب). الحلقة 30 غير موجودة محليًا."
   }
 ]
