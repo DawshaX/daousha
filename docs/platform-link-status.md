@@ -97,3 +97,108 @@ TikTok — فحص 2026-08-15 (مساءً مجدولة): صفحة المطوري�
 
 ## TikTok — فحص 2026-08-16 (18:15 القاهرة)
 صفحة المطورين تعرض «No access — تسجيل دخول مطلوب» في المتصفح (لم يُفتح المتصفح بتسجيل دخول المطور). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+## النشر — 2026-08-17 (12:00 القاهرة — تشغيل مجدول، الحلقتان 12 و13)
+
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 12 | الوقت يسير في اتجاهين! 3 مفارقات صادمة ستصدمك | — pending (secrets غير متوفرة في جلسة 2026-08-17 — يتطلب استعادة secrets.txt) | https://www.instagram.com/reel/DcIr8VxjRCi/ | — pending (نفس سبب YouTube) |
+| 13 | لغتك أقوى من أن تتخيل! 3 حقائق صادمة عن العربية | — pending (نفس السبب) | https://www.instagram.com/reel/DcIsD3ikduQ/ | — pending (نفس السبب) |
+
+الحلقتان 12 و13: produced كامل في هذه الدورة (ep12: 1080x1920، 42.0s، narration Charon 43.5s؛ ep13: 1080x1920، 43.5s، narration Charon 45.0s، 4 صور 1440x2560 لكل منهما) في docs/episode12/ وdocs/episode13/. topic_library.json محدثة: ep12، ep13 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5 وep6 وep7 وep8 وep9 وep10 وep11 وep12 وep13. Instagram يعمل دائمًا عبر Manus connector.
+
+ملاحظة تشغيلية (مكررة منذ 2026-08-15): جلسات الجدولة الآلية تبدأ في sandbox جديد لا يحتوي `/home/ubuntu/secrets.txt`، لذلك يستمر تعذّر النشر على YouTube/Facebook وإشعار Telegram. عند استعادة الملف يُستكمل نشر ep5-13 فورًا دون إعادة إنتاج.
+
+## TikTok — فحص 2026-08-17 (12:03 القاهرة)
+
+صفحة المطورين تعرض «No access — You need to login» في متصفح المستخدم (لم يُفتح المتصفح بتسجيل دخول المطور). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+
+## النشر — 2026-08-17 (18:02 القاهرة — تشغيل مجدول، الحلقة 14)
+
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 14 | قطتك أقوى بكثير مما تظن! 3 حقائق صادمة ستصدمك | — pending (secrets غير متوفرة في جلسة الجدولة) | https://www.instagram.com/reel/DcJV2K1ino9/ | — pending (نفس السبب) |
+
+الحلقة 14: produced كامل في هذه الدورة (1080x1920، 41.7s، narration Charon 43.2s، 4 صور 1440x2560) في test_run/ وdocs/episode14/. topic_library.json محدثة: ep14 = published-ig. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5 وep6 وep7 وep8 وep9 وep10 وep11 وep12 وep13 وep14. Instagram يعمل دائمًا عبر Manus connector.
+
+## TikTok — فحص 2026-08-17 (18:18 القاهرة)
+
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (فقدت جلسة تسجيل الدخول القديمة، وتسجيل الدخول يتطلب بيانات يدوية). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+## دورة 2026-08-17 (منتصف الليل — ~00:15 القاهرة)
+الحلقة 15 (خريطة جوجل أصلها عربي! 3 حقائق صادمة ستدهشك): إنتاج جزئي في هذه الدورة — سيناريو (312 حرفًا) + narration15.wav (32.4s بصوت Charon) + ep15-scene1.png مولّد بجودة جيدة (النص العربي صحيح) في docs/episode15/. حصة توليد الصور نفدت (20/20 — خطة مجانية) بعد المشهد الأول؛ تبقى المشاهد 2-4 (prompts جاهزة في cycle-notes.md / docs/episode15) لإكمالها في الدورة التالية فور تجدد الحصة، ثم بناء الفيديو final. لا يوجد تكرار مع ep12/ep13 (موضوع مختلف: اختراعات إسلامية). topic_library.json: ep15 = pending-images.
+YT/FB/Telegram: ما تزال معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل: ep5 إلى ep14. Instagram يعمل دائمًا عبر Manus connector.
+TikTok: صفحة المطورين تعرض «No access — You need to login» (نفس نتيجة 18:18 القاهرة اليوم)؛ الحالة المسجلة تبقى Production / In review منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات.
+السلم: level 2، dailyCap 6، streakSafe 11 (لا أخطاء نشر هذه الدورة — التأجيل بسبب انقطاع بيئي فقط: secrets.txt وحصة الصور).
+===
+## النشر — 2026-08-18 (نشرة 6 صباحًا القاهرة)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 15 | خريطة جوجل أصلها عربي! 3 حقائق صادمة | — pending (secrets.txt غائب) | https://www.instagram.com/reel/DcKnOPslFoe/ | — pending (secrets.txt غائب) |
+ملاحظة: ep15 أُنتجت كاملة هذه الدورة (المشاهد 2-4 بعد نفاد حصة الصور أمس). YT/FB/Telegram معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة. الحلقات المعلقة للنشر الكامل: ep5 إلى ep15.
+
+## الإنتاج — 2026-08-18 (دورة مجدولة، الحلقة 16)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 16 | ماء جسمك عمره 4 مليارات سنة! 3 حقائق صادمة عن الماء | — produced (secrets.txt غائب) | — produced, CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/mIRuiTLgZoJpvfxq.mp4 | — produced (secrets.txt غائب) |
+الحلقة 16: produced كامل في هذه الدورة (1080x1920، 34.5s، narration Charon 36.0s، 4 صور 1440x2560) — سيناريو ep16-script.md، المشاهد والأصول في scripts/. topic_library.json محدثة: ep16 = produced. YT/FB/Telegram معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل: ep5 إلى ep16.
+
+## TikTok — فحص 2026-08-18 (دورة مجدولة)
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة. آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+## النشر — 2026-08-18 (دورة 6 مساءً القاهرة)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 16 | ماء جسمك عمره 4 مليارات سنة! 3 حقائق صادمة عن الماء | — pending (secrets.txt غائب) | https://www.instagram.com/reel/DcL5ZjuFStQ/ | — pending (secrets.txt غائب) |
+
+## النشر — 2026-08-18 (11:30م القاهرة — تشغيل مجدول، الحلقة 17)
+
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 17 | نحلة تقهر الموت! 3 أسرار عن نحل العسل ستدهشك | — pending (secrets.txt غير متوفرة في جلسة 2026-08-18 المسائية) | https://www.instagram.com/reel/DcMl5jFDqjC/ | — pending (نفس السبب) |
+
+الحلقة 17: produced كامل في هذه الدورة (1080x1920، 38.6s، narration Charon 40.1s، 4 صور 1440x2560) في test_run/ وdocs/episode17/. topic_library.json محدثة: ep17 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep17 (كلها produced).
+
+## TikTok — فحص 2026-08-18 (11:36م القاهرة)
+
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (فقدت جلسة تسجيل الدخول القديمة، وتسجيل الدخول يتطلب بيانات يدوية). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+## النشر — 2026-08-19 (6 صباحًا القاهرة — تشغيل مجدول، الحلقة 18)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 18 | دمك فيه نجوم حرفيًا! 3 حقائق صادمة عن الحديد | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcNNO3tAevH/ | — pending (نفس السبب) |
+الحلقة 18: produced كامل في هذه الدورة (1080x1920، 46.4s، narration18b.wav Charon 47.9s بوتيرة أبطأ مدروسة، 4 صور 1440x2560) في test_run/ وdocs/episode18/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/kterfzDHDguyIprs.mp4. topic_library.json محدثة: ep18 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep18 (كلها produced).
+## TikTok — فحص 2026-08-19 (03:12 UTC / 6:12 القاهرة)
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+## النشر — 2026-08-19 (12:19م القاهرة — تشغيل مجدول، الحلقة 19)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 19 | القمر يبتعد عنا كل ثانية! 3 أسرار عن القمر لم تسمعها | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcN3RU1EY53/ | — pending (نفس السبب) |
+الحلقة 19: produced كامل في هذه الدورة (1080x1920، 36.4s، narration19.wav Charon 37.9s، 4 صور 1440x2560) في test_run/ وdocs/episode19/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/FdzlZQGpIBMOyXjq.mp4. topic_library.json محدثة: ep19 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep19 (كلها produced).
+## TikTok — فحص 2026-08-19 (09:19 UTC / 12:19م القاهرة)
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+## سجل تلجرام — 2026-08-19 (12:19م القاهرة)
+لم يُرسل إشعار تلجرام في هذه الدورة (بوت xDaw_NOVA يتطلب secrets.txt الغائب منذ 2026-08-15). تقرير الدورة أُرسل للمستخدم داخل المحادثة.
+
+## النشر — 2026-08-19 (~18:49 القاهرة — تشغيل مجدول، الحلقة 20)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 20 | صوتك لا يُسمع في الفضاء! 3 حقائق صادمة عن الصوت | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcOi8dzii3P/ | — pending (نفس السبب) |
+الحلقة 20: produced كامل في هذه الدورة (1080x1920، 30.0s، narration20.wav Charon 31.5s، 4 صور 1440x2560) في test_run/ وdocs/episode20/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/zPCYUUrWtUlLeKUw.mp4. topic_library.json محدثة: ep20 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep20 (كلها produced).
+
+## TikTok — فحص 2026-08-19 (15:49 UTC / ~6:49م القاهرة)
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+
+## سجل تلجرام — 2026-08-19 (~18:49 القاهرة)
+لم يُرسل إشعار تلجرام في هذه الدورة (بوت xDaw_NOVA يتطلب secrets.txt الغائب منذ 2026-08-15). تقرير الدورة أُرسل للمستخدم داخل المحادثة.
+
+## دورة 2026-08-19 (21:16 UTC / 12:16م ليلًا القاهرة)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 21 | البرق يضرب نفس المكان! 3 حقائق صادمة ستصدمك | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcPIZ58gChY/ | — pending (نفس السبب) |
+الحلقة 21: produced كامل في هذه الدورة (1080x1920، 35.7s، narration Charon 37.2s، 4 صور 1440x2560) في test_run/ وdocs/episode21/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/kzxrRwMCMJjpNQtj.mp4. topic_library.json محدثة: ep21 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep21 (كلها produced).
+## TikTok — فحص 2026-08-19 (21:16 UTC / 12:16م القاهرة)
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+## سجل تلجرام — 2026-08-19 (12:16م القاهرة)
+لم يُرسل إشعار تلجرام في هذه الدورة (بوت xDaw_NOVA يتطلب secrets.txt الغائب منذ 2026-08-15). تقرير الدورة يُرسل للمستخدم داخل المحادثة.

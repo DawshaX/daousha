@@ -17,6 +17,15 @@
 | 3 | opuu9zPgN-w | DcCW2HdEanZ | 122103941919434391 |
 | 4 | fm7Y0h1YBVg | DcCYJ1TDuvK | 122103948783434391 |
 | 5 | — pending (secrets غير متوفرة في جلسة 2026-08-15) | DcDij0miryG | — pending (نفس السبب) |
+| 6 | — pending | DcFdUQGjgnC | — pending |
+| 7 | — pending | DcE1eNEDLX5 | — pending |
+| 8 | — pending | DcFeX05jNsp | — pending |
+| 9 | — pending | DcGHbbVgOG0 | — pending |
+| 10 | — pending | DcHanMzlU8A | — pending |
+| 11 | — pending | DcHahryiU2D | — pending |
+| 12 | — pending | DcIr8VxjRCi | — pending |
+| 13 | — pending | DcIsD3ikduQ | — pending |
+| 14 | — pending | DcJV2K1ino9 | — pending |
 
 ## الأسرار (في /home/ubuntu/secrets.txt — لا تُعرض)
 - YOUTUBE_CLIENT_ID/SECRET (77905jqkefcbanqrqnvm1p4ogl5n229) + YOUTUBE_REFRESH_TOKEN دائم
@@ -39,8 +48,11 @@
 - ep3-5-scripts.md، episode{3,4,5}-script.md، narration5.wav، ep5-scene*.png، episode5-final.mp4 (يجب نسخها للمستودع)
 
 ## TikTok
-- التطبيق In Review (In review منذ 2026-08-14). الجدول الدوري يفحص (10ص/4م) وينشر لحظة القبول + تلجرام.
+- التطبيق In Review (In review منذ 2026-08-14). فحص 2026-08-17 18:18 القاهرة: صفحة المطورين تتطلب تسجيل دخول مجدد (فقدت الجلسة) — الحالة المسجلة تبقى In review.
 - بعد القبول: ربط حساب المستخدم الحقيقي عبر OAuth (Client Key awa32n4co6o1vqbm) ونشر عام.
+
+## آخر تشغيل (2026-08-17 مساءً — مجدول)
+الحلقة 14 «قطتك أقوى بكثير مما تظن! 3 حقائق صادمة ستصدمك» (القطط): produced كامل (1080x1920، 41.7s، narration 43.2s، 4 صور) ونُشرت على Instagram فقط (DcJV2K1ino9). YouTube/Facebook/Telegram معطلة بيئيًا بسبب غياب /home/ubuntu/secrets.txt (نفس الوضع منذ 2026-08-15). الحلقات ep5-14 معلقة للنشر الكامل على YT/FB/Telegram عند استعادة الأسرار.
 
 ## GitHub (داشداش داوسها داوسها — user DawshaX)
 - Repo: DawshaX/daousha (private, main)
@@ -88,3 +100,28 @@
 - السلم: level 2، dailyCap 6، streakSafe 7 (لا أخطاء نشر اليوم).
 - المطلوب من المستخدم: إعادة رفع secrets.txt (عبر الشات أو الجلسة اليدوية)، ثم يكمل نشر ep5-11 على YT/FB + إشعارات تلجرام تلقائيًا دون إعادة إنتاج.
 - الحلقة التالية في المكتبة: ep12 (الوقت — 3 مفارقات غريبة عن الوقت).
+
+## دورة 2026-08-17 (جدولة — 12:00 القاهرة)
+- الحلقة 12 (الوقت يسير في اتجاهين! 3 مفارقات صادمة ستصدمك): أُنتجت بالكامل في هذه الدورة — سيناريو (304 حرفًا) + narration Charon 43.5s + 4 صور 1440x2560 + فيديو 1080x1920، 42.0s في test_run/ + docs/episode12/. topic_library.json محدثة: ep12 = produced.
+- الحلقة 13 (لغتك أقوى من أن تتخيل! 3 حقائق صادمة عن العربية): produced كامل في هذه الدورة — سيناريو (305 حرفًا) + narration Charon 45.0s + 4 صور 1440x2560 + فيديو 1080x1920، 43.5s في test_run/ + docs/episode13/. topic_library.json محدثة: ep13 = produced.
+- IG: نُشرت ep12 — https://www.instagram.com/reel/DcIr8VxjRCi/ ، وep13 — https://www.instagram.com/reel/DcIsD3ikduQ/ (موثقة عبر get_post_list).
+- YT/FB/Telegram: ما تزال معطلة بيئيًا بسبب غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل: ep5 إلى ep13.
+- TikTok: صفحة المطورين تعرض No access (تسجيل دخول مطلوب)؛ الحالة تبقى Production / In review منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات.
+- السلم: level 2، dailyCap 6، streakSafe 9 (لا أخطاء نشر اليوم — النشر IG).
+- ملاحظة إيجابية: منشور خارجي من اليوم 2026-08-17 03:40 UTC «الساعة تخدعك كل يوم! 3 مفارقات صادمة عن الوقت» (reel DcIGBuSE61W، 3 إعجابات) يظهر في get_post_list — يبدو أنه نشر سابق مستقل عن هذه الدورة. الحلقتان 12 و13 مختلفتان موضوعيًا (الوقت النسبي/الجاذبية) ولا تكرار محتوى.
+- المطلوب من المستخدم: إعادة رفع secrets.txt (عبر الشات أو جلسة يدوية) لإكمال نشر ep5-13 على YT/FB + إشعارات تلجرام، ولعودة الإشعار التلقائي بعد كل دورة.
+## دورة 2026-08-17 (منتصف الليل — ~00:15 القاهرة)
+- الحلقة 15 (خريطة جوجل أصلها عربي! 3 حقائق صادمة ستدهشك): إنتاج جزئي — سيناريو (312 حرفًا) + narration15.wav (32.4s Charon) + ep15-scene1.png في test_run/ + docs/episode15/. حصة توليد الصور نفدت (20/20 خطة مجانية) بعد المشهد الأول: تبقى المشاهد 2-4 ثم بناء الفيديو final في الدورة التالية. topic_library.json محدثة: ep15 = pending-images. لا تكرار مع ep12/ep13 (موضوع مختلف: اختراعات إسلامية).
+- YouTube/Facebook/Instagram/TikTok: لم يُنشر شيء هذه الدورة (الفيديو غير مكتمل + YT/FB معطلتان بسبب غياب secrets.txt).
+- YT/FB/Telegram: ما تزال معطلة بيئيًا بسبب غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل: ep5 إلى ep14.
+- TikTok: صفحة المطورين تعرض No access (تسجيل دخول مطلوب)؛ الحالة تبقى Production / In review منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات.
+- السلم: level 2، dailyCap 6، streakSafe 11 (لا أخطاء نشر هذه الدورة — التأجيلات بيئية فقط: secrets.txt وحصة الصور).
+- المطلوب من المستخدم: (1) إعادة رفع secrets.txt لإكمال نشر ep5-14 على YT/FB + إشعارات تلجرام، (2) ترقية الخطة إن أراد تجدد حصة الصور يوميًا أسرع لإكمال مشاهد الحلقات المتبقية.
+
+## دورة 2026-08-18 (مساءً — ~11:30 القاهرة، تشغيل مجدول)
+- الحلقة 17 (نحلة تقهر الموت! 3 أسرار عن نحل العسل ستدهشك): produced كامل في هذه الدورة — سيناريو (334 حرفًا) + narration Charon 40.1s + 4 صور 1440x2560 (dark navy + amber glow) + فيديو 1080x1920، 38.6s في test_run/ + docs/episode17/. topic_library.json محدثة: ep17 = produced. نُشرت IG: https://www.instagram.com/reel/DcMl5jFDqjC/
+- YT/FB/Telegram: ما تزال معطلة بيئيًا بسبب غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل: ep5 إلى ep17.
+- TikTok: صفحة المطورين تعرض No access (تسجيل دخول مطلوب)؛ الحالة تبقى Production / In review منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات.
+- السلم: level 2، dailyCap 6، streakSafe 14 (لا أخطاء نشر هذه الدورة — النشر IG).
+- المطلوب من المستخدم: إعادة رفع secrets.txt (عبر الشات أو جلسة يدوية) لإكمال نشر ep5-17 على YT/FB + إشعارات تلجرام.
+- الحلقة التالية في المكتبة: ep18 (الحديد في جسمك — 3 حقائق صادمة عن جسمك).

@@ -2,11 +2,62 @@
 This file is the single source of truth for the escalating daily publishing cap. Update after every publish run.
 - level: 2 (streakSafe reached 5 on 2026-08-16 run — ladder rule promotes dailyCap 4→6)
 - dailyCap: 6
-- streakSafe: 7 (2026-08-16 runs: episodes 6 + 8 + 9 + 10 + 11 fully produced and published to Instagram, no publish/platform errors; YT/FB/Telegram deferred for environmental reason only — secrets file missing in scheduled sessions, same as 2026-08-15)
+- streakSafe: 18 (2026-08-19 21:16 UTC / ~6:49pm Cairo run: ep20 fully produced (script + Charon narration20 31.5s + 4 scenes 1440x2560 + final video 1080x1920 30.0s) and published on Instagram https://www.instagram.com/reel/DcOi8dzii3P/ ; no platform errors; YT/FB/Telegram deferred for environmental reason only — secrets.txt still missing, same as prior runs)
 - streakRisky: 0
-- lastPublishDate: 2026-08-16
-- lastPublishUrl: https://www.instagram.com/reel/DcHahryiU2D/ (episode 11, IG run 2026-08-16 scheduled evening, 18:00 Cairo)
+- lastPublishDate: 2026-08-19
+- note: ep21 published 21:16 UTC (after 12am Cairo start of Aug 20 local time; logged under Aug 19 run)
+- lastPublishUrl: https://www.instagram.com/reel/DcPIZ58gChY/ (episode 21, IG run 2026-08-19 21:16 UTC / 12:16am Cairo)
+- pendingFullPublish: ep5, ep6, ep7, ep8, ep9, ep10, ep11, ep12, ep13, ep14, ep15, ep16, ep17, ep18 (all produced; YT/FB/Telegram await secrets.txt restoration; ep16+ep17+ep18 already published on IG; ep20+ep21 published on IG; YT/FB/Telegram publish awaiting secrets.txt restoration)
+
+## دورة 2026-08-19 (21:16 UTC / 12:16م ليلًا القاهرة)
+- الحلقة 21 "البرق يضرب نفس المكان! 3 حقائق صادمة ستصدمك": produced كامل (1080x1920، 35.7s، narration21 Charon 37.2s بوتيرة أبطأ، 4 صور 1440x2560) في test_run/ وdocs/episode21/ + نشر IG https://www.instagram.com/reel/DcPIZ58gChY/
+- لا أخطاء نشر؛ YT/FB/Telegram معطلة بيئيًا فقط (secrets.txt غائب منذ 2026-08-15) → streakSafe 18، streakRisky 0
+- TikTok: صفحة المطورين "No access — login required"؛ الحالة المسجلة تبقى Production / In review منذ 2026-08-14
+- topic_library.json: ep21 = produced; الحلقة التالية queued = ep22 (العين المجردة)
+
+## دورة 2026-08-19 (15:49 UTC / ~6:49م القاهرة)
+- الحلقة 20 "صوتك لا يُسمع في الفضاء! 3 حقائق صادمة عن الصوت": produced كامل (1080x1920، 30.0s، narration20.wav Charon 31.5s، 4 صور 1440x2560) في test_run/ وdocs/episode20/ + نشر IG https://www.instagram.com/reel/DcOi8dzii3P/
+- لا أخطاء نشر؛ YT/FB/Telegram معطلة بيئيًا فقط (secrets.txt غائب منذ 2026-08-15) → streakSafe 17، streakRisky 0
+- TikTok: صفحة المطورين "No access — login required"؛ الحالة المسجلة تبقى Production / In review منذ 2026-08-14
+- topic_library.json: ep20 = produced; الحلقة التالية queued = ep21 (البرق)
+## دورة 2026-08-19 (09:19 UTC / 12:19م القاهرة)
+- الحلقة 19 "القمر يبتعد عنا كل ثانية! 3 أسرار عن القمر لم تسمعها": produced كامل (1080x1920، 36.4s، narration19.wav Charon 37.9s، 4 صور 1440x2560) في test_run/ وdocs/episode19/ + نشر IG https://www.instagram.com/reel/DcN3RU1EY53/
+- لا أخطاء نشر؛ YT/FB/Telegram معطلة بيئيًا فقط (secrets.txt غائب منذ 2026-08-15) → streakSafe 16، streakRisky 0
+- TikTok: صفحة المطورين "No access — login required"؛ الحالة المسجلة تبقى Production / In review منذ 2026-08-14
+- topic_library.json: ep19 = produced; الحلقة التالية queued = ep20 (الصوت)
+
+## دورة 2026-08-19 (03:00 UTC / 6 صباحًا القاهرة)
+- الحلقة 18 "دمك فيه نجوم حرفيًا! 3 حقائق صادمة عن الحديد في جسمك": produced كامل (1080x1920، 46.4s، narration18b.wav Charon 47.9s بوتيرة أبطأ، 4 صور 1440x2560) في test_run/ وdocs/episode18/ + نشر IG https://www.instagram.com/reel/DcNNO3tAevH/
+- لا أخطاء نشر؛ YT/FB/Telegram معطلة بيئيًا فقط (secrets.txt غائب منذ 2026-08-15) → streakSafe 15، streakRisky 0
+- TikTok: صفحة المطورين "No access — login required"؛ الحالة المسجلة تبقى Production / In review منذ 2026-08-14
+- topic_library.json: ep18 = produced; الحلقة التالية queued = ep19 (القمر)
 - history:
+  - date: 2026-08-18 (scheduled run): episode 16 "ماء جسمك عمره 4 مليارات سنة! 3 حقائق صادمة عن الماء" fully produced (1080x1920, 34.5s, narration 36.0s, 4 images 1440x2560) — no publish this run; YT/FB/Telegram deferred (secrets.txt missing), IG pending user confirmation on Manus card
+  - date: 2026-08-18 (morning, 6am Cairo)
+    platform: Instagram (YT/FB/Telegram deferred — secrets file missing in scheduled session)
+    video: "خريطة جوجل أصلها عربي! 3 حقائق صادمة ستدهشك"
+    url: https://www.instagram.com/reel/DcKnOPslFoe/
+    status: published-public
+  - date: 2026-08-17 (night)
+    platform: Instagram (deferred)
+    video: "خريطة جوجل أصلها عربي! 3 حقائق صادمة ستدهشك" (episode 15, pending-images — quota exhausted)
+    url: pending
+    status: production-partial
+  - date: 2026-08-17 (evening)
+    platform: Instagram
+    video: "قطتك أقوى بكثير مما تظن! 3 حقائق صادمة ستصدمك"
+    url: https://www.instagram.com/reel/DcJV2K1ino9/
+    status: published-public
+  - date: 2026-08-17
+    platform: Instagram
+    video: "لغتك أقوى من أن تتخيل! 3 حقائق صادمة عن العربية"
+    url: https://www.instagram.com/reel/DcIsD3ikduQ/
+    status: published-public
+  - date: 2026-08-17
+    platform: Instagram
+    video: "الوقت يسير في اتجاهين! 3 مفارقات صادمة ستصدمك"
+    url: https://www.instagram.com/reel/DcIr8VxjRCi/
+    status: published-public
   - date: 2026-08-16
     platform: Instagram
     video: "تحت قدميك إمبراطورية كاملة! 3 حقائق صادمة عن عالم النمل"
@@ -106,4 +157,14 @@ This file is the single source of truth for the escalating daily publishing cap.
     platform: Instagram (YT/FB/Telegram deferred — secrets file missing in scheduled session)
     video: "الجاذبية ليست قوة! 3 أسرار ستقلب فهمك رأسًا على عقب"
     url: https://www.instagram.com/reel/DcE1eNEDLX5/
+    status: published-public
+  - date: 2026-08-18 (15:08 UTC / 6:08 PM Cairo)
+    platform: Instagram
+    video: "ماء جسمك عمره 4 مليارات سنة! 3 حقائق صادمة عن الماء" (ep16)
+    url: https://www.instagram.com/reel/DcL5ZjuFStQ/
+    status: published-public
+  - date: 2026-08-18 (21:30 UTC / 11:30 PM Cairo)
+    platform: Instagram (YT/FB/Telegram deferred — secrets.txt missing in scheduled sandbox, same constraint as 2026-08-15/16/18-morning runs)
+    video: "نحلة تقهر الموت! 3 أسرار عن نحل العسل ستدهشك" (ep17)
+    url: https://www.instagram.com/reel/DcMl5jFDqjC/
     status: published-public
