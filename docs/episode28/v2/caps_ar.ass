@@ -1,0 +1,27 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: cap,Noto Naskh Arabic,64,&H00FFFFFF,&H000000FF,&H00202020,&H80000000,-1,0,0,0,100,100,1,0,1,4,3,2,40,40,100,1
+
+[Events]
+Format: Layer, Start, End, Style, Text, MarginL, MarginR, MarginV, Effect
+Dialogue: 0,0:00.30,0:04.79,cap,,40,40,100,,ما رأيك بأغلى مادة في الكون كله؟
+Dialogue: 0,0:04.20,0:07.79,cap,,40,40,100,,تكلف التريليونات!
+Dialogue: 0,0:08.00,0:12.19,cap,,40,40,100,,أنا واثق أنك لم تسمع بها!
+Dialogue: 0,0:12.50,0:16.50,cap,,40,40,100,,اسمع هذه الحقائق الثلاثة!
+Dialogue: 0,0:17.00,0:20.50,cap,,40,40,100,,وستتغير نظرتك للعالم!
+Dialogue: 0,0:20.80,0:22.60,cap,,40,40,100,,الحقيقة الأولى:
+Dialogue: 0,0:22.80,0:28.50,cap,,40,40,100,,غرام واحد يتجاوز 60 تريليون دولار!
+Dialogue: 0,0:28.50,0:33.00,cap,,40,40,100,,أغلى بكثير من أي ألماسة!
+Dialogue: 0,0:33.79,0:35.60,cap,,40,40,100,,الحقيقة الثانية:
+Dialogue: 0,0:35.60,0:40.00,cap,,40,40,100,,كل ما صنعته البشرية من مادة مضادة!
+Dialogue: 0,0:40.00,0:43.50,cap,,40,40,100,,لا يملأ ملعقة شاي واحدة!
+Dialogue: 0,0:43.79,0:45.60,cap,,40,40,100,,الحقيقة الثالثة:
+Dialogue: 0,0:45.60,0:49.50,cap,,40,40,100,,لو تلامسا ينفجران في ومضة طاقة خالصة!
+Dialogue: 0,0:49.50,0:52.60,cap,,40,40,100,,أنتم خير ونور من الله...
+Dialogue: 0,0:49.50,0:52.60,cap,,40,40,100,,هل ستستخدم البشرية هذه الطاقة؟
+Dialogue: 0,0:51.00,0:52.60,cap,,40,40,100,,تابع دوشة!

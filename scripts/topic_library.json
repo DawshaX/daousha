@@ -211,30 +211,33 @@
     },
     {
         "id": "ep28",
-        "topic": "المادة المضادة",
-        "angle": "3 حقائق صادمة عن أغلى مادة في الكون",
-        "status": "published",
-        "status_note": "نشرت AR+EN على IG في دورة 2026-08-20 12:19 UTC (بديل مونتاج حقيقي لأن حصة توليد الصور 20/20 مستهلكة). YT/FB/Telegram معلقة (secrets.txt غائب منذ 2026-08-15). TikTok: Rejected - لا نشر.",
-        "published_at": "2026-08-20T12:19Z",
-        "duration_s": {
-            "ar": 56.1,
-            "en": 45.7
+        "topic": "أغلى مادة في الكون — المادة المضادة",
+        "angle": "3 حقائق صادمة عن المادة المضادة",
+        "status": "published-ig",
+        "links": {
+            "ar": "https://www.instagram.com/reel/DcQ4o6ACYRR/",
+            "en": "https://www.instagram.com/reel/DcRA7GElDHI/",
+            "ar_v1": "https://www.instagram.com/reel/DcQvoEQjDiB/",
+            "en_v1": "https://www.instagram.com/reel/DcQv02xmhc5/"
         },
-        "urls": {
-            "ig_ar": "https://www.instagram.com/reel/DcQvoEQjDiB/",
-            "ig_en": "https://www.instagram.com/reel/DcQv02xmhc5/"
-        }
+        "cycle": "2026-08-20",
+        "style": "captions-overlay-sci-fi (Pexels)"
     },
     {
         "id": "ep29",
-        "topic": "البركان",
-        "angle": "3 حقائق صادمة عن أعظم البراكين في التاريخ",
+        "topic": "عالم عام 2099 — 3 حقائق صادمة عن المستقبل",
+        "angle": "مدن تحت قباب زجاجية، سيارات طائرة، وروبوتات ذكية",
         "status": "published-ig",
+        "links": {
+            "en_v2": "https://www.instagram.com/reel/DcRA7GElDHI/"
+        },
+        "cycle": "2026-08-20",
+        "style": "captions-overlay-sci-fi (Pexels)",
         "urls": {
             "ig_ar": "https://www.instagram.com/reel/DcRDB1sgLKo/",
             "ig_en": "https://www.instagram.com/reel/DcRDclmHzDw/"
         },
         "published_at": "2026-08-20T15:10Z",
-        "status_note": "نشرت AR v2 + EN v2 على IG في دورة 2026-08-20 15:08-15:10 UTC (نسخ v2 من ملفات منشورة سابقًا). YT/FB/Telegram معلقة (secrets.txt غائب). TikTok: Rejected — لا نشر."
+        "status_note": "نشرت AR v2 + EN v2 على IG في دورة 2026-08-20 15:08-15:10 UTC. YT/FB/Telegram معلقة (secrets.txt غائب). TikTok: Rejected — لا نشر."
     }
 ]
