@@ -1,5 +1,16 @@
 # Platform Link Status — XDAW NOVA
 
+## النشر — 2026-08-20 (03:35 UTC / 6:35 صباحًا القاهرة — تشغيل مجدول، الحلقة 26)
+| الحلقة | الموضوع | YouTube | Instagram | Facebook |
+|---|---|---|---|---|
+| 26 | جبالك أخفى مما تظن! 3 أسرار صادمة عن أعظم جبال الأرض | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcPyNOID91y/ | — pending (نفس السبب) |
+الحلقة 26: produced كامل في هذه الدورة (1080x1920، 44.7s، narration26.wav Charon 46.2s → 46.2s/1.18=معدل 46.24s مضبوط إلى 44.7s مع الفيديو، 4 صور 1440x2560) في test_run/ وdocs/episode26/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/DqIFdDhoyTVamhfI.mp4. topic_library.json محدثة: ep26 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep25 (كلها produced/منشورة جزئيًا).
+## TikTok — فحص 2026-08-20 (03:16 UTC / 6:16 صباحًا القاهرة)
+صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
+## سجل تلجرام — 2026-08-20 (6:35 صباحًا القاهرة)
+لم يُرسل إشعار تلجرام في هذه الدورة (بوت xDaw_NOVA يتطلب secrets.txt الغائب منذ 2026-08-15). تقرير الدورة أُرسل للمستخدم داخل المحادثة.
+
+
 Last verified: 2026-08-14. Facebook upgraded to permanent long-lived page token on the same date. TikTok live-mode review submitted on the same date (2026-08-14). Secrets never live in this repo; they stay in the owner's local `.env.local` (owner must copy `secrets.txt` back after every credential rotation).
 
 ## First multi-platform publish (2026-08-14)

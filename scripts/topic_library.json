@@ -189,7 +189,9 @@
   "id": "ep26",
   "topic": "الجبال",
   "angle": "3 أسرار عن أعظم جبال الأرض",
-  "status": "queued"
+  "status": "produced",
+  "produced_at": "2026-08-20 (03:35 UTC)",
+  "duration_s": 44.7
  },
  {
   "id": "ep27",
