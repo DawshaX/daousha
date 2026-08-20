@@ -11,6 +11,37 @@
         "angle": "3 حقائق ستصدمك عن القلب",
         "status": "published"
     },
+<<<<<<< HEAD
+    "cycle": "2026-08-20",
+    "style": "captions-overlay-sci-fi (Pexels)"
+  },
+  {
+    "id": "ep29",
+    "topic": "عالم عام 2099 — 3 حقائق صادمة عن المستقبل",
+    "angle": "مدن تحت قباب زجاجية، سيارات طائرة، وروبوتات ذكية",
+    "status": "published-ig",
+    "links": {
+      "ar": "https://www.instagram.com/reel/DcRDB1sgLKo/",
+      "en": "https://www.instagram.com/reel/DcRDclmHzDw/"
+    },
+    "cycle": "2026-08-20",
+    "style": "captions-overlay-sci-fi (Pexels)",
+    "urls": {
+      "ig_ar": "https://www.instagram.com/reel/DcRDB1sgLKo/",
+      "ig_en": "https://www.instagram.com/reel/DcRDclmHzDw/"
+    },
+    "published_at": "2026-08-20T15:10Z",
+    "status_note": "نُشرت AR/EN عبر الجدول المجدول (15:35 UTC) — AR DcRDB1sgLKo (نسخة بفيديو Pexels)، EN DcRDclmHzDw. يوجد أيضًا v3 بالختم الجديد xDaw NoVa (rbJunGUlPQQbqxji / spckFSwbVPxVHeoK) كبديل أرشيفي."
+  },
+  {
+    "id": "ep30",
+    "topic": "أسرار البرق الصادمة",
+    "angle": "3 حقائق صادمة عن البرق: 100 ضربة/ثانية، أسخن من الشمس 5 مرات، يضرب نفس المكان",
+    "status": "pending",
+    "style": "الصور الذهنية (نمط القناة) + تحويل video AI + كابتشنز + ختم xDaw NoVa + موسيقى",
+    "script": "/home/ubuntu/daousha/docs/episode30/episode30-script.md"
+  }
+=======
     {
         "id": "ep3-done",
         "topic": "العين تكذب عليك",
@@ -240,4 +271,5 @@
         "published_at": "2026-08-20T15:10Z",
         "status_note": "نشرت AR v2 + EN v2 على IG في دورة 2026-08-20 15:08-15:10 UTC. YT/FB/Telegram معلقة (secrets.txt غائب). TikTok: Rejected — لا نشر."
     }
+>>>>>>> origin/master
 ]
