@@ -197,6 +197,7 @@
   "id": "ep27",
   "topic": "السرعة",
   "angle": "3 حقائق صادمة عن أسرع الأشياء في الكون",
-  "status": "queued"
+  "status": "produced-partial",
+  "status_note": "script (AR+EN) + narration27-ar.wav (45.8s) + narration27-en.wav (45.4s) produced 2026-08-20. Images deferred: image quota 20/20 exhausted today — generate 8 images (4 AR + 4 EN, 9:16, scene1-4) in next scheduled run, then build both videos and publish."
  }
 ]

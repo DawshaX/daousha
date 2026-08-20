@@ -5,6 +5,12 @@
 |---|---|---|---|---|
 | 26 | جبالك أخفى مما تظن! 3 أسرار صادمة عن أعظم جبال الأرض | — pending (secrets.txt غائب — نفس القيد منذ 2026-08-15) | https://www.instagram.com/reel/DcPyNOID91y/ | — pending (نفس السبب) |
 الحلقة 26: produced كامل في هذه الدورة (1080x1920، 44.7s، narration26.wav Charon 46.2s → 46.2s/1.18=معدل 46.24s مضبوط إلى 44.7s مع الفيديو، 4 صور 1440x2560) في test_run/ وdocs/episode26/. CDN: https://files.manuscdn.com/user_upload_by_module/session_file/310519663069883897/DqIFdDhoyTVamhfI.mp4. topic_library.json محدثة: ep26 = produced. YT/FB/Telegram: معطلة بيئيًا — غياب /home/ubuntu/secrets.txt من جلسة الجدولة (نفس السبب منذ 2026-08-15). الحلقات المعلقة للنشر الكامل (YT/FB/Telegram): ep5–ep25 (كلها produced/منشورة جزئيًا).
+## الإنتاج — 2026-08-20 (~07:06 القاهرة / 04:06 UTC — تشغيل مجدول، الحلقة 27)
+| الحلقة | الموضوع | الحالة |
+|---|---|---|
+| 27 | أسرع من الضوء؟ 3 حقائق صادمة عن السرعة ستفجّر عقلك (AR + EN) | produced-partial |
+الحلقة 27: produced-partial في هذه الدورة — السيناريو AR+EN + narration27-ar.wav (45.8s Charon) + narration27-en.wav (45.4s Charon) في test_run/ وdocs/episode27/. **الصور الثمانية (4 AR + 4 EN) مؤجلة**: حصة توليد الصور المجانية نفدت اليوم (20/20) — تُنتج في التشغيل المجدول القادم فور إعادة تعيين الحصة، ثم يُبنى الفيديوان (AR + EN) ويُنشران على Instagram؛ YT/FB/Telegram تبقى معطلة بيئيًا (secrets.txt غائب منذ 2026-08-15). topic_library.json محدثة: ep27 = produced-partial.
+
 ## TikTok — فحص 2026-08-20 (03:16 UTC / 6:16 صباحًا القاهرة)
 صفحة المطورين تعرض «No access — You need to login» في متصفح هذه الدورة (نفس النتيجة المتكررة). آخر حالة مسجلة تبقى: **Production / In review** منذ 2026-08-14. لا إعادة تقديم ولا تغيير إعدادات. عند القبول: ربط OAuth بالحساب الحقيقي ونشر الحلقة المعلقة فورًا + إشعار تلجرام.
 ## سجل تلجرام — 2026-08-20 (6:35 صباحًا القاهرة)

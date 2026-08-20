@@ -14,6 +14,11 @@ This file is the single source of truth for the escalating daily publishing cap.
 - lastPublishDate: 2026-08-20
 - note: ep21 published 21:16 UTC (after 12am Cairo start of Aug 20 local time; logged under Aug 19 run)
 - lastPublishUrl: https://www.instagram.com/reel/DcPyNOID91y/ (episode 26, IG run 2026-08-20 03:35 UTC / 6:35am Cairo)
+- history:
+  - date: 2026-08-20 (~07:06 Cairo / 04:06 UTC — scheduled run, no new publish)
+    episode 27 "أسرع من الضوء؟ 3 حقائق صادمة عن السرعة ستفجّر عقلك" (AR + EN versions requested): produced-partial — script (AR+EN) + narration27-ar.wav (45.8s Charon) + narration27-en.wav (45.4s Charon) done in test_run/ & docs/episode27/; 8 scenes (4 AR + 4 EN, 9:16) deferred: free image quota 20/20 exhausted today — generate in next scheduled run, then build both final videos and publish (AR + EN) on IG; YT/FB/Telegram deferred (secrets.txt missing since 2026-08-15).
+    TikTok: "No access — login required" again; state stays Production / In review since 2026-08-14.
+    No platform errors this run (no publish attempted) → streakSafe unchanged.
 - pendingFullPublish: ep5, ep6, ep7, ep8, ep9, ep10, ep11, ep12, ep13, ep14, ep15, ep16, ep17, ep18, ep19, ep20, ep21, ep23, ep24, ep25, ep26 (all produced/partially published; YT/FB/Telegram await secrets.txt restoration)
 
 ## دورة 2026-08-20 (02:08 UTC / 5:08 فجرًا القاهرة)
