@@ -1,0 +1,2 @@
+ALTER TABLE `video_projects` ADD `projectKind` enum('standalone','package_parent','package_variant') DEFAULT 'standalone' NOT NULL;--> statement-breakpoint
+ALTER TABLE `video_projects` ADD `orientation` enum('vertical','horizontal','none') DEFAULT 'none' NOT NULL;
