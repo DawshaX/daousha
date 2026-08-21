@@ -263,13 +263,17 @@
    "ar_v17_xdaw_nova": "https://www.instagram.com/reel/DcTnS22k4cu/",
    "en_v17_xdaw_nova": "https://www.instagram.com/reel/DcTnXxIIM9d/",
    "ar_v18_xdaw_nova": "https://www.instagram.com/reel/DcTvHOUCSHD/",
-   "en_v18_xdaw_nova": "https://www.instagram.com/reel/DcTvNwUisSJ/"
+   "en_v18_xdaw_nova": "https://www.instagram.com/reel/DcTvNwUisSJ/",
+   "ar_v19_xdaw_nova": "https://www.instagram.com/reel/DcT1zVOErWs/",
+   "en_v19_xdaw_nova": "https://www.instagram.com/reel/DcT19I0jZeD/"
   },
   "cycle": "2026-08-21-v5",
   "style": "captions-overlay-sci-fi (Pexels)",
   "urls": {
-   "ig_ar": "https://www.instagram.com/reel/DcTF-EFAgl-/",
-   "ig_en": "https://www.instagram.com/reel/DcTGEHDkyAJ/",
+   "ig_ar": "https://www.instagram.com/reel/DcT1zVOErWs/",
+   "ig_en": "https://www.instagram.com/reel/DcT19I0jZeD/",
+   "ig_ar_v19": "https://www.instagram.com/reel/DcT1zVOErWs/",
+   "ig_en_v19": "https://www.instagram.com/reel/DcT19I0jZeD/",
    "ig_ar_v12": "https://www.instagram.com/reel/DcTF-EFAgl-/",
    "ig_en_v12": "https://www.instagram.com/reel/DcTGEHDkyAJ/",
    "ig_ar_previous": "https://www.instagram.com/reel/DcSijSsERWV/",
@@ -296,6 +300,6 @@
    "ig_en_v17": "https://www.instagram.com/reel/DcTnXxIIM9d/"
   },
   "published_at": "2026-08-21T16:10:00Z",
-  "status_note": "دورة النشر التلقائي 2026-08-21: نُشرت النسخة العربية والإنجليزية الجديدة على Instagram Reels بختم xDaw NoVa. AR: https://www.instagram.com/reel/DcTvHOUCSHD/ EN: https://www.instagram.com/reel/DcTvNwUisSJ/. الحلقة 30 غير موجودة في مسار docs/episode30/v3 عند التنفيذ."
+  "status_note": "دورة النشر التلقائي 2026-08-21: نُشرت النسخة العربية والإنجليزية الجديدة على Instagram Reels بختم xDaw NoVa. AR: https://www.instagram.com/reel/DcTvHOUCSHD/ EN: https://www.instagram.com/reel/DcTvNwUisSJ/. إعادة المحاولة الفورية الأحدث: AR: https://www.instagram.com/reel/DcT1zVOErWs/ EN: https://www.instagram.com/reel/DcT19I0jZeD/. الحلقة 30 غير موجودة في مسار docs/episode30/v3 عند التنفيذ."
  }
 ]
