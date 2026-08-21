@@ -240,15 +240,17 @@
       "ar_v5_xdawnova": "https://www.instagram.com/reel/DcSVN7vCUjW/",
       "en_v5_xdawnova": "https://www.instagram.com/reel/DcSVTgKgFvW/",
       "ar_v6_xdawnova": "https://www.instagram.com/reel/DcSccdgGxb1/",
-      "en_v6_xdawnova": "https://www.instagram.com/reel/DcScmCnjWxq/"
+      "en_v6_xdawnova": "https://www.instagram.com/reel/DcScmCnjWxq/",
+      "ar_v7_xdawnova": "https://www.instagram.com/reel/DcT8ob0kxph/",
+      "en_v7_xdawnova": "https://www.instagram.com/reel/DcT81vZDe5F/"
     },
-    "cycle": "2026-08-21-v5-scheduled",
+    "cycle": "2026-08-21-v5-xdawnova-execution",
     "style": "xDaw NoVa stamp (CDN v)",
     "urls": {
-      "ig_ar": "https://www.instagram.com/reel/DcSVN7vCUjW/",
-      "ig_en": "https://www.instagram.com/reel/DcSVTgKgFvW/"
+      "ig_ar": "https://www.instagram.com/reel/DcT8ob0kxph/",
+      "ig_en": "https://www.instagram.com/reel/DcT81vZDe5F/"
     },
-    "published_at": "2026-08-21T03:10Z",
-    "status_note": "دورة الجدولة 2026-08-21 (v5) xDaw NoVa stamp: AR: https://www.instagram.com/reel/DcSVN7vCUjW/ EN: https://www.instagram.com/reel/DcSVTgKgFvW/"
+    "published_at": "2026-08-21T18:12:42Z",
+    "status_note": "دورة التنفيذ 2026-08-21 (v5) بختم xDaw NoVa الجديد: AR: https://www.instagram.com/reel/DcT8ob0kxph/ EN: https://www.instagram.com/reel/DcT81vZDe5F/"
   }
 ]
