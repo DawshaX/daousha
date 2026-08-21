@@ -245,7 +245,9 @@
    "ar_v8": "https://www.instagram.com/reel/DcSqL_fDJ61/",
    "en_v7": "https://www.instagram.com/reel/DcSqRqdjOgV/",
    "ar_v9_xdawnova": "https://www.instagram.com/reel/DcSwcLEiRGs/",
-   "en_v9_xdawnova": "https://www.instagram.com/reel/DcSwod8k5x1/"
+   "en_v9_xdawnova": "https://www.instagram.com/reel/DcSwod8k5x1/",
+   "ar_v10_xdaw_nova": "https://www.instagram.com/reel/DcS3q_LjskW/",
+   "en_v10_xdaw_nova": "https://www.instagram.com/reel/DcS3wrUlOG8/"
   },
   "cycle": "2026-08-21-v5",
   "style": "captions-overlay-sci-fi (Pexels)",
@@ -259,9 +261,11 @@
    "ig_ar_v8": "https://www.instagram.com/reel/DcSqL_fDJ61/",
    "ig_en_v7": "https://www.instagram.com/reel/DcSqRqdjOgV/",
    "ig_ar_v9": "https://www.instagram.com/reel/DcSwcLEiRGs/",
-   "ig_en_v9": "https://www.instagram.com/reel/DcSwod8k5x1/"
+   "ig_en_v9": "https://www.instagram.com/reel/DcSwod8k5x1/",
+   "ig_ar_latest": "https://www.instagram.com/reel/DcS3q_LjskW/",
+   "ig_en_latest": "https://www.instagram.com/reel/DcS3wrUlOG8/"
   },
   "published_at": "2026-08-21",
-  "status_note": "دورة النشر التلقائي 2026-08-21: نُشرت النسخة العربية والإنجليزية على IG Reels بختم xDaw NoVa الجديد. AR: https://www.instagram.com/reel/DcSwcLEiRGs/ EN: https://www.instagram.com/reel/DcSwod8k5x1/. الحلقة 30 غير موجودة في مسار docs/episode30/v3 عند التنفيذ."
+  "status_note": "دورة النشر التلقائي 2026-08-21: نُشرت النسخة العربية والإنجليزية الجديدة على IG Reels بختم xDaw NoVa. AR: https://www.instagram.com/reel/DcS3q_LjskW/ EN: https://www.instagram.com/reel/DcS3wrUlOG8/. الحلقة 30 غير موجودة في مسار docs/episode30/v3 عند التنفيذ."
  }
 ]
