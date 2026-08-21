@@ -229,20 +229,20 @@
   "angle": "مدن تحت قباب زجاجية، سيارات طائرة، وروبوتات ذكية",
   "status": "published-ig",
   "links": {
-   "ar_v3": "https://www.instagram.com/reel/DcR07C6Dbd2/",
-   "en_v3": "https://www.instagram.com/reel/DcR1BW7Elde/",
+   "ar_v3": "https://www.instagram.com/reel/DcSIh1CDrGb/",
+   "en_v3": "https://www.instagram.com/reel/DcSInlOFZOx/",
    "ar_v2": "https://www.instagram.com/reel/DcRg-FIlaRn/",
    "en_v2": "https://www.instagram.com/reel/DcRhHkJloOr/",
    "ar": "https://www.instagram.com/reel/DcRX-1-gcvK/",
    "en": "https://www.instagram.com/reel/DcRYIAeAqLb/"
   },
-  "cycle": "2026-08-21-v4",
+  "cycle": "2026-08-21-v5-scheduled",
   "style": "captions-overlay-sci-fi (Pexels)",
   "urls": {
-   "ig_ar": "https://www.instagram.com/reel/DcSBkY7lPgm/",
-   "ig_en": "https://www.instagram.com/reel/DcSBqFtDj5U/"
+   "ig_ar": "https://www.instagram.com/reel/DcSIh1CDrGb/",
+   "ig_en": "https://www.instagram.com/reel/DcSInlOFZOx/"
   },
-  "published_at": "2026-08-21T00:15Z",
-  "status_note": "دورة xDaw NoVa 2026-08-21 (التنفيذ 2026-08-21 UTC): إعادة نشر AR وEN على IG (reels) بالفيديوهات الجديدة (ختم xDaw NoVa). YT/FB/Telegram معطلة (secrets.txt غائب في ساندبوكس الجدولة). حصة فيديو 4K متوفرة؛ نشر مباشر بدون انتظار."
+  "published_at": "2026-08-21T01:15Z",
+  "status_note": "دورة الجدولة 2026-08-21 (v5): إعادة نشر AR وEN على IG reels بختم xDaw NoVa الجديد. AR: https://www.instagram.com/reel/DcSIh1CDrGb/ EN: https://www.instagram.com/reel/DcSInlOFZOx/"
  }
 ]
