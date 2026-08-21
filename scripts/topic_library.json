@@ -261,7 +261,9 @@
    "ar_v16_xdaw_nova": "https://www.instagram.com/reel/DcThBTuFUUu/",
    "en_v16_xdaw_nova": "https://www.instagram.com/reel/DcThGSTAItB/",
    "ar_v17_xdaw_nova": "https://www.instagram.com/reel/DcTnS22k4cu/",
-   "en_v17_xdaw_nova": "https://www.instagram.com/reel/DcTnXxIIM9d/"
+   "en_v17_xdaw_nova": "https://www.instagram.com/reel/DcTnXxIIM9d/",
+   "ar_v18_xdaw_nova": "https://www.instagram.com/reel/DcTvHOUCSHD/",
+   "en_v18_xdaw_nova": "https://www.instagram.com/reel/DcTvNwUisSJ/"
   },
   "cycle": "2026-08-21-v5",
   "style": "captions-overlay-sci-fi (Pexels)",
@@ -278,8 +280,10 @@
    "ig_en_v7": "https://www.instagram.com/reel/DcSqRqdjOgV/",
    "ig_ar_v9": "https://www.instagram.com/reel/DcSwcLEiRGs/",
    "ig_en_v9": "https://www.instagram.com/reel/DcSwod8k5x1/",
-   "ig_ar_latest": "https://www.instagram.com/reel/DcTnS22k4cu/",
-   "ig_en_latest": "https://www.instagram.com/reel/DcTnXxIIM9d/",
+   "ig_ar_latest": "https://www.instagram.com/reel/DcTvHOUCSHD/",
+   "ig_en_latest": "https://www.instagram.com/reel/DcTvNwUisSJ/",
+   "ig_ar_v18": "https://www.instagram.com/reel/DcTvHOUCSHD/",
+   "ig_en_v18": "https://www.instagram.com/reel/DcTvNwUisSJ/",
    "ig_ar_v16": "https://www.instagram.com/reel/DcThBTuFUUu/",
    "ig_en_v16": "https://www.instagram.com/reel/DcThGSTAItB/",
    "ig_ar_v15": "https://www.instagram.com/reel/DcTZzyYDQn8/",
@@ -291,7 +295,7 @@
    "ig_ar_v17": "https://www.instagram.com/reel/DcTnS22k4cu/",
    "ig_en_v17": "https://www.instagram.com/reel/DcTnXxIIM9d/"
   },
-  "published_at": "2026-08-21T15:06:07Z",
-  "status_note": "دورة النشر التلقائي 2026-08-21: نُشرت النسخة العربية والإنجليزية الجديدة على Instagram Reels بختم xDaw NoVa. AR: https://www.instagram.com/reel/DcTnS22k4cu/ EN: https://www.instagram.com/reel/DcTnXxIIM9d/. الحلقة 30 غير موجودة في مسار docs/episode30/v3 عند التنفيذ."
+  "published_at": "2026-08-21T16:10:00Z",
+  "status_note": "دورة النشر التلقائي 2026-08-21: نُشرت النسخة العربية والإنجليزية الجديدة على Instagram Reels بختم xDaw NoVa. AR: https://www.instagram.com/reel/DcTvHOUCSHD/ EN: https://www.instagram.com/reel/DcTvNwUisSJ/. الحلقة 30 غير موجودة في مسار docs/episode30/v3 عند التنفيذ."
  }
 ]
