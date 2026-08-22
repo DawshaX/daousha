@@ -218,10 +218,18 @@
       "ar": "https://www.instagram.com/reel/DcQ4o6ACYRR/",
       "en": "https://www.instagram.com/reel/DcRA7GElDHI/",
       "ar_v1": "https://www.instagram.com/reel/DcQvoEQjDiB/",
-      "en_v1": "https://www.instagram.com/reel/DcQv02xmhc5/"
+      "en_v1": "https://www.instagram.com/reel/DcQv02xmhc5/",
+      "ar_v2_20260822": "https://www.instagram.com/reel/DcVPJvFDnyI/",
+      "en_v2_20260822": "https://www.instagram.com/reel/DcVPiVfIM74/"
     },
     "cycle": "2026-08-20",
-    "style": "captions-overlay-sci-fi (Pexels)"
+    "style": "captions-overlay-sci-fi (Pexels)",
+    "published_at_latest": "2026-08-22T06:14:26Z",
+    "status_note_latest": "نُشرت النسختان v2 على Instagram في 2026-08-22؛ YouTube وFacebook وTelegram مؤجلة لأن secrets.txt غير موجود في البيئة الحالية.",
+    "urls": {
+      "ig_ar_latest": "https://www.instagram.com/reel/DcVPJvFDnyI/",
+      "ig_en_latest": "https://www.instagram.com/reel/DcVPiVfIM74/"
+    }
   },
   {
     "id": "ep29",
