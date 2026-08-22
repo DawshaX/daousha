@@ -1,0 +1,45 @@
+Dawsha cycle audit 2026-08-22
+
+Episode 30 assets:
+
+Available MP4 technical metadata:
+/home/ubuntu/daousha/docs/episode10/episode10-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode10/episode10-final.mp4	45.933333,18824574
+/home/ubuntu/daousha/docs/episode11/episode11-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode11/episode11-final.mp4	49.966667,24062578
+/home/ubuntu/daousha/docs/episode23/episode23-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode23/episode23-final.mp4	38.800000,20558222
+/home/ubuntu/daousha/docs/episode26/episode26-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode26/episode26-final.mp4	44.766667,21341301
+/home/ubuntu/daousha/docs/episode28/clip1.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/clip1.mp4	11.800000,1180464
+/home/ubuntu/daousha/docs/episode28/clip2.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/clip2.mp4	11.800000,1141722
+/home/ubuntu/daousha/docs/episode28/clip3.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/clip3.mp4	11.800000,1422781
+/home/ubuntu/daousha/docs/episode28/clip4.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/clip4.mp4	11.800000,1524665
+/home/ubuntu/daousha/docs/episode28/episode28-ar-v2.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/episode28-ar-v2.mp4	52.666667,65351027
+/home/ubuntu/daousha/docs/episode28/episode28-ar.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/episode28-ar.mp4	56.100000,7833443
+/home/ubuntu/daousha/docs/episode28/episode28-en-v2.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/episode28-en-v2.mp4	47.160000,61845646
+/home/ubuntu/daousha/docs/episode28/episode28-en.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/episode28-en.mp4	45.700000,15016993
+/home/ubuntu/daousha/docs/episode28/video_noaudio.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode28/video_noaudio.mp4	45.700000,7183263
+/home/ubuntu/daousha/docs/episode5/episode5-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode5/episode5-final.mp4	42.633333,17326992
+/home/ubuntu/daousha/docs/episode6/episode6-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode6/episode6-final.mp4	36.366667,20116712
+/home/ubuntu/daousha/docs/episode7/episode7-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode7/episode7-final.mp4	42.133333,20939487
+/home/ubuntu/daousha/docs/episode8/episode8-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode8/episode8-final.mp4	35.066667,18955540
+/home/ubuntu/daousha/docs/episode9/episode9-final.mp4	h264,1080,1920,30/1
+/home/ubuntu/daousha/docs/episode9/episode9-final.mp4	46.733333,23315367
+/home/ubuntu/daousha/docs/xdaw-nova-first-youtube-pilot.mp4	h264,1280,720,24/1
+/home/ubuntu/daousha/docs/xdaw-nova-first-youtube-pilot.mp4	8.000000,2241360
+/home/ubuntu/daousha/docs/xdawnova-tiktok-review-demo-sandbox-live.mp4	h264,1280,720,30/1
+/home/ubuntu/daousha/docs/xdawnova-tiktok-review-demo-sandbox-live.mp4	36.000000,411085

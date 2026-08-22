@@ -1,0 +1,24 @@
+Dawsha quality gate — 2026-08-22
+Policy target: vertical 1080x1920 or 2160x3840, duration <180s, video+audio.
+
+/home/ubuntu/daousha/docs/episode10/episode10-final.mp4	video=h264,1080,1920	audio=aac	duration=45.933333s
+/home/ubuntu/daousha/docs/episode11/episode11-final.mp4	video=h264,1080,1920	audio=aac	duration=49.966667s
+/home/ubuntu/daousha/docs/episode23/episode23-final.mp4	video=h264,1080,1920	audio=aac	duration=38.800000s
+/home/ubuntu/daousha/docs/episode26/episode26-final.mp4	video=h264,1080,1920	audio=aac	duration=44.766667s
+/home/ubuntu/daousha/docs/episode28/clip1.mp4	video=h264,1080,1920	audio=MISSING	duration=11.800000s
+/home/ubuntu/daousha/docs/episode28/clip2.mp4	video=h264,1080,1920	audio=MISSING	duration=11.800000s
+/home/ubuntu/daousha/docs/episode28/clip3.mp4	video=h264,1080,1920	audio=MISSING	duration=11.800000s
+/home/ubuntu/daousha/docs/episode28/clip4.mp4	video=h264,1080,1920	audio=MISSING	duration=11.800000s
+/home/ubuntu/daousha/docs/episode28/episode28-ar-v2.mp4	video=h264,1080,1920	audio=aac	duration=52.666667s
+/home/ubuntu/daousha/docs/episode28/episode28-ar.mp4	video=h264,1080,1920	audio=aac	duration=56.100000s
+/home/ubuntu/daousha/docs/episode28/episode28-en-v2.mp4	video=h264,1080,1920	audio=aac	duration=47.160000s
+/home/ubuntu/daousha/docs/episode28/episode28-en.mp4	video=h264,1080,1920	audio=aac	duration=45.700000s
+/home/ubuntu/daousha/docs/episode28/video_noaudio.mp4	video=h264,1080,1920	audio=MISSING	duration=45.700000s
+/home/ubuntu/daousha/docs/episode5/episode5-final.mp4	video=h264,1080,1920	audio=aac	duration=42.633333s
+/home/ubuntu/daousha/docs/episode6/episode6-final.mp4	video=h264,1080,1920	audio=aac	duration=36.366667s
+/home/ubuntu/daousha/docs/episode7/episode7-final.mp4	video=h264,1080,1920	audio=aac	duration=42.133333s
+/home/ubuntu/daousha/docs/episode8/episode8-final.mp4	video=h264,1080,1920	audio=aac	duration=35.066667s
+/home/ubuntu/daousha/docs/episode9/episode9-final.mp4	video=h264,1080,1920	audio=aac	duration=46.733333s
+
+Episode 30 candidate: NONE
+Publish gate: BLOCKED — no episode 30 video, no v5/v6 pipeline, and publishing credentials absent.
