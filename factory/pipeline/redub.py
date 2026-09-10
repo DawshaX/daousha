@@ -45,14 +45,29 @@ def redub(entry_id: str, audio: Path) -> dict:
     except Exception as e:
         return {"ok": False, "error": f"VISUALS:{type(e).__name__}:{e}"[:200]}
 
-    # 2) الصوت الجديد
+    # 2) الصوت الجديد + تمديد تلقائي لو أقصر من الحد
+    from .ffmpeg_bin import probe_duration
     narr = work / f"narration_{lang}.wav"
+    tmpa = work / "_soul_tmp.wav"
     if audio.suffix.lower() != ".wav":
-        r = run(["-y", "-i", str(audio), "-ar", "44100", "-ac", "1", str(narr)])
+        r = run(["-y", "-i", str(audio), "-ar", "44100", "-ac", "1", str(tmpa)])
         if r.returncode != 0:
             return {"ok": False, "error": f"CONVERT_FAIL:{r.stderr[-200:]}"}
     else:
-        shutil.copy(audio, narr)
+        shutil.copy(audio, tmpa)
+    try:
+        _min = float(load_config("factory")["video"]["min_seconds"])
+        _dur = probe_duration(str(tmpa))
+        if _dur < _min:
+            tempo = max(0.85, _dur / (_min + 0.6))
+            r = run(["-y", "-i", str(tmpa), "-filter:a", f"atempo={tempo:.3f}",
+                     "-ar", "44100", "-ac", "1", str(narr)])
+            if r.returncode != 0:
+                return {"ok": False, "error": f"STRETCH_FAIL:{r.stderr[-200:]}"}
+        else:
+            shutil.copy(tmpa, narr)
+    finally:
+        tmpa.unlink(missing_ok=True)
 
     # 3) المونتاج + الجودة + الخزنة
     old_final = work / f"final_{lang}.mp4"

@@ -49,7 +49,7 @@ def build_overlays(topic: dict, body: str):
     overlays, contexts = [], []
     for b in make_blocks(body):
         li = b["line"]
-        overlays.append((_shorten(b["text"], 46), _shorten(line_en[li], 52)))
+        overlays.append((_shorten(b["text"], 46), _shorten(line_en[li], 46)))
         contexts.append(f"{ta} {lines[li]} {line_en[li]}")
     return overlays, contexts
 
