@@ -246,7 +246,7 @@ def _text_block(img, text: str, y_top: int, lang: str, secondary: str | None = N
         d.text((x, y), ln, font=fnt, fill=WHITE, stroke_width=3, stroke_fill=(0, 0, 0))
         y += lh
     if secondary:
-        f2 = font(36, latin_only=True)
+        f2 = font(30, latin_only=True)
         tw2 = d.textlength(secondary, font=f2)
         d.text(((W - tw2) // 2, y + 12), secondary, font=f2, fill=GOLD,
                stroke_width=2, stroke_fill=(0, 0, 0))
