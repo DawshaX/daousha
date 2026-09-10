@@ -6,6 +6,7 @@
 import argparse
 import json
 import random
+import re
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -277,11 +278,45 @@ def _chrome(img, lang: str, scene_idx: int, total: int = 4):
            stroke_width=2, stroke_fill=(0, 0, 0))
 
 
+_NUM_RE = re.compile("[0-9٠-٩]+(?:[.,٫][0-9٠-٩]+)?%?")
+
+
+def _truth_card(img, overlay: str, context: str):
+    """بطاقة الحقيقة: الرقم الأبرز في العبارة بحجم ضخم ذهبي + وحدته."""
+    m = _NUM_RE.search(overlay or "")
+    if not m:
+        return
+    num = m.group(0)
+    tail = (overlay or "")[m.end():].strip().split()
+    unit = " ".join(tail[:2])[:22]
+    d = ImageDraw.Draw(img)
+    use_latin = not any("\u0660" <= c <= "\u0669" for c in num)
+    fnum = font(150, latin_only=use_latin)
+    tw = d.textlength(num, font=fnum)
+    for dx, dy in ((0, 6), (5, 0), (-5, 0), (0, -5)):
+        d.text(((W - tw) // 2 + dx, 250 + dy), num, font=fnum, fill=(0, 0, 0))
+    d.text(((W - tw) // 2, 250), num, font=fnum, fill=GOLD)
+    d.rectangle([(W // 2 - 130, 445), (W // 2 + 130, 455)], fill=RED)
+    if unit:
+        shown = shape_ar(unit) if is_arabic(unit) else unit
+        fu = font(44)
+        twu = d.textlength(shown, font=fu)
+        d.text(((W - twu) // 2, 470), shown, font=fu, fill=WHITE,
+               stroke_width=2, stroke_fill=(0, 0, 0))
+
+
 def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0,
                  secondary: str | None = None, context: str = "", total: int = 4) -> Image.Image:
     try:
         from .scene_art import paint_scene
-        img = paint_scene(context or overlay, seed).convert("RGB")
+        from .photo import find_photo, load_photo
+        art = paint_scene(context or overlay, seed).convert("RGB")
+        ph = find_photo(context or overlay)
+        if ph is not None:
+            # الحقيقة أولاً: صورة فوتوغرافية أساس + روح NOVA فوقها
+            img = Image.blend(load_photo(ph, seed), art, 0.35)
+        else:
+            img = art
         img = _vignette_grain(img, random.Random(seed))
     except Exception as e:
         print(f"ART_FALLBACK: {e}")
@@ -291,6 +326,7 @@ def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0,
         img = _circuits(img, rng)
         img = _rings(img, W // 2, 640, rng)
         img = _vignette_grain(img, rng)
+    _truth_card(img, overlay, context)
     _text_block(img, overlay, 990, lang, secondary)
     _chrome(img, lang, scene_idx, total)
     return img.convert("RGB")
