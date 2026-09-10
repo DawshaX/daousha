@@ -70,11 +70,33 @@ def block_timings(blocks: list, duration: float) -> list:
     return out
 
 
-def make_srt(body: str, duration: float, out: Path) -> Path:
-    blocks = block_timings(make_blocks(body), duration)
-    parts = [f"{i + 1}\n{_srt_time(b['start'])} --> {_srt_time(b['end'])}\n{b['text']}\n"
-             for i, b in enumerate(blocks)]
-    out.write_text("\n".join(parts), encoding="utf-8")
+FADE = 0.35
+
+
+def fit_timings(raw_blocks: list, duration: float, fade: float = FADE):
+    """مقاطع بمجموع = المدة + تراكب الانتقالات، وترجمة على منتصف الانتقال."""
+    raw = block_timings(raw_blocks, duration)
+    n = len(raw)
+    sc = (duration + fade * max(0, n - 1)) / max(0.01, sum(b["dur"] for b in raw))
+    segs = [b["dur"] * sc for b in raw]
+    V, t = [0.0], 0.0
+    for d in segs[:-1]:
+        t += d - fade
+        V.append(t)
+    caps = []
+    for i in range(n):
+        s = 0.0 if i == 0 else V[i] + fade / 2
+        e = duration if i == n - 1 else V[i + 1] + fade / 2
+        caps.append({**raw[i], "start": s, "end": e, "dur": segs[i]})
+    return segs, caps
+
+
+def make_srt(body: str, duration: float, out: Path, fade: float = FADE) -> Path:
+    _, caps = fit_timings(make_blocks(body), duration, fade)
+    el = chr(10)
+    parts = [str(i + 1) + el + _srt_time(b['start']) + " --> " + _srt_time(b['end']) + el + b['text'] + el
+             for i, b in enumerate(caps)]
+    out.write_text(el.join(parts), encoding="utf-8")
     return out
 
 
@@ -85,22 +107,25 @@ def _zoom_filter(mode: str, seg: float, role: str) -> str:
     total = max(1, int(seg * V["fps"]))
     s = f"{V['width']}x{V['height']}"
     if role == "hook":
-        z = f"min(1.0+0.0022*on,1.24)*{PULSE}"
+        z = f"min(1.0+0.0022*on,1.15)*{PULSE}"
         xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
     elif role == "bridge":
-        z = f"1.10*{PULSE}"
+        z = f"1.08*{PULSE}"
         xy = f"x='(iw-iw/zoom)*on/{total}':y='ih/2-(ih/zoom/2)'"
     elif role == "cta":
-        z = f"min(1.05+0.0016*on,1.22)*{PULSE}"
+        z = f"min(1.02+0.0018*on,1.15)*{PULSE}"
         xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
     elif mode == "zout":
-        z = f"max(1.18-0.0012*on,1.0)*{PULSE}"
+        z = f"max(1.15-0.0012*on,1.0)*{PULSE}"
         xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
     elif mode == "pan":
-        z = f"1.18*{PULSE}"
+        z = f"1.15*{PULSE}"
         xy = f"x='(iw-iw/zoom)*on/{total}':y='ih/2-(ih/zoom/2)'"
+    elif mode == "pan2":
+        z = f"1.15*{PULSE}"
+        xy = f"x='(iw-iw/zoom)*(1-on/{total})':y='ih/2-(ih/zoom/2)'"
     else:
-        z = f"min(1.0+0.0012*on,1.18)*{PULSE}"
+        z = f"min(1.0+0.0012*on,1.12)*{PULSE}"
         xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
     return f"scale=2160:3840,zoompan=z='{z}':{xy}:d=1:s={s}:fps={V['fps']}"
 
@@ -167,6 +192,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         s = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + int(m.group(3)) + int(m.group(4)) / 1000
         e = int(m.group(5)) * 3600 + int(m.group(6)) * 60 + int(m.group(7)) + int(m.group(8)) / 1000
         body = m.group(9).strip().replace("\n", "\\N")
+        _bs = chr(92)
+        _gold = "{" + _bs + "c&H4BB5E8&}"
+        _wht = "{" + _bs + "c&H00FFFFFF&}"
+        body = re.sub("([0-9][0-9.,]*)", lambda m: _gold + m.group(1) + _wht, body)
+        body = "{" + _bs + "fad(120,120)" + _bs + "t(0,180," + _bs + "fs62)}" + body
         events.append(f"Dialogue: 0,{_ass_time(s)},{_ass_time(e)},Nova,,0,0,0,,{body}")
     ass.write_text(header + "\n".join(events), encoding="utf-8")
 
@@ -179,7 +209,43 @@ def _skull_watermark() -> Path | None:
     return None
 
 
-GRADE = "eq=saturation=1.12:contrast=1.03"  # تدرج لوني دافئ مريح
+GRADE = "eq=saturation=1.14:contrast=1.04,noise=alls=6:allf=t"  # تدرج دافئ + حبيبات متحركة
+
+
+def _whoosh_bounds(srt: Path, duration: float) -> list:
+    """بدايات الكتل (نقاط الانتقال) لصوت الـ whoosh."""
+    import re
+    try:
+        text = Path(srt).read_text(encoding="utf-8")
+    except Exception:
+        return []
+    starts = []
+    for m in re.finditer(r"([0-9]+):([0-9]+):([0-9]+),([0-9]+) -->", text):
+        s = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + int(m.group(3)) + int(m.group(4)) / 1000
+        if 0.8 < s < duration - 1.0:
+            starts.append(s)
+    return starts[:8]
+
+
+def _finalize_mix(base: Path, narration: Path, duration: float, fade_start: float, bounds: list, out: Path):
+    cmd = ["-y", "-i", str(base), "-i", str(narration),
+           "-f", "lavfi", "-i", f"sine=frequency=55:duration={duration:.1f}"]
+    for i in range(len(bounds)):
+        cmd += ["-f", "lavfi", "-i", f"anoisesrc=color=pink:duration=0.45:seed={100 + i}"]
+    fc = (f"[2:a]volume=0.06,lowpass=f=220[bed];"
+          f"[1:a]afade=t=out:st={fade_start:.1f}:d=1.5[narr];")
+    labels = ["[bed]", "[narr]"]
+    for i, b in enumerate(bounds):
+        ms = int(max(0, (b - 0.15)) * 1000)
+        fc += (f"[{3 + i}:a]bandpass=f=300+t*6000:w=1.2,"
+               f"afade=t=in:st=0:d=0.25,afade=t=out:st=0.2:d=0.25,"
+               f"volume=0.15,adelay={ms}|{ms}[w{i}];")
+        labels.append(f"[w{i}]")
+    fc += f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:dropout_transition=0[a]"
+    cmd += ["-filter_complex", fc, "-map", "0:v", "-map", "[a]", "-c:v", "copy",
+            "-c:a", "aac", "-b:a", V["audio_bitrate"], "-shortest",
+            "-movflags", "+faststart", str(out)]
+    return run(cmd)
 
 
 def finalize(video_noaudio: Path, narration: Path, srt: Path, duration: float, out: Path):
@@ -209,14 +275,10 @@ def finalize(video_noaudio: Path, narration: Path, srt: Path, duration: float, o
              "-c:a", "copy", str(subbed)])
     base = subbed if (r.returncode == 0 and subbed.exists()) else tmp
     fade_start = max(0, duration - 1.5)
-    r = run(["-y", "-i", str(base), "-i", str(narration),
-             "-f", "lavfi", "-i", f"sine=frequency=55:duration={duration:.1f}",
-             "-filter_complex",
-             f"[2:a]volume=0.06,lowpass=f=220[bed];"
-             f"[1:a]afade=t=out:st={fade_start:.1f}:d=1.5[narr];"
-             f"[bed][narr]amix=inputs=2:duration=first:dropout_transition=0[a]",
-             "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac",
-             "-b:a", V["audio_bitrate"], "-shortest", "-movflags", "+faststart", str(out)])
+    bounds = _whoosh_bounds(srt, duration)
+    r = _finalize_mix(base, narration, duration, fade_start, bounds, out)
+    if r.returncode != 0 and bounds:
+        r = _finalize_mix(base, narration, duration, fade_start, [], out)
     if r.returncode != 0:
         raise RuntimeError(f"finalize failed: {r.stderr[-500:]}")
     return out
@@ -235,11 +297,13 @@ def assemble(work_dir: Path, out: Path) -> dict:
     assert narration.exists(), "narration missing"
 
     duration = probe_duration(str(narration))
-    lines = [l.strip() for l in script["body"].split("\n") if l.strip()]
-    blocks = block_timings(make_blocks(script["body"]), duration)
+    el = chr(10)
+    lines = [l.strip() for l in script["body"].split(el) if l.strip()]
+    raw_blocks = make_blocks(script["body"])
+    blocks = raw_blocks
 
     if len(scenes) == len(blocks):
-        segs = [b["dur"] for b in blocks]
+        segs, _caps = fit_timings(raw_blocks, duration, FADE)
         roles = [line_role(b, lines) for b in blocks]
     else:  # توافق مع المشاهد القديمة: تقسيم متساوٍ
         seg = duration / len(scenes)
@@ -249,7 +313,7 @@ def assemble(work_dir: Path, out: Path) -> dict:
     tmpd = Path(tempfile.mkdtemp(prefix="xdaw_asm_"))
     try:
         clips = []
-        fact_modes = ["zin", "zout", "pan"]
+        fact_modes = ["zin", "zout", "pan", "pan2"]
         fi = 0
         for sc, seg, role in zip(scenes, segs, roles):
             mode = fact_modes[fi % 3] if role == "fact" else "zin"

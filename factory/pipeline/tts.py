@@ -63,12 +63,45 @@ def synth_import(src: Path, out: Path) -> Path:
     return out
 
 
-def synthesize(text: str, lang: str, out: Path, provider: str = None) -> Path:
-    provider = provider or PROD.get("tts_provider", "edge")
+VOICEBANK = FACTORY_ROOT / "assets" / "voicebank"
+
+
+def synth_bank(topic_id: str, lang: str, out: Path) -> Path:
+    """صوت روح دوشة المسجل مسبقاً — صفر صفارة، يعمل أوفلاين."""
+    if not topic_id:
+        raise ValueError("bank provider needs topic_id")
+    for ext in (".mp3", ".wav"):
+        src = VOICEBANK / f"{topic_id}{ext}"
+        if src.exists():
+            break
+    else:
+        raise FileNotFoundError(f"NO_VOICEBANK:{topic_id}")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if src.suffix == ".wav":
+        shutil.copy(src, out)
+        return out
+    from .ffmpeg_bin import ensure_ffmpeg, run
+    ensure_ffmpeg()
+    r = run(["-y", "-i", str(src), "-ar", "44100", "-ac", "1", str(out)])
+    if r.returncode != 0:
+        raise RuntimeError(f"bank convert failed: {r.stderr[-200:]}")
+    return out
+
+
+def synthesize(text: str, lang: str, out: Path, provider: str = None, topic_id: str = None) -> Path:
+    provider = provider or PROD.get("tts_provider", "auto")
     if provider == "test":
         return synth_test_wav(text, lang, out)
     if provider == "import":
         raise ValueError("import provider needs --src file (use synth_import)")
+    if provider == "bank":
+        return synth_bank(topic_id, lang, out)
+    if provider == "auto":
+        try:
+            return synth_bank(topic_id, lang, out)
+        except Exception as e:
+            print(f"BANK_MISS:{topic_id} ({e}) -- trying edge", flush=True)
+        return synth_edge(text, lang, out)
     if provider == "edge":
         return synth_edge(text, lang, out)
     raise ValueError(f"unknown TTS provider: {provider}")

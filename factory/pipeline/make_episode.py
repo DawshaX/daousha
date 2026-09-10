@@ -49,7 +49,7 @@ def build_overlays(topic: dict, body: str):
     overlays, contexts = [], []
     for b in make_blocks(body):
         li = b["line"]
-        overlays.append((_shorten(b["text"], 46), _shorten(line_en[li], 46)))
+        overlays.append((_shorten(b["text"], 46), _shorten(line_en[li], 70)))
         contexts.append(f"{ta} {lines[li]} {line_en[li]}")
     return overlays, contexts
 
@@ -76,7 +76,7 @@ def make_one(topic: dict, lang: str, tts_provider: str) -> dict:
     # 3) صوت
     narr = work / f"narration_{lang}.wav"
     try:
-        synthesize(script.body, lang, narr, tts_provider)
+        synthesize(script.body, lang, narr, tts_provider, topic.get("id"))
     except Exception as e:
         return {"ok": False, "stage": "tts", "errors": [f"{type(e).__name__}:{e}"[:200]]}
 

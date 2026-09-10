@@ -80,3 +80,15 @@ def test_montage_blocks():
     timed = block_timings(blocks, 30.0)
     assert abs(sum(b["dur"] for b in timed) - 30.0) < 0.01
     assert all(b["dur"] >= 1.2 for b in timed)
+
+def test_fit_timings_sync():
+    from pipeline.assemble import fit_timings, make_blocks, FADE
+    body = "سطر أول للتجربة\nالحقيقة الأولى: القمر يبتعد 3.8 سم\nتابع داوسها!"
+    raw = make_blocks(body)
+    segs, caps = fit_timings(raw, 26.0)
+    assert abs(sum(segs) - 0.35 * (len(segs) - 1) - 26.0) < 0.01
+    assert abs(caps[0]["start"] - 0.0) < 0.01
+    assert abs(caps[-1]["end"] - 26.0) < 0.01
+    for a, b in zip(caps, caps[1:]):
+        assert abs(a["end"] - b["start"]) < 0.01
+    assert FADE == 0.35

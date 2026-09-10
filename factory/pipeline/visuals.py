@@ -247,10 +247,12 @@ def _text_block(img, text: str, y_top: int, lang: str, secondary: str | None = N
         y += lh
     if secondary:
         f2 = font(30, latin_only=True)
-        tw2 = d.textlength(secondary, font=f2)
-        d.text(((W - tw2) // 2, y + 12), secondary, font=f2, fill=GOLD,
-               stroke_width=2, stroke_fill=(0, 0, 0))
-        y += 70
+        for _ln2 in _wrap(secondary, f2, W - 160)[:2]:
+            tw2 = d.textlength(_ln2, font=f2)
+            d.text(((W - tw2) // 2, y + 12), _ln2, font=f2, fill=GOLD,
+                   stroke_width=2, stroke_fill=(0, 0, 0))
+            y += 44
+        y += 26
     return y
 
 
@@ -290,6 +292,16 @@ def _truth_card(img, overlay: str, context: str):
     tail = (overlay or "")[m.end():].strip().split()
     unit = " ".join(tail[:2])[:22]
     d = ImageDraw.Draw(img)
+    try:
+        _fp = font(28, latin_only=True)
+        _ft = "XDAW FACT"
+        _tw = d.textlength(_ft, font=_fp)
+        _px0, _py0 = (W - _tw) // 2 - 26, 172
+        d.rounded_rectangle([(_px0, _py0), (_px0 + _tw + 52, _py0 + 44)], radius=22,
+                            fill=(20, 20, 24), outline=GOLD, width=2)
+        d.text(((W - _tw) // 2, _py0 + 4), _ft, font=_fp, fill=GOLD)
+    except Exception:
+        pass
     use_latin = not any("\u0660" <= c <= "\u0669" for c in num)
     fnum = font(150, latin_only=use_latin)
     tw = d.textlength(num, font=fnum)
@@ -326,6 +338,17 @@ def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0,
         img = _circuits(img, rng)
         img = _rings(img, W // 2, 640, rng)
         img = _vignette_grain(img, rng)
+    if any(k in (overlay or "") for k in ("DAWSHA", "FOLLOW", "SUBSCRIBE")) or any(k in (overlay or "") for k in ("\u062f\u0627\u0648\u0633\u0647\u0627", "\u062a\u0627\u0628\u0639", "\u0627\u0634\u062a\u0631\u0643", "\u0644\u0627\u064a\u0643")):
+        try:
+            _sk = _skull_layer(300, 300)
+            if _sk is not None:
+                _gl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+                _gl = _glow(_gl, W // 2, 470, 300, RED, 90)
+                img = Image.alpha_composite(img.convert("RGBA"), _gl)
+                img = _paste_center(img, _sk, W // 2, 470)
+                img = img.convert("RGB")
+        except Exception:
+            pass
     _truth_card(img, overlay, context)
     _text_block(img, overlay, 990, lang, secondary)
     _chrome(img, lang, scene_idx, total)
