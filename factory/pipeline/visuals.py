@@ -215,7 +215,7 @@ def _wrap(text: str, fnt, max_w: int):
     return lines[:4]
 
 
-def _text_block(img, text: str, y_top: int, lang: str):
+def _text_block(img, text: str, y_top: int, lang: str, secondary: str | None = None):
     shown = shape_ar(text) if (lang == "ar" and is_arabic(text)) else text
     size = 62
     fnt = font(size)
@@ -236,6 +236,12 @@ def _text_block(img, text: str, y_top: int, lang: str):
         x = (W - tw) // 2
         d.text((x, y), ln, font=fnt, fill=WHITE, stroke_width=3, stroke_fill=(0, 0, 0))
         y += lh
+    if secondary:
+        f2 = font(36, latin_only=True)
+        tw2 = d.textlength(secondary, font=f2)
+        d.text(((W - tw2) // 2, y + 12), secondary, font=f2, fill=GOLD,
+               stroke_width=2, stroke_fill=(0, 0, 0))
+        y += 70
     return y
 
 
@@ -262,7 +268,8 @@ def _chrome(img, lang: str, scene_idx: int, total: int = 4):
            stroke_width=2, stroke_fill=(0, 0, 0))
 
 
-def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0) -> Image.Image:
+def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0,
+                 secondary: str | None = None) -> Image.Image:
     rng = random.Random(seed)
     img = _gradient_bg()
     img = _glow(img, rng.randint(200, 880), rng.randint(300, 700), rng.randint(260, 420), RED, 70)
@@ -270,7 +277,7 @@ def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0) -> Image.
     img = _circuits(img, rng)
     img = _rings(img, W // 2, 640, rng)
     img = _vignette_grain(img, rng)
-    _text_block(img, overlay, 1010, lang)
+    _text_block(img, overlay, 990, lang, secondary)
     _chrome(img, lang, scene_idx)
     return img.convert("RGB")
 
@@ -292,7 +299,10 @@ def build_episode_visuals(topic_id: str, lang: str, overlays: list, out_dir: Pat
     paths = []
     for i, ov in enumerate(overlays[:4]):
         seed = seed_base + hash(f"{topic_id}:{lang}:{i}") % 100000
-        img = draw_scene(ov, lang, i + 1, seed)
+        if isinstance(ov, (list, tuple)):
+            img = draw_scene(ov[0], lang, i + 1, seed, ov[1] if len(ov) > 1 else None)
+        else:
+            img = draw_scene(ov, lang, i + 1, seed)
         p = out_dir / f"scene{i+1}_{lang}.png"
         img.save(p)
         paths.append(str(p))
@@ -308,8 +318,10 @@ def main():
     if a.ensure_fonts:
         ensure_fonts()
     s = json.loads(Path(a.script_json).read_text(encoding="utf-8"))
-    key = "overlay_ar" if s["lang"] == "ar" else "overlay_en"
-    overlays = [sc[key] for sc in s["scenes"]]
+    if s["lang"] == "ar":
+        overlays = [(sc["overlay_ar"], sc["overlay_en"]) for sc in s["scenes"]]
+    else:
+        overlays = [(sc["overlay_en"], sc["overlay_ar"]) for sc in s["scenes"]]
     seed_base = sum(ord(c) for c in s["topic_id"])
     paths = build_episode_visuals(s["topic_id"], s["lang"], overlays, Path(a.out_dir), seed_base)
     print("VISUALS_OK:")

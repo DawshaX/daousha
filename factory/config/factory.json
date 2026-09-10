@@ -4,7 +4,10 @@
     "name": "XDAW NOVA FACTORY v2",
     "owner": "Dawsha",
     "timezone": "Africa/Cairo",
-    "langs": ["ar", "en"]
+    "langs": [
+      "ar",
+      "en"
+    ]
   },
   "video": {
     "width": 1080,
@@ -30,7 +33,12 @@
   "cadence": {
     "_comment": "النشر كل ساعة بالتناوب على المنصات = 6/يوم لكل منصة (آمن + يحقق طلب كل ساعة)",
     "publish_every_minutes": 60,
-    "rotation": ["youtube", "instagram", "facebook", "tiktok"],
+    "rotation": [
+      "youtube",
+      "instagram",
+      "facebook",
+      "tiktok"
+    ],
     "inter_platform_gap_minutes": 12,
     "per_platform_daily_cap": {
       "youtube": 6,
@@ -48,10 +56,22 @@
   "ladder": {
     "level": 1,
     "levels": {
-      "1": {"per_platform_cap": 4, "promote_after_clean_days": 5},
-      "2": {"per_platform_cap": 6, "promote_after_clean_days": 10},
-      "3": {"per_platform_cap": 8, "promote_after_clean_days": 14},
-      "4": {"per_platform_cap": 12, "needs_owner_approval": true}
+      "1": {
+        "per_platform_cap": 4,
+        "promote_after_clean_days": 5
+      },
+      "2": {
+        "per_platform_cap": 6,
+        "promote_after_clean_days": 10
+      },
+      "3": {
+        "per_platform_cap": 8,
+        "promote_after_clean_days": 14
+      },
+      "4": {
+        "per_platform_cap": 12,
+        "needs_owner_approval": true
+      }
     }
   },
   "production": {
@@ -62,7 +82,10 @@
     "_tts_providers": "edge (مجاني — edge-tts) | elevenlabs (API key) | import (ملف wav جاهز)",
     "voice_ar": "ar-EG-ShakiraNeural",
     "voice_en": "en-US-GuyNeural",
-    "music_bed_db": -22
+    "music_bed_db": -22,
+    "narration_lang": "ar",
+    "video_format": "ar_voice_en_text (unified bilingual card)",
+    "voice_style": "feminine warm expressive (داوسها اختار الصوت النسائي اللطيف)"
   },
   "vault": {
     "_comment": "المخزون: النشر يسحب منه فقط — لا نشر مباشر من خط الإنتاج",

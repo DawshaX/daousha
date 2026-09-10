@@ -43,12 +43,14 @@ def make_one(topic: dict, lang: str, tts_provider: str) -> dict:
     except Exception as e:
         return {"ok": False, "stage": "tts", "errors": [f"{type(e).__name__}:{e}"[:200]]}
 
-    # 4) مشاهد
-    key = "overlay_ar" if lang == "ar" else "overlay_en"
+    # 4) مشاهد (بطاقات ثنائية: الأساسي بلغة التعليق + الثانوي باللغة الأخرى)
     seed_base = sum(ord(c) for c in topic["id"])
+    if lang == "ar":
+        pairs = [(s["overlay_ar"], s["overlay_en"]) for s in script.scenes]
+    else:
+        pairs = [(s["overlay_en"], s["overlay_ar"]) for s in script.scenes]
     try:
-        build_episode_visuals(topic["id"], lang, [s[key] for s in script.scenes],
-                              work, seed_base)
+        build_episode_visuals(topic["id"], lang, pairs, work, seed_base)
     except Exception as e:
         return {"ok": False, "stage": "visuals", "errors": [f"{type(e).__name__}:{e}"[:200]]}
 

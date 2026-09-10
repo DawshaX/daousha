@@ -30,7 +30,7 @@ def production_burst(tts_provider: str, max_episodes: int = 3) -> list:
         if not topic:
             made.append({"skipped": "BANK_EMPTY_NEED_EXPANSION"})
             break
-        for lang in CFG["factory"]["langs"]:
+        for lang in [CFG["production"].get("narration_lang", "ar")]:
             r = make_one(topic, lang, tts_provider)
             made.append({"topic": topic["id"], "lang": lang, **r})
             if not r.get("ok"):
@@ -52,14 +52,17 @@ def pick_rotation_platform() -> str:
     return nxt
 
 
-def cycle(live: bool, tts_provider: str, produce: int = 3) -> dict:
-    print(f"\n===== CYCLE {datetime.now().isoformat(timespec='minutes')} live={live} =====")
+def cycle(live: bool, tts_provider: str, produce: int = 3, no_publish: bool = False) -> dict:
+    print(f"\n===== CYCLE {datetime.now().isoformat(timespec='minutes')} live={live} no_publish={no_publish} =====", flush=True)
     made = production_burst(tts_provider, produce)
-    print(f"produced: {sum(1 for m in made if m.get('ok'))} videos")
+    print(f"produced: {sum(1 for m in made if m.get('ok'))} videos", flush=True)
+    if no_publish:
+        print("publish: SKIPPED (production-only mode)", flush=True)
+        return {"made": made, "publish": "SKIPPED", "vault": vault_status()}
     plat = pick_rotation_platform()
-    print(f"publishing to: {plat}")
+    print(f"publishing to: {plat}", flush=True)
     pub = run_once([plat], live)
-    print(pub)
+    print(pub, flush=True)
     return {"made": made, "publish": pub, "vault": vault_status()}
 
 
@@ -70,13 +73,14 @@ def main():
     ap.add_argument("--once", action="store_true", help="دورة واحدة ثم خروج (لـ cron)")
     ap.add_argument("--tts-provider", default=None)
     ap.add_argument("--produce", type=int, default=3)
+    ap.add_argument("--no-publish", action="store_true", help="إنتاج فقط بلا نشر (ملء المخزون)")
     a = ap.parse_args()
-    live = a.live
+    live = a.live and not a.no_publish
     provider = a.tts_provider or CFG["production"]["tts_provider"]
-    tg.send_message(f"🏭 المصنع بدأ العمل (live={live}, every={a.every_minutes}min)")
+    tg.send_message(f"🏭 المصنع بدأ العمل (live={live}, no_publish={a.no_publish}, every={a.every_minutes}min)")
     while True:
         try:
-            cycle(live, provider, a.produce)
+            cycle(live, provider, a.produce, a.no_publish)
         except Exception as e:
             tg.notify_alert(f"خطأ في الدورة: {type(e).__name__}: {e}"[:300])
         if a.once:
