@@ -17,9 +17,9 @@
     "preset": "medium",
     "crf": 20,
     "audio_bitrate": "192k",
-    "min_seconds": 28,
+    "min_seconds": 24,
     "max_seconds": 60,
-    "target_seconds": 40,
+    "target_seconds": 32,
     "scenes": 4
   },
   "script_rules": {
@@ -85,7 +85,9 @@
     "music_bed_db": -22,
     "narration_lang": "ar",
     "video_format": "ar_voice_en_text (unified bilingual card)",
-    "voice_style": "feminine warm expressive (داوسها اختار الصوت النسائي اللطيف)"
+    "voice_style": "feminine warm expressive (داوسها اختار الصوت النسائي اللطيف)",
+    "voice_persona": "روح دوشة — feminine soul voice from 2099 (voice-03)",
+    "voice_id_studio": "voice-03"
   },
   "vault": {
     "_comment": "المخزون: النشر يسحب منه فقط — لا نشر مباشر من خط الإنتاج",
@@ -96,7 +98,7 @@
   },
   "qc": {
     "require_resolution": "1080x1920",
-    "require_min_seconds": 28,
+    "require_min_seconds": 24,
     "require_max_seconds": 60,
     "require_audio": true,
     "require_captions": true,

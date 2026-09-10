@@ -13,7 +13,7 @@ CFG = load_config("factory")
 PROD = CFG["production"]
 
 # سرعة الإلقاء (حرف/ثانية) — معايرة من النظام القديم (300 حرف ≈ 40 ثانية)
-RATE = {"ar": 7.5, "en": 9.0}
+RATE = {"ar": 11.3, "en": 12.5}  # معايرة من صوت روح دوشة الحقيقي 2026-09-10
 
 
 def estimate_duration(text: str, lang: str) -> float:
