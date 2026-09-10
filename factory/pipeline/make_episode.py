@@ -12,11 +12,48 @@ from . import topics as T
 from .script import build_script, validate, save_markdown
 from .tts import synthesize, estimate_duration
 from .visuals import build_episode_visuals
-from .assemble import assemble
+from .assemble import assemble, make_blocks
 from .qc import check
 from .vault import add as vault_add
 
 CFG = load_config("factory")
+
+def _shorten(text: str, n: int) -> str:
+    text = " ".join(text.split())
+    if len(text) <= n:
+        return text
+    cut = text[:n].rsplit(" ", 1)[0]
+    return cut if len(cut) > n * 0.6 else text[:n]
+
+
+def build_overlays(topic: dict, body: str):
+    """يبني (overlays, contexts) لكل كتلة مونتاج: مشهد لكل عبارة."""
+    from . import load_config as _lc
+    rules = _lc("factory")["script_rules"]
+    lines = [l.strip() for l in body.split("\n") if l.strip()]
+    fa = topic.get("facts_ar", []) or []
+    fe = topic.get("facts_en", []) or []
+    ta = f"{topic.get('topic_ar', '')} {topic.get('topic_en', '')}"
+    # الإنجليزية لكل سطر
+    line_en, fi = [], 0
+    for li, ln in enumerate(lines):
+        if li == 0:
+            line_en.append(topic.get("angle_en", ""))
+        elif li == len(lines) - 1:
+            line_en.append(rules["cta_en"])
+        elif ln.startswith(("ركز", "والأغرب", "Stay", "And the strangest")):
+            line_en.append("")
+        else:
+            line_en.append(fe[fi] if fi < len(fe) else "")
+            fi += 1
+    overlays, contexts = [], []
+    for b in make_blocks(body):
+        li = b["line"]
+        overlays.append((_shorten(b["text"], 46), _shorten(line_en[li], 52)))
+        contexts.append(f"{ta} {lines[li]} {line_en[li]}")
+    return overlays, contexts
+
+
 
 
 def make_one(topic: dict, lang: str, tts_provider: str) -> dict:
@@ -43,15 +80,9 @@ def make_one(topic: dict, lang: str, tts_provider: str) -> dict:
     except Exception as e:
         return {"ok": False, "stage": "tts", "errors": [f"{type(e).__name__}:{e}"[:200]]}
 
-    # 4) مشاهد (بطاقات ثنائية: الأساسي بلغة التعليق + الثانوي باللغة الأخرى)
+    # 4) مشاهد المونتاج: مشهد لكل عبارة (N مشاهد بدل 4)
     seed_base = sum(ord(c) for c in topic["id"])
-    if lang == "ar":
-        pairs = [(s["overlay_ar"], s["overlay_en"]) for s in script.scenes]
-    else:
-        pairs = [(s["overlay_en"], s["overlay_ar"]) for s in script.scenes]
-    fa, fe = topic.get("facts_ar", []), topic.get("facts_en", [])
-    ta = f"{topic.get('topic_ar','')} {topic.get('topic_en','')}"
-    contexts = [ta] + [f"{ta} {a} {b}" for a, b in zip(fa, fe)]
+    pairs, contexts = build_overlays(topic, script.body)
     try:
         build_episode_visuals(topic["id"], lang, pairs, work, seed_base, contexts)
     except Exception as e:

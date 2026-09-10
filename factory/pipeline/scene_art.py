@@ -373,6 +373,30 @@ def p_money(img, rng):
     return glow_spot(img, W // 2, CY, 300, (255, 210, 100), 70)
 
 
+
+
+def p_earth(img, rng):
+    """كوكب الأرض: رخام أزرق + غيوم + قمر."""
+    img = stars(img, rng, 200)
+    d = ImageDraw.Draw(img)
+    cx, cy, r = W // 2, CY, 210
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(30, 90, 200, 255))
+    d.ellipse([cx - r + 40, cy - r + 30, cx + r - 60, cy + r - 90], fill=(40, 140, 80, 200))  # يابسة
+    d.ellipse([cx - r + 90, cy - 40, cx + r - 30, cy + 90], fill=(50, 150, 90, 180))
+    for _ in range(12):  # غيوم
+        x, y = rng.randint(cx - r, cx + r - 120), rng.randint(cy - r, cy + r - 30)
+        layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        ImageDraw.Draw(layer).ellipse([x, y, x + rng.randint(70, 140), y + rng.randint(16, 30)],
+                                     fill=(255, 255, 255, 130))
+        img = Image.alpha_composite(img.convert("RGBA"), layer)
+        d = ImageDraw.Draw(img)
+    d.arc([cx - r, cy - r, cx + r, cy + r], 200, 340, fill=(150, 220, 255, 255), width=6)  # لمعة
+    mx, my = cx + 280, cy - 260  # قمر صغير
+    d.ellipse([mx - 45, my - 45, mx + 45, my + 45], fill=(220, 220, 230, 255))
+    d.ellipse([mx - 25, my - 45, mx + 55, my + 35], fill=(10, 14, 30, 255))
+    img = ring(img, cx, cy, r + 40, (100, 180, 255), 2, 90)
+    return glow_spot(img, cx, cy, 330, (60, 130, 255), 80)
+
 def p_cosmic(img, rng):
     """الافتراضي الكوني — جميل دائماً."""
     img = stars(img, rng, 200)
@@ -399,9 +423,10 @@ MOTIFS = [
     (("نحل", "bee", "عسل", "honey", "خلي"), p_honeycomb, ((14, 10, 4), (50, 35, 12))),
     (("أخطبوط", "octopus"), p_tentacles, ((12, 5, 14), (40, 15, 50))),
     (("هرم", "pyramid", "فرعون", "pharaoh", "أثر"), p_pyramids, ((16, 10, 5), (55, 35, 15))),
+    (("أرض", "earth", "كوكب", "planet", "world"), p_earth, ((4, 8, 18), (10, 25, 55))),
     (("روبوت", "robot", "ذكاء", "ai", "حاسوب", "computer", "شريحة", "chip"), p_robot, ((5, 10, 16), (15, 35, 60))),
     (("دائرة", "circuit", "كهرب", "electric", "طاق", "energy"), p_circuits, ((4, 12, 10), (12, 40, 34))),
-    (("مستقبل", "future", "مدينة", "city", "مريخ", "mars", "طائر"), p_city, ((8, 6, 16), (30, 18, 55))),
+    (("مستقبل", "future", "2099", "مدينة", "city", "مريخ", "mars", "طائر"), p_city, ((8, 6, 16), (30, 18, 55))),
     (("مال", "money", "دولار", "dollar", "ذهب", "gold", "ثراء", "bank", "بن", "سهم", "اقتصاد"), p_money, ((12, 10, 4), (45, 35, 14))),
     (("نمل", "ant"), None, ((12, 8, 4), (45, 28, 14))),
 ]

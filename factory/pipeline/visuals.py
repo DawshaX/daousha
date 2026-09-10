@@ -189,6 +189,13 @@ def _paste_center(canvas, layer, cx, cy):
 
 def _vignette_grain(img, rng):
     img = img.convert("RGB")
+    # حبيبات فيلم خفيفة (راحة نفسية سينمائية)
+    try:
+        from PIL import Image as _I
+        noise = _I.effect_noise((W, H), 10).convert("RGB")
+        img = _I.blend(img, _I.blend(img, noise, 0.5), 0.05)
+    except Exception:
+        pass
     # فينيت
     vig = Image.new("L", (W, H), 0)
     dv = ImageDraw.Draw(vig)
@@ -254,8 +261,9 @@ def _chrome(img, lang: str, scene_idx: int, total: int = 4):
     d.text(((W - tw) // 2, 120), brand, font=f_small, fill=WHITE,
            stroke_width=2, stroke_fill=(0, 0, 0))
     d.ellipse([W // 2 + tw // 2 + 16, 132, W // 2 + tw // 2 + 30, 146], fill=RED)
-    # شريط تقدم المشاهد
-    seg_w, gap, y0 = 180, 18, H - 220
+    # شريط تقدم المشاهد (عرض ديناميكي حسب العدد)
+    gap, y0, total_w = 12, H - 220, 880
+    seg_w = max(18, (total_w - gap * (total - 1)) // max(1, total))
     x0 = (W - (seg_w * total + gap * (total - 1))) // 2
     for i in range(total):
         x = x0 + i * (seg_w + gap)
@@ -270,7 +278,7 @@ def _chrome(img, lang: str, scene_idx: int, total: int = 4):
 
 
 def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0,
-                 secondary: str | None = None, context: str = "") -> Image.Image:
+                 secondary: str | None = None, context: str = "", total: int = 4) -> Image.Image:
     try:
         from .scene_art import paint_scene
         img = paint_scene(context or overlay, seed).convert("RGB")
@@ -284,7 +292,7 @@ def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0,
         img = _rings(img, W // 2, 640, rng)
         img = _vignette_grain(img, rng)
     _text_block(img, overlay, 990, lang, secondary)
-    _chrome(img, lang, scene_idx)
+    _chrome(img, lang, scene_idx, total)
     return img.convert("RGB")
 
 
@@ -303,14 +311,15 @@ def draw_title_card(title: str, lang: str, seed: int = 0) -> Image.Image:
 def build_episode_visuals(topic_id: str, lang: str, overlays: list, out_dir: Path, seed_base: int = 0, contexts: list | None = None) -> list:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = []
-    for i, ov in enumerate(overlays[:4]):
+    total = len(overlays)
+    for i, ov in enumerate(overlays):
         seed = seed_base + hash(f"{topic_id}:{lang}:{i}") % 100000
         ctx = contexts[i] if contexts and i < len(contexts) else ""
         if isinstance(ov, (list, tuple)):
-            img = draw_scene(ov[0], lang, i + 1, seed, ov[1] if len(ov) > 1 else None, ctx)
+            img = draw_scene(ov[0], lang, i + 1, seed, ov[1] if len(ov) > 1 else None, ctx, total)
         else:
-            img = draw_scene(ov, lang, i + 1, seed, None, ctx)
-        p = out_dir / f"scene{i+1}_{lang}.png"
+            img = draw_scene(ov, lang, i + 1, seed, None, ctx, total)
+        p = out_dir / f"scene{i+1:02d}_{lang}.png"
         img.save(p)
         paths.append(str(p))
     return paths

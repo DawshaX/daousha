@@ -69,3 +69,14 @@ def test_expand_bank_volume_and_cats():
     cats = {c["cat"] for c in cands}
     assert len(cats) == 12
     assert all(c["status"] == "needs_facts" for c in cands)
+
+
+def test_montage_blocks():
+    from pipeline.assemble import make_blocks, block_timings
+    body = "سطر أول قصير\nالحقيقة الأولى: هذه جملة طويلة تحتاج إلى تقسيم على كتلتين أو أكثر\nتابع داوسها!"
+    blocks = make_blocks(body)
+    assert len(blocks) >= 3
+    assert all(b["line"] < 3 for b in blocks)
+    timed = block_timings(blocks, 30.0)
+    assert abs(sum(b["dur"] for b in timed) - 30.0) < 0.01
+    assert all(b["dur"] >= 1.2 for b in timed)
