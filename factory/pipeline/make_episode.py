@@ -49,8 +49,11 @@ def make_one(topic: dict, lang: str, tts_provider: str) -> dict:
         pairs = [(s["overlay_ar"], s["overlay_en"]) for s in script.scenes]
     else:
         pairs = [(s["overlay_en"], s["overlay_ar"]) for s in script.scenes]
+    fa, fe = topic.get("facts_ar", []), topic.get("facts_en", [])
+    ta = f"{topic.get('topic_ar','')} {topic.get('topic_en','')}"
+    contexts = [ta] + [f"{ta} {a} {b}" for a, b in zip(fa, fe)]
     try:
-        build_episode_visuals(topic["id"], lang, pairs, work, seed_base)
+        build_episode_visuals(topic["id"], lang, pairs, work, seed_base, contexts)
     except Exception as e:
         return {"ok": False, "stage": "visuals", "errors": [f"{type(e).__name__}:{e}"[:200]]}
 

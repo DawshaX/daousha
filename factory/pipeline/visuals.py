@@ -195,7 +195,8 @@ def _vignette_grain(img, rng):
     dv.ellipse([-W * 0.25, -H * 0.15, W * 1.25, H * 1.1], fill=255)
     vig = vig.filter(ImageFilter.GaussianBlur(180))
     black = Image.new("RGB", (W, H), (0, 0, 0))
-    img = Image.composite(img, black, vig.point(lambda v: int(v * 0.25)))
+    # المركز يحتفظ بـ100% من الصورة، الأطراف تُظلم ~45% (فينيت صحيح)
+    img = Image.composite(img, black, vig.point(lambda v: 255 - int((255 - v) * 0.45)))
     return img
 
 
@@ -269,14 +270,19 @@ def _chrome(img, lang: str, scene_idx: int, total: int = 4):
 
 
 def draw_scene(overlay: str, lang: str, scene_idx: int, seed: int = 0,
-                 secondary: str | None = None) -> Image.Image:
-    rng = random.Random(seed)
-    img = _gradient_bg()
-    img = _glow(img, rng.randint(200, 880), rng.randint(300, 700), rng.randint(260, 420), RED, 70)
-    img = _glow(img, rng.randint(100, 980), rng.randint(1200, 1700), rng.randint(200, 340), CRIMSON, 80)
-    img = _circuits(img, rng)
-    img = _rings(img, W // 2, 640, rng)
-    img = _vignette_grain(img, rng)
+                 secondary: str | None = None, context: str = "") -> Image.Image:
+    try:
+        from .scene_art import paint_scene
+        img = paint_scene(context or overlay, seed).convert("RGB")
+        img = _vignette_grain(img, random.Random(seed))
+    except Exception as e:
+        print(f"ART_FALLBACK: {e}")
+        rng = random.Random(seed)
+        img = _gradient_bg()
+        img = _glow(img, W // 2, 500, 380, RED, 70)
+        img = _circuits(img, rng)
+        img = _rings(img, W // 2, 640, rng)
+        img = _vignette_grain(img, rng)
     _text_block(img, overlay, 990, lang, secondary)
     _chrome(img, lang, scene_idx)
     return img.convert("RGB")
@@ -294,15 +300,16 @@ def draw_title_card(title: str, lang: str, seed: int = 0) -> Image.Image:
     return img.convert("RGB")
 
 
-def build_episode_visuals(topic_id: str, lang: str, overlays: list, out_dir: Path, seed_base: int = 0) -> list:
+def build_episode_visuals(topic_id: str, lang: str, overlays: list, out_dir: Path, seed_base: int = 0, contexts: list | None = None) -> list:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = []
     for i, ov in enumerate(overlays[:4]):
         seed = seed_base + hash(f"{topic_id}:{lang}:{i}") % 100000
+        ctx = contexts[i] if contexts and i < len(contexts) else ""
         if isinstance(ov, (list, tuple)):
-            img = draw_scene(ov[0], lang, i + 1, seed, ov[1] if len(ov) > 1 else None)
+            img = draw_scene(ov[0], lang, i + 1, seed, ov[1] if len(ov) > 1 else None, ctx)
         else:
-            img = draw_scene(ov, lang, i + 1, seed)
+            img = draw_scene(ov, lang, i + 1, seed, None, ctx)
         p = out_dir / f"scene{i+1}_{lang}.png"
         img.save(p)
         paths.append(str(p))
@@ -322,8 +329,9 @@ def main():
         overlays = [(sc["overlay_ar"], sc["overlay_en"]) for sc in s["scenes"]]
     else:
         overlays = [(sc["overlay_en"], sc["overlay_ar"]) for sc in s["scenes"]]
+    contexts = [sc.get("prompt_en", "") + " " + sc.get("overlay_ar", "") for sc in s["scenes"]]
     seed_base = sum(ord(c) for c in s["topic_id"])
-    paths = build_episode_visuals(s["topic_id"], s["lang"], overlays, Path(a.out_dir), seed_base)
+    paths = build_episode_visuals(s["topic_id"], s["lang"], overlays, Path(a.out_dir), seed_base, contexts)
     print("VISUALS_OK:")
     for p in paths:
         print(" ", p)
