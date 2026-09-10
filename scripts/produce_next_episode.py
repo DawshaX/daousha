@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""نظام الإنتاج التلقائي — يختار الحلقة التالية من مكتبة المواضيع ويبنيها.
-- يستخدم المواضيع التي لها سيناريو جاهز في ملفات episodeN-script.md (4 مشاهد + تعليق صوتي)
-- يبني الفيديو عبر build_episode.sh
-- يحدّث topic_library.json
-الاستخدام: python3 produce_next_episode.py [ep_number]
-"""
+"""نظام الإنتاج التلقائي — يختار الحلقة التالية من مكتبة المواضيع ويبنيها."""
 import json
 import os
 import re
@@ -14,14 +9,11 @@ import sys
 BASE = '/home/ubuntu/test_run'
 LIB = f'{BASE}/topic_library.json'
 
-
 def load_lib():
     return json.load(open(LIB))
 
-
 def save_lib(lib):
     json.dump(lib, open(LIB, 'w'), ensure_ascii=False, indent=1)
-
 
 def main():
     lib = load_lib()
@@ -46,7 +38,7 @@ def main():
         sys.exit(0)
     script = f'{BASE}/episode{n}-script.md'
     if not os.path.exists(script):
-        print(f'MISSING_SCRIPT: {script} — يحتاج كتابة سيناريو + 4 مشاهد + تعليق صوتي أولاً')
+        print(f'MISSING_SCRIPT: {script} — needs scenario + 4 scenes + narration first')
         sys.exit(2)
     narration = f'{BASE}/episode{n}-narration.wav'
     if not os.path.exists(narration):
@@ -68,7 +60,6 @@ def main():
             t['status'] = 'produced'
     save_lib(lib)
     print(f'PRODUCED: {video}')
-
 
 if __name__ == '__main__':
     main()

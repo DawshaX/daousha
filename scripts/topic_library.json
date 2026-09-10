@@ -1,264 +1,93 @@
 [
-  {
-    "id": "ep1-done",
-    "topic": "الدماغ يعمل على ثلث طاقته فقط",
-    "angle": "3 حقائق صادمة عن الدماغ",
-    "status": "published"
-  },
-  {
-    "id": "ep2-done",
-    "topic": "القلب",
-    "angle": "3 حقائق ستصدمك عن القلب",
-    "status": "published"
-  },
-  {
-    "id": "ep3-done",
-    "topic": "العين تكذب عليك",
-    "angle": "3 حيل تخدع بها دماغك",
-    "status": "published"
-  },
-  {
-    "id": "ep4-done",
-    "topic": "أكاذيب الذاكرة",
-    "angle": "3 أكاذيب عن ذاكرتك",
-    "status": "published"
-  },
-  {
-    "id": "ep5",
-    "topic": "أسرار النوم",
-    "angle": "3 اكتشافات عن دماغك النائم",
-    "status": "produced"
-  },
-  {
-    "id": "ep6",
-    "topic": "النوم والأحلام",
-    "angle": "لماذا نحلم؟ 3 أسرار علمية",
-    "status": "published-ig"
-  },
-  {
-    "id": "ep7",
-    "topic": "الجاذبية الأرضية",
-    "angle": "3 أشياء لا تعرفها عن الجاذبية",
-    "status": "produced"
-  },
-  {
-    "id": "ep8",
-    "topic": "المحيطات",
-    "angle": "3 أسرار لم يكتشفها البشر في أعماق المحيطات",
-    "status": "published-ig"
-  },
-  {
-    "id": "ep9",
-    "topic": "الفضاء والشمس",
-    "angle": "3 حقائق صادمة عن شمسنا",
-    "status": "produced"
-  },
-  {
-    "id": "ep10",
-    "topic": "DNA",
-    "angle": "3 أسرار في حمضك النووي ستدهشك",
-    "status": "produced"
-  },
-  {
-    "id": "ep11",
-    "topic": "النمل",
-    "angle": "3 حقائق مذهلة عن عالم النمل",
-    "status": "produced"
-  },
-  {
-    "id": "ep12",
-    "topic": "الوقت",
-    "angle": "3 مفارقات غريبة عن الوقت",
-    "status": "produced"
-  },
-  {
-    "id": "ep13",
-    "topic": "اللغة العربية",
-    "angle": "3 حقائق عن أقوى لغة في التاريخ",
-    "status": "produced"
-  },
-  {
-    "id": "ep14",
-    "topic": "القطط",
-    "angle": "3 أسرار عن أذكى حيوان أليف",
-    "status": "published-ig"
-  },
-  {
-    "id": "ep15",
-    "topic": "التاريخ الإسلامي",
-    "angle": "3 اختراعات إسلامية غيّرت العالم",
-    "status": "published-ig",
-    "note": "2026-08-18: scenes 2-4 generated + final video produced (1080x1920, 30.9s) + published on Instagram https://www.instagram.com/reel/DcKnOPslFoe/ ; YT/FB/Telegram deferred (secrets.txt missing in scheduled sandbox)"
-  },
-  {
-    "id": "ep16",
-    "topic": "الماء",
-    "angle": "3 حقائق غريبة عن الماء لا تعرفها",
-    "status": "published-ig",
-    "produced_at": "2026-08-18",
-    "duration_s": 34.5
-  },
-  {
-    "id": "ep17",
-    "topic": "النحل",
-    "angle": "3 أسرار عن نحل العسل ستدهشك",
-    "status": "produced",
-    "produced_at": "2026-08-18",
-    "duration_s": 38.6
-  },
-  {
-    "id": "ep18",
-    "topic": "الحديد في جسمك",
-    "angle": "3 حقائق صادمة عن جسمك",
-    "status": "produced"
-  },
-  {
-    "id": "ep19",
-    "topic": "القمر",
-    "angle": "3 أسرار عن القمر لم تسمعها",
-    "status": "produced"
-  },
-  {
-    "id": "ep20",
-    "topic": "الصوت",
-    "angle": "3 حقائق عن الصوت ستندهش لها",
-    "status": "produced"
-  },
-  {
-    "id": "ep21",
-    "topic": "البرق",
-    "angle": "3 حقائق صادمة عن البرق",
-    "status": "produced",
-    "produced_at": "2026-08-19 (21:16 UTC / 12:16 AM Cairo)",
-    "duration_s": 35.7
-  },
-  {
-    "id": "ep22",
-    "topic": "العين المجردة",
-    "angle": "3 أشياء لا تراها عينك لكنها حولك",
-    "status": "published",
-    "published_at": "2026-08-20",
-    "urls": {
-      "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
-      "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
-      "yt_ar": "https://www.youtube.com/watch?v=2OjsVKOGpWk",
-      "yt_en": "https://www.youtube.com/watch?v=UPZwEmHIY9c",
-      "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
-      "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
-    }
-  },
-  {
-    "id": "ep23",
-    "topic": "الجاذبية والصفر",
-    "angle": "3 حقائق عن الفضاء والفراغ",
-    "status": "produced",
-    "produced_at": "2026-08-20 (02:08 UTC)",
-    "duration_s": 38.8
-  },
-  {
-    "id": "ep24",
-    "topic": "الدماغ والتعلم",
-    "angle": "3 أسرار عن التعلم السريع",
-    "status": "published",
-    "published_at": "2026-08-20",
-    "urls": {
-      "ig_ar": "https://www.instagram.com/reel/DcPfiQwEq8o/",
-      "ig_en": "https://www.instagram.com/reel/DcPfp5SgL75/",
-      "yt_short_ar": "https://www.youtube.com/watch?v=D3uHnNSLZM0",
-      "yt_short_en": "https://www.youtube.com/watch?v=w9U-jPrNdCo",
-      "fb_ar": "https://www.facebook.com/1265727539958933/videos/974473192276514",
-      "fb_en": "https://www.facebook.com/1265727539958933/videos/1049723391246958"
-    }
-  },
-  {
-    "id": "ep25",
-    "topic": "الطاقة الشمسية",
-    "angle": "3 حقائق عن طاقة الشمس الهائلة",
-    "status": "published",
-    "published_at": "2026-08-20T15:35Z",
-    "urls": {
-      "ig_ar": "https://www.instagram.com/reel/DcPmct4AFjb/",
-      "ig_en": "https://www.instagram.com/reel/DcPmjZnD3rD/",
-      "yt_short_ar": "https://www.youtube.com/watch?v=pftiChK59Y0",
-      "yt_short_en": "https://www.youtube.com/watch?v=JPN8fcXCLaY",
-      "fb_ar": "https://www.facebook.com/1265727539958933/videos/1760676461600436",
-      "fb_en": "https://www.facebook.com/1265727539958933/videos/1123935693417417"
-    }
-  },
-  {
-    "id": "ep26",
-    "topic": "الجبال",
-    "angle": "3 أسرار عن أعظم جبال الأرض",
-    "status": "published",
-    "produced_at": "2026-08-20 (03:35 UTC)",
-    "duration_s": 44.7,
-    "published_at": "2026-08-20T07:23Z",
-    "urls": {
-      "ig_ar": "https://www.instagram.com/reel/DcQN5XjD4tD/"
-    },
-    "status_note": "IG only — YT/FB/Telegram معطلون بيئيًا (secrets.txt غائب منذ 2026-08-15)"
-  },
-  {
-    "id": "ep27",
-    "topic": "السرعة",
-    "angle": "3 حقائق صادمة عن أسرع الأشياء في الكون",
-    "status": "published",
-    "status_note": "حصة توليد الصور (20/20) مستهلكة في دورة 2026-08-20 08:06 UTC — المشاهد الثمانية (4 AR + 4 EN) تنتج فور إعادة التعيين، ثم بناء الفيديوهين ونشر AR+EN على IG (نافذة الكولداون تفتح 11:23 UTC). YT/FB/Telegram معلقة (secrets.txt غائب منذ 2026-08-15). TikTok: Not approved/Rejected (2026-08-19 9:15AM) — لا نشر حتى قرار المستخدم.",
-    "published_at": "2026-08-20T10:20Z",
-    "instagram_ar": "https://www.instagram.com/reel/DcQhcr9gmqD/",
-    "instagram_en": "https://www.instagram.com/reel/DcQhj4mim6k/",
-    "production_note": "Produced with Pexels stock clips (image-gen quota exhausted 20/20 on 2026-08-20). Duration AR 43.5s / EN 43.1s, 1080x1920. Published on Instagram; YouTube/Facebook/Telegram unavailable (secrets.txt absent in scheduled session)."
-  },
-  {
-    "id": "ep28",
-    "topic": "أغلى مادة في الكون — المادة المضادة",
-    "angle": "3 حقائق صادمة عن المادة المضادة",
-    "status": "published-ig",
-    "links": {
-      "ar": "https://www.instagram.com/reel/DcQ4o6ACYRR/",
-      "en": "https://www.instagram.com/reel/DcRA7GElDHI/",
-      "ar_v1": "https://www.instagram.com/reel/DcQvoEQjDiB/",
-      "en_v1": "https://www.instagram.com/reel/DcQv02xmhc5/",
-      "ar_v2_20260822": "https://www.instagram.com/reel/DcVPJvFDnyI/",
-      "en_v2_20260822": "https://www.instagram.com/reel/DcVPiVfIM74/"
-    },
-    "cycle": "2026-08-20",
-    "style": "captions-overlay-sci-fi (Pexels)",
-    "published_at_latest": "2026-08-22T06:14:26Z",
-    "status_note_latest": "نُشرت النسختان v2 على Instagram في 2026-08-22؛ YouTube وFacebook وTelegram مؤجلة لأن secrets.txt غير موجود في البيئة الحالية.",
-    "urls": {
-      "ig_ar_latest": "https://www.instagram.com/reel/DcVPJvFDnyI/",
-      "ig_en_latest": "https://www.instagram.com/reel/DcVPiVfIM74/"
-    }
-  },
-  {
-    "id": "ep29",
-    "topic": "عالم عام 2099 — 3 حقائق صادمة عن المستقبل",
-    "angle": "مدن تحت قباب زجاجية، سيارات طائرة، وروبوتات ذكية",
-    "status": "published-ig",
-    "links": {
-      "ar_v3": "https://www.instagram.com/reel/DcSIh1CDrGb/",
-      "en_v3": "https://www.instagram.com/reel/DcSInlOFZOx/",
-      "ar_v2": "https://www.instagram.com/reel/DcRg-FIlaRn/",
-      "en_v2": "https://www.instagram.com/reel/DcRhHkJloOr/",
-      "ar": "https://www.instagram.com/reel/DcRX-1-gcvK/",
-      "en": "https://www.instagram.com/reel/DcRYIAeAqLb/",
-      "ar_v4": "https://www.instagram.com/reel/DcSOodrgLov/",
-      "en_v4": "https://www.instagram.com/reel/DcSOuYJDGX3/",
-      "ar_v5_xdawnova": "https://www.instagram.com/reel/DcSVN7vCUjW/",
-      "en_v5_xdawnova": "https://www.instagram.com/reel/DcSVTgKgFvW/",
-      "ar_v6_xdawnova": "https://www.instagram.com/reel/DcSccdgGxb1/",
-      "en_v6_xdawnova": "https://www.instagram.com/reel/DcScmCnjWxq/",
-      "ar_v7_xdawnova": "https://www.instagram.com/reel/DcT8ob0kxph/",
-      "en_v7_xdawnova": "https://www.instagram.com/reel/DcT81vZDe5F/"
-    },
-    "cycle": "2026-08-21-v5-xdawnova-execution",
-    "style": "xDaw NoVa stamp (CDN v)",
-    "urls": {
-      "ig_ar": "https://www.instagram.com/reel/DcT8ob0kxph/",
-      "ig_en": "https://www.instagram.com/reel/DcT81vZDe5F/"
-    },
-    "published_at": "2026-08-21T18:12:42Z",
-    "status_note": "دورة التنفيذ 2026-08-21 (v5) بختم xDaw NoVa الجديد: AR: https://www.instagram.com/reel/DcT8ob0kxph/ EN: https://www.instagram.com/reel/DcT81vZDe5F/"
-  }
+  {"id": "ep100", "topic": "اكتشاف الجسيم هيغز يكتمل معايير نموذج القياسية", "status": "queued", "category": "علوم", "facts": ["اكتشاف الجسيم هيغز يكتمل معايير نموذج القياسية", "يقوّم الجسيم وجود حقل هيغز", "اكتمل في CERN عام 2012"]},
+  {"id": "ep101", "topic": "القلب ينبض بلا توقف منذ قبل الميلاد", "status": "queued", "category": "علوم", "facts": ["القلب ينبض بلا توقف منذ قبل الميلاد", "يضخ الدم طوال حياة الانسان", "ي beating 100,000 مرة يومياً"]},
+  {"id": "ep102", "topic": "النظام الشمسي قديم 4.6 مليار سنة", "status": "queued", "category": "علوم", "facts": ["النظام الشمسي قديم 4.6 مليار سنة", "تشكل قبل 4.6 مليار سنة", "أبعد كوكب نبتون"]},
+  {"id": "ep103", "topic": "الجاذبية تجعلك أصغر قليلاً عند القدمين", "status": "queued", "category": "علوم", "facts": ["الجاذبية تجعلك أصغر قليلاً عند القدمين", "تختلفaccording to latitude", "الجاذبية weaker at equator"]},
+  {"id": "ep104", "topic": "الضوء ينتقل بسرعة هائلة", "status": "queued", "category": "علوم", "facts": ["سرعة الضوء 300,000 كم/ث", "يستغرق الضوء 8 دقائق للوصول للأرض", "الضوء له سلوك موجي وجسيمي"]},
+  {"id": "ep105", "topic": "الذرة mostly Empty Space", "status": "queued", "category": "علوم", "facts": ["الذرة 99.9% مساحة فارغة", "لو ضغنا كل matter للأرض لتناسب حبة عين", "تنبض الذرات continually"]},
+  {"id": "ep106", "topic": "الثقوب السوداء تمتص كل شيء", "status": "queued", "category": "علوم", "facts": ["ثقوب سوداء لها جذب لا يهرب منه حتى الضوء", "يمكن أن تكون بحجم ذرة أو مليار ضعف الشمس", "تُنتج موجات جاذبة عند الالتحام"]},
+  {"id": "ep107", "topic": "الوقت relativistic", "status": "queued", "category": "علوم", "facts": ["الوقت يمر ببطء أسرع بالقرب من سرعة الضوء", "الساعات على الطائرات تنقل أقصر بقليل", "الجاذبية تسبب تمدد الزمن"]},
+  {"id": "ep108", "topic": "الموجات الجاذبة discovered", "status": "queued", "category": "علوم", "facts": ["اكتشفها LIGO في 2015", "تُنتج عند اصطدام ثقوب سوداء", "تنقل معلومات عن الكون المبكر"]},
+  {"id": "ep109", "topic": "المادة المظلمة comprising 27%", "status": "queued", "category": "علوم", "facts": ["تُشكل 27% من Universe", "لا نرها لكنها تؤثر جاذبياً", "غزيرة البحث حتى الآن"]},
+  {"id": "ep110", "topic": "الطاقة المظلمة 68%", "status": "queued", "category": "علوم", "facts": ["تُشكل 68% من Universe", "تسرع تمدد宇宙", "غزيرة البحث حتى الآن"]},
+  {"id": "ep111", "topic": "الحوسبة الكمومية ثورية", "status": "queued", "category": "تكنولوجيا", "facts": ["تتغلب على الحواسيب الكلاسيكية في مسائل معقدة", "تستخدم qubits التي يمكن أن تكون 0 و 1 معاً", "شركات كبرى تستثمر مليارات بها"]},
+  {"id": "ep112", "topic": "الإنترنت الكمومي قادم", "status": "queued", "category": "تكنولوجيا", "facts": ["يُتيح Transmission آمنة لا يمكن قرصنتها", "تجارب ناجحة لجذب الفوتونات لمسافات طويلة", "شبكة وطنية كمومية في الصين تعمل"]},
+  {"id": "ep113", "topic": "الذكاء الاصطناعي generative", "status": "queued", "category": "تكنولوجيا", "facts": ["تشات جي بي تي وصل لـ 100 مليون مستخدم خلال شهرين", "يمكنه كتابة كود وإنتاج فن وكتابة قصص", "يثير قلق الوظائف الإبداعية"]},
+  {"id": "ep114", "topic": "الروبوتات البشرية", "status": "queued", "category": "تكنولوجيا", "facts": ["أندرويدز يمكنها المشي والتحدث والتفاعل", "تُستخدم في الرعاية الصحية والخدمات", "تكلفتها تنخفض تدريجياً"]},
+  {"id": "ep115", "topic": "الواقع الافتراضي", "status": "queued", "category": "تكنولوجيا", "facts": ["يمكنك العيش في عوالم أخرى تماماً", "يُستخدم في العلاج من الفوبيا والتدريب", "سوق الواقع الافتراضي grows rapidly"]},
+  {"id": "ep116", "topic": "البلوكشين decentralized", "status": "queued", "category": "تكنولوجيا", "facts": ["لا يحتاج للبنوك المركزية", "يمكن لتتبع السلاسل الغذائية", "NFTs و العملات الرقمية basada"]},
+  {"id": "ep117", "topic": "5G ثورة الاتصال", "status": "queued", "category": "تكنولوجيا", "facts": ["سرعة تنزيل تصل لـ 10 Gbps", "تأخر(latency) يقلل لـ 1ms", "تمكن المدن الذكية والأجهزة المتصلة"]},
+  {"id": "ep118", "topic": "ستارلينك satelites", "status": "queued", "category": "تكنولوجيا", "facts": ["أكثر من 4000 قمر اصطناعي مدار", "توفير إنترنت عالمي", "غطاء إنترنت للمناطق النائية"]},
+  {"id": "ep119", "topic": "حوسبة الحافة", "status": "queued", "category": "تكنولوجيا", "facts": ["معالجة البيانات بالقرب من المصدر", "تقلل帯宽 usage", "تسرع response time للتطبيقات"]},
+  {"id": "ep120", "topic": "الحماية السيبرانية", "status": "queued", "category": "تكنولوجيا", "facts": ["اختراقات يومية للمؤسسات", "الحماية تتطور continually", "ن shortage of cybersecurity professionals"]},
+  {"id": "ep121", "topic": "شجرة الأمازون produce 20% الأكسجين", "status": "queued", "category": "طبيعة", "facts": ["غابة الأمازون تُعرف بـ lungs الأرض", "تُنتج 20% الأكسجين العالمي", "تحتوي على 400 مليار شجرة"]},
+  {"id": "ep122", "topic": "المحيطات تغطي 71% الأرض", "status": "queued", "category": "طبيعة", "facts": ["المحيطات تحتوي على 96.5% الماء", "70% الأكسجين يأتي من المحيطات", "أعمق نقطة 11km في Challenger Deep"]},
+  {"id": "ep123", "topic": "الجبال تنمو وتتفكك", "status": "queued", "category": "طبيعة", "facts": ["الهرمونات تنمو سمكتها سنويا", "الرياح والمطر تفتتها", "البعض يرتفع سمكته 1cm/year"]},
+  {"id": "ep124", "topic": "البراكين تخلق الأرض", "status": "queued", "category": "طبيعة", "facts": ["تُنشئ أرض جديدة lava", "يمكن رؤيتها من الفضاء", "تُفرغ كميات هائلة من الرماد"]},
+  {"id": "ep125", "topic": "الزلازل لا يمكن التنبؤ", "status": "queued", "category": "طبيعة", "facts": ["لا يمكن التنبؤ بموعد exactly", "يمكن توقع المناطق المعرضة", "تسجيل thousands daily worldwide"]},
+  {"id": "ep126", "topic": "المناخيتغير بسرعة", "status": "queued", "category": "طبيعة", "facts": ["أحر 10 سنوات في التاريخ كانت آخر 10 سنوات", "ذوبان الجليد يتسارع", "ظواهر مناخية متطرفة تزداد"]},
+  {"id": "ep127", "topic": "الكلى تُنقي الدم 40 مرة يومياً", "status": "queued", "category": "جسد إنساني", "facts": ["تُنقى 180 لتر من الدم يومياً", "تُعيد 99% الماء للجسم", "تُنتج 1-2 لتر بول"]},
+  {"id": "ep128", "topic": "الرئتان تستنشقا 11,000 لتر هواء", "status": "queued", "category": "جسد إنساني", "facts": ["في اليوم", "والمساحة الكلية akin to tennis court", "يدخل الأكسجين للدورة الدموية"]},
+  {"id": "ep129", "topic": "العظام تتجدد كل 10 سنوات", "status": "queued", "category": "جسد إنساني", "facts": ["كامل الإطار العظمي", "يتطلب كالسيوم وفيتامين D", "يتسارع في الشباب"]},
+  {"id": "ep130", "topic": "الجلد أكبر عضو", "status": "queued", "category": "جسد إنساني", "facts": ["مساحة 1.5-2 متر مربع", "يزن حوالي 3-4 kg", "يتجدد ذاتيEvery 28 day"]},
+  {"id": "ep131", "topic": "الأنف يشم 1 تريليون رائحة", "status": "queued", "category": "جسد إنساني", "facts": ["الباحثوناكتشفوا recently", "رائحة تذكرنا بالذكريات", "يمكن distinguishing between تريليونات"]},
+  {"id": "ep132", "topic": "اللسان has 10,000 براعم تذوق", "status": "queued", "category": "جسد إنساني", "facts": ["يمكن distinguishing sweet-sour-salty-bitter", "تجدد كل 10-14 day", "فقدان الشم يقلل التذوق"]},
+  {"id": "ep133", "topic": "مصر الفرعونية 3000 سنة", "status": "queued", "category": "تاريخ", "facts": ["واحد oldest civilizations", "البنايات لا تزال baffle engineers", "هieroglyphs decoded أخيراً"]},
+  {"id": "ep134", "topic": "و Ellis Island immigrants", "status": "queued", "category": "تاريخ", "facts": ["استقبل 12 million immigrants", "بوابة أمريكا 1892-1954", "كل American third generation immigrant"]},
+  {"id": "ep135", "topic": "العجلة اختراع Changed humanity", "status": "queued", "category": "تاريخ", "facts": ["ظهرت ~3500 BC", "تمكن التجارة والنقل", "لا يزال fundamental"]},
+  {"id": "ep136", "topic": "الطباعة Gutenberg", "status": "queued", "category": "تاريخ", "facts": ["حوالي 1440", "انتشرت المعرفة rapidamente", "نهضة وعصر الاستكشاف"]},
+  {"id": "ep137", "topic": "الديناصورات انقرضت 66 مليون سنة", "status": "queued", "category": "تاريخ", "facts": ["حدث impact asteroid", "اسم K-Pg boundary", "طيور Modern are descendants"]},
+  {"id": "ep138", "topic": "رحلة أبولو 11", "status": "queued", "category": "استكشاف فضائي", "facts": ["الهبوط على القمر 20 يوليو 1969", "نيل Armstrong first step", "14% Americans watched live"]},
+  {"id": "ep139", "topic": "محطة الفضاء الدولية", "status": "queued", "category": "استكشاف فضائي", "facts": ["تُغرق في مدار Low Earth Orbit", "شركاء 5 دول", "يمكن رؤيتها بالعين naked"]},
+  {"id": "ep140", "topic": "مارس له قنوات جافة", "status": "queued", "category": "استكشاف فضائي", "facts": ["روب Curiosity يستكشف", "كان له ماء سائل قديم", "هدف البشرية colonisation"]},
+  {"id": "ep141", "topic": "فيويجر 1 خارج النظام", "status": "queued", "category": "استكشاف فضائي", "facts": ["بعدت 23 billion km من الأرض", "تُرسِل بيانات حتى 2025", "تحتوي علىGolden Record"]},
+  {"id": "ep142", "topic": "بعثات المريخ القادمة", "status": "queued", "category": "استكشاف فضائي", "facts": ["Tianwen-1 من الصين", "Perseverance seeks life signs", "ببPlanetary regreso al Luna"]},
+  {"id": "ep143", "topic": "عدد فيبوناتشي في الطبيعة", "status": "queued", "category": "رياضيات", "facts": ["يتسلسل: 0,1,1,2,3,5,8,13...", "يظهر في بتلات الزهور والأصداف", "النسبة تقترب لـ 1.618 (phi)"]},
+  {"id": "ep144", "topic": "مفهوم الصفر اخترعه هنود", "status": "queued", "category": "رياضيات", "facts": ["لا وجود له في اليونان", "اختراع Indians around 5th century", "أساس النظام العددي الحديث"]},
+  {"id": "ep145", "topic": "لا نهاية لأعداد الأولية", "status": "queued", "category": "رياضيات", "facts": ["ثابت منذ Euclid 300 BC", "توزيعها irregular", "تُستخدم في التشفير"]},
+  {"id": "ep146", "topic": "معادلة فيرما Last Theorem", "status": "queued", "category": "رياضيات", "facts": ["منشور من قبل Andrew Wiles 1994", "بواسط 350 years", "a^n + b^n = c^n has no integer solutions"]},
+  {"id": "ep147", "topic": "أكثر اللغات انتشاراً", "status": "queued", "category": "لغات", "facts": ["الإنجليزية 1.5 Billion Speaker", "المندرين 1.1 Billion", "الإسبانية 550 Million"]},
+  {"id": "ep148", "topic": "كلمات اللغة العربية", "status": "queued", "category": "لغات", "facts": ["حوالي 12 million كلمة", "لغة ضاربة في العمق", "اسماعيل recognise في 26 دولة"]},
+  {"id": "ep149", "topic": "ترجمات شكسبير", "status": "queued", "category": "لغات", "facts": ["تُرجم لـ 100 لغة", "أكثر الأعمال theatrical انتشاراً", "تُؤدى حول العالم يومياً"]},
+  {"id": "ep150", "topic": "يمكنك سماع صوت الانشطار", "status": "queued", "category": "معلومات مثيرة", "facts": ["صوت الرصاصةSpeed ~340 m/s", "يمكن سماعه kilometre away", "الصدى helps location"]},
+  {"id": "ep151", "topic": "العناكب تُخيط أكثر من webs", "status": "queued", "category": "معلومات مثيرة", "facts": ["تُنتج الحرير بقوة تفوق الفولاذ", "يمكنها regeneration limbs", "تُوجد منذ 400 مليون سنة"]},
+  {"id": "ep152", "topic": "القمر يؤثر على النوم", "status": "queued", "category": "معلومات مثيرة", "facts": ["Studies show later bedtime", "أقل Duration durante full moon", "الغموض العلمي encore"]},
+  {"id": "ep153", "topic": "البرق درجات حرارة هائلة", "status": "queued", "category": "معلومات مثيرة", "facts": ["يمكن أن تصل 30,000 K", "أكثر سخونة من سطح الشمس", "تسبب نووي momentarily"]},
+  {"id": "ep154", "topic": "المطرح البحري oldestLiving", "status": "queued", "category": "معلومات مثيرة", "facts": ["يمكن أن تعيش 5,000 سنة", "توجد في أعماق海洋", "تنمو طبقات السنوية"]},
+  {"id": "ep155", "topic": "يمكن للبشر البقاء دون أكسجين", "status": "queued", "category": "معلومات مثيرة", "facts": ["التدريب الحرفي", "بعض البحارين تصل لـ 22 دقيقة", "تقنيات can enhance"]},
+  {"id": "ep156", "topic": "المigrate monarch butterflies", "status": "queued", "category": "معلومات مثيرة", "facts": ["ملكية monarch travels 3,000+ km", "تستغرق جيلين complete", "تهاجر من كندا للمكسيك"]},
+  {"id": "ep157", "topic": "يمكن للنحل reconnize humans", "status": "queued", "category": "معلومات مثيرة", "facts": ["يمكن differentiating between faces", "تُدرّب على تمييز colori", "تذكّر مواقع الأزهار"]},
+  {"id": "ep158", "topic": "البكتيريا موجودة في كل مكان", "status": "queued", "category": "معلومات مثيرة", "facts": ["أكثر من 38 trillion bacteria in body", "كثير منها مفيد", "مقاومة المضادات الحيوية concern"]},
+  {"id": "ep159", "topic": "يمكن للبرد تقوية المناعة", "status": "queued", "category": "معلومات مثيرة", "facts": ["التعرض لدرجات منخفضة", "يمكن تفعيل خلايا NK", "حمامات الماء البارد gaining popularity"]},
+  {"id": "ep160", "topic": "يمكن للثعابين الطيران", "status": "queued", "category": "معلومات مثيرة", "facts": ["تسطح الجسد", "تتحليق لمسافات 100m", "توجد في جنوب شرق آسيا"]},
+  {"id": "ep161", "topic": "الثعالب تتمكن من تقليد الأصوات", "status": "queued", "category": "معلومات مثيرة", "facts": ["تُقلد صراخ الطيور", "تُستخدم لجذب الانتباه", "ذكاء اجتماعي"]},
+  {"id": "ep162", "topic": "يمكن للنمل حمل 50 ضعف وزنه", "status": "queued", "category": "معلومات مثيرة", "facts": ["بعض الأنواع", "تعاون هائل"]},
+  {"id": "ep163", "topic": "يمكن للفيلة Remember", "status": "queued", "category": "معلومات مثيرة", "facts": ["الذكريات تمتد لعقود", "تزنRemembered humans"]},
+  {"id": "ep164", "topic": "يمكن للغربان استخدام الأدوات", "status": "queued", "category": "معلومات مثيرة", "facts": ["تصميم stick for tasks", "تخطيط للمستقبل"]},
+  {"id": "ep165", "topic": "يمكن للدلافين names", "status": "queued", "category": "معلومات مثيرة", "facts": ["اسم each dolphin"]},
+  {"id": "ep166", "topic": "يمكن للجرذان laugh", "status": "queued", "category": "معلومات مثيرة", "facts": ["above 50 kHz ultrasonic"]},
+  {"id": "ep167", "topic": "يمكن للخفاش navigate", "status": "queued", "category": "معلومات مثيرة", "facts": ["ب echolocation"]},
+  {"id": "ep168", "topic": "يمكن للسحالي regenerate tails", "status": "queued", "category": "معلومات مثيرة", "facts": ["May grow complete"]},
+  {"id": "ep169", "topic": "يمكن للدببة hibernation", "status": "queued", "category": "معلومات مثيرة", "facts": ["Reduced metabolic rate"]},
+  {"id": "ep170", "topic": "يمكن للزرافة الوصول أوراق الشجر", "status": "queued", "category": "معلومات مثيرة", "facts": ["Height 5.5m"]},
+  {"id": "ep171", "topic": "يمكن للنعام奔跑", "status": "queued", "category": "معلومات مثيرة", "facts": ["Speed 70 km/h"]},
+  {"id": "ep172", "topic": "يمكن للسلاحف العيش 150 سنة", "status": "queued", "category": "معلومات مثيرة", "facts": ["Some species"]},
+  {"id": "ep173", "topic": "يمكن للنمل الفلاحي", "status": "queued", "category": "معلومات مثيرة", "facts": ["Cultivated fungi"]},
+  {"id": "ep174", "topic": "يمكن للقنديل المحيطي glowing", "status": "queued", "category": "معلومات مثيرة", "facts": ["bioluminescence"]},
+  {"id": "ep175", "topic": "يمكن للديدان الأرضية aerate soil", "status": "queued", "category": "معلومات مثيرة", "facts": ["Improve fertility"]},
+  {"id": "ep176", "topic": "يمكن للعناكب consumption", "status": "queued", "category": "معلومات مثيرة", "facts": ["Eaten in some cultures"]},
+  {"id": "ep177", "topic": "يمكن للفطريات communicate", "status": "queued", "category": "معلومات مثيرة", "facts": ["via chemical signals"]},
+  {"id": "ep178", "topic": "يمكن للبكتيريا survive", "status": "queued", "category": "معلومات مثيرة", "facts": ["in extreme conditions"]},
+  {"id": "ep179", "topic": "يمكن للفيروسات mutate", "status": "queued", "category": "معلومات مثيرة", "facts": ["Very quickly"]},
+  {"id": "ep180", "topic": "يمكن للبراكين create", "status": "queued", "category": "معلومات مثيرة", "facts": ["new land masses"]},
+  {"id": "ep181", "topic": "يمكن للزلازل release", "status": "queued", "category": "معلومات مثيرة", "facts": ["enormous energy"]},
+  {"id": "ep182", "topic": "يمكن للثورات change", "status": "queued", "category": "معلومات مثيرة", "facts": ["history dramatically"]},
+  {"id": "ep183", "topic": "يمكن للاكتشافات advance", "status": "queued", "category": "معلومات مثيرة", "facts": ["human civilization"]},
+  {"id": "ep184", "topic": "يمكن للابتكations transform", "status": "queued", "category": "معلومات مثيرة", "facts": ["way we live"]},
+  {"id": "ep185", "topic": "يمكن للعلوم uncover", "status": "queued", "category": "معلومات مثيرة", "facts": ["mysteries of universe"]},
+  {"id": "ep186", "topic": "يمكن للتكنولوجيا improve", "status": "queued", "category": "معلومات مثيرة", "facts": ["quality of life"]},
+  {"id": "ep187", "topic": "يمكن للفنون inspire", "status": "queued", "category": "معلومات مثيرة", "facts": ["creativity emotion"]},
+  {"id": "ep188", "topic": "يمكن للرياضة unite", "status": "queued", "category": "معلومات مثيرة", "facts": ["people worldwide"]},
+  {"id": "ep189", "topic": "يمكن للتعليم empower", "status": "queued", "category": "معلومات مثيرة", "facts": ["individuals communities"]},
+  {"id": "ep190", "topic": "يمكن للسلام sustain", "status": "queued", "category": "معلومات مثيرة", "facts": ["long-term prosperity"]}
 ]

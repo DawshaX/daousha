@@ -41,41 +41,119 @@
 
 :root {
   --radius: 0.8rem;
-  --background: oklch(0.075 0.003 285);
+  --background: oklch(0.08 0.003 285);
   --foreground: oklch(0.94 0.004 285);
-  --card: oklch(0.105 0.005 285);
+  --card: oklch(0.11 0.005 285);
   --card-foreground: oklch(0.94 0.004 285);
-  --popover: oklch(0.105 0.005 285);
+  --popover: oklch(0.11 0.005 285);
   --popover-foreground: oklch(0.94 0.004 285);
-  --primary: oklch(0.64 0.22 25);
+  --primary: oklch(0.65 0.2 260); /* vivid violet */
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.16 0.006 285);
+  --secondary: oklch(0.15 0.006 285);
   --secondary-foreground: oklch(0.94 0.004 285);
   --muted: oklch(0.16 0.006 285);
   --muted-foreground: oklch(0.64 0.012 285);
-  --accent: oklch(0.16 0.006 285);
+  --accent: oklch(0.6 0.25 250); /* bright neon cyan/accent */
   --accent-foreground: oklch(0.96 0.004 285);
   --destructive: oklch(0.62 0.23 25);
   --border: oklch(0.22 0.006 285);
   --input: oklch(0.18 0.006 285);
-  --ring: oklch(0.64 0.22 25);
+  --ring: oklch(0.65 0.2 260);
   --sidebar: oklch(0.09 0.005 285);
   --sidebar-foreground: oklch(0.91 0.004 285);
-  --sidebar-primary: oklch(0.64 0.22 25);
+  --sidebar-primary: oklch(0.65 0.2 260);
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.15 0.007 285);
+  --sidebar-accent: oklch(0.55 0.25 240);
   --sidebar-accent-foreground: oklch(0.96 0.004 285);
   --sidebar-border: oklch(0.2 0.005 285);
-  --sidebar-ring: oklch(0.64 0.22 25);
+  --sidebar-ring: oklch(0.65 0.2 260);
 }
 
-* { border-color: var(--border); }
-html { background: #09090b; }
-body { min-width: 320px; background: #09090b; color: var(--foreground); font-family: var(--font-sans); }
-button, a { -webkit-tap-highlight-color: transparent; }
-button { transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease, border-color 160ms ease; }
-button:active { transform: scale(.98); }
-::selection { background: rgba(239,68,68,.36); color: white; }
+/* Custom neon color CSS variables */
+:root {
+  --neon-violet: #8a2be2;
+  --neon-cyan: #00ffff;
+  --neon-purple: #a900ff;
+  --neon-blue: #00d4ff;
+  --dark-bg: #0a0a15;
+  --card-bg: #121226;
+}
 
-.container { width: 100%; margin-inline: auto; padding-inline: 1rem; }
-@media (min-width: 640px) { .container { padding-inline: 1.5rem; } }
+/* Neon glow effects */
+@keyframes neon-glow {
+  0%, 100% { text-shadow: 0 0 5px var(--neon-violet), 0 0 10px var(--neon-violet), 0 0 15px var(--neon-violet); }
+  50% { text-shadow: 0 0 10px var(--neon-violet), 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan); }
+}
+
+@keyframes neon-pulse {
+  0%, 80% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* Utility classes for neon effects */
+.neon-violet {
+  text-shadow: 0 0 5px var(--neon-violet), 0 0 10px var(--neon-violet), 0 0 15px var(--neon-violet);
+}
+
+.neon-cyan {
+  text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan), 0 0 15px var(--neon-cyan);
+}
+
+.neon-purple {
+  text-shadow: 0 0 5px var(--neon-purple), 0 0 10px var(--neon-purple), 0 0 15px var(--neon-purple);
+}
+
+.glow-violet {
+  box-shadow: 0 0 15px rgba(139, 43, 240, 0.5), 0 0 30px rgba(139, 43, 240, 0.3);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), 0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+/* Pulse animation */
+.pulse-slow {
+  animation: neon-pulse 4s ease-in-out infinite;
+}
+
+/* Background pattern */
+.bg-pattern {
+  background-image: 
+    linear-gradient(135deg, rgba(139, 43, 240, 0.03) 1px, transparent 1px),
+    linear-gradient(45deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/* Custom scrollbar for Firefox */
+* {
+  scrollbar-width: var(--scrollbar-width, thin);
+  scrollbar-color: var(--border) var(--background);
+}
