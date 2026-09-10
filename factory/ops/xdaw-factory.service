@@ -1,0 +1,21 @@
+# XDAW NOVA FACTORY — systemd unit (تشغيل 24/7 على سيرفر لينكس)
+# التثبيت:
+#   sudo cp xdaw-factory.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now xdaw-factory
+[Unit]
+Description=XDAW NOVA Factory - hourly video engine
+After=network.target
+
+[Service]
+Type=simple
+User=xdaw
+WorkingDirectory=/opt/xdaw/daousha/factory
+ExecStart=/opt/xdaw/daousha/factory/.venv/bin/python -m pipeline.scheduler --every-minutes 60 --live
+Restart=always
+RestartSec=120
+Environment=FACTORY_DRY_RUN=false
+StandardOutput=append:/var/log/xdaw/factory.log
+StandardError=append:/var/log/xdaw/factory.log
+
+[Install]
+WantedBy=multi-user.target

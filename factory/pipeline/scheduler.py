@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""المرحلة 9 — ⏰ محرك الساعة: إنتاج → مخزون → نشر، كل ساعة، للأبد.
+
+مثال: python3 -m pipeline.scheduler --every-minutes 60 --live
+بدون --live: كل شيء محاكاة (إنتاج حقيقي + نشر وهمي).
+"""
+import argparse
+import time
+from datetime import datetime
+from . import load_config
+from . import topics as T
+from .make_episode import make_one
+from .vault import status as vault_status
+from .publish import run_once, load_pub_state, save_pub_state
+from . import telegram as tg
+
+CFG = load_config("factory")
+
+
+def production_burst(tts_provider: str, max_episodes: int = 3) -> list:
+    """ينتج دفعات حتى يمتلئ المخزون أو ينتهي البنك."""
+    made = []
+    for _ in range(max_episodes):
+        st = vault_status()
+        if st["healthy"]:
+            break
+        bank = T.load_bank()
+        fstate = T.load_state()
+        topic = T.next_topic(fstate, bank)
+        if not topic:
+            made.append({"skipped": "BANK_EMPTY_NEED_EXPANSION"})
+            break
+        for lang in CFG["factory"]["langs"]:
+            r = make_one(topic, lang, tts_provider)
+            made.append({"topic": topic["id"], "lang": lang, **r})
+            if not r.get("ok"):
+                break
+        else:
+            T.mark_consumed(fstate, topic["id"], topic.get("cat", "?"))
+            continue
+        break
+    return made
+
+
+def pick_rotation_platform() -> str:
+    st = load_pub_state()
+    rot = CFG["cadence"]["rotation"]
+    last = st.get("last_platform", rot[-1])
+    nxt = rot[(rot.index(last) + 1) % len(rot)]
+    st["last_platform"] = nxt
+    save_pub_state(st)
+    return nxt
+
+
+def cycle(live: bool, tts_provider: str, produce: int = 3) -> dict:
+    print(f"\n===== CYCLE {datetime.now().isoformat(timespec='minutes')} live={live} =====")
+    made = production_burst(tts_provider, produce)
+    print(f"produced: {sum(1 for m in made if m.get('ok'))} videos")
+    plat = pick_rotation_platform()
+    print(f"publishing to: {plat}")
+    pub = run_once([plat], live)
+    print(pub)
+    return {"made": made, "publish": pub, "vault": vault_status()}
+
+
+def main():
+    ap = argparse.ArgumentParser(description="XDAW NOVA scheduler")
+    ap.add_argument("--every-minutes", type=int, default=60)
+    ap.add_argument("--live", action="store_true")
+    ap.add_argument("--once", action="store_true", help="دورة واحدة ثم خروج (لـ cron)")
+    ap.add_argument("--tts-provider", default=None)
+    ap.add_argument("--produce", type=int, default=3)
+    a = ap.parse_args()
+    live = a.live
+    provider = a.tts_provider or CFG["production"]["tts_provider"]
+    tg.send_message(f"🏭 المصنع بدأ العمل (live={live}, every={a.every_minutes}min)")
+    while True:
+        try:
+            cycle(live, provider, a.produce)
+        except Exception as e:
+            tg.notify_alert(f"خطأ في الدورة: {type(e).__name__}: {e}"[:300])
+        if a.once:
+            break
+        time.sleep(a.every_minutes * 60)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,6 @@
+# XDAW NOVA FACTORY — بديل cron (إذا لم يتوفر systemd)
+# أضف عبر: crontab -e
+# الدورة كل ساعة (إنتاج + نشر بالتناوب)
+0 * * * * cd /opt/xdaw/daousha/factory && ./.venv/bin/python -m pipeline.scheduler --once --live >> /var/log/xdaw/factory.log 2>&1
+# تقرير المخزون يومياً 8 صباحاً بتوقيت القاهرة
+0 8 * * * cd /opt/xdaw/daousha/factory && ./.venv/bin/python -m pipeline.vault --status >> /var/log/xdaw/vault.log 2>&1

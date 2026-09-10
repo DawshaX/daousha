@@ -1,0 +1,98 @@
+{
+  "_comment": "XDAW NOVA FACTORY v2 — إعدادات التشغيل الرئيسية. كل المسارات نسبية لمجلد factory/",
+  "factory": {
+    "name": "XDAW NOVA FACTORY v2",
+    "owner": "Dawsha",
+    "timezone": "Africa/Cairo",
+    "langs": ["ar", "en"]
+  },
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "codec": "libx264",
+    "preset": "medium",
+    "crf": 20,
+    "audio_bitrate": "192k",
+    "min_seconds": 28,
+    "max_seconds": 60,
+    "target_seconds": 40,
+    "scenes": 4
+  },
+  "script_rules": {
+    "min_chars": 280,
+    "max_chars": 420,
+    "hook_max_seconds": 3,
+    "facts_count": 3,
+    "cta_ar": "تابع داوسها!",
+    "cta_en": "Follow XDAW NOVA!"
+  },
+  "cadence": {
+    "_comment": "النشر كل ساعة بالتناوب على المنصات = 6/يوم لكل منصة (آمن + يحقق طلب كل ساعة)",
+    "publish_every_minutes": 60,
+    "rotation": ["youtube", "instagram", "facebook", "tiktok"],
+    "inter_platform_gap_minutes": 12,
+    "per_platform_daily_cap": {
+      "youtube": 6,
+      "instagram": 6,
+      "facebook": 6,
+      "tiktok": 6
+    },
+    "cooldown_minutes": {
+      "youtube": 180,
+      "instagram": 240,
+      "facebook": 180,
+      "tiktok": 240
+    }
+  },
+  "ladder": {
+    "level": 1,
+    "levels": {
+      "1": {"per_platform_cap": 4, "promote_after_clean_days": 5},
+      "2": {"per_platform_cap": 6, "promote_after_clean_days": 10},
+      "3": {"per_platform_cap": 8, "promote_after_clean_days": 14},
+      "4": {"per_platform_cap": 12, "needs_owner_approval": true}
+    }
+  },
+  "production": {
+    "episodes_per_day_target": 30,
+    "visual_mode": "procedural",
+    "_visual_modes": "procedural (بلا حدود — PIL + هوية NOVA) | stock (Pexels API) | ai (توليد صور — محدود الحصة)",
+    "tts_provider": "edge",
+    "_tts_providers": "edge (مجاني — edge-tts) | elevenlabs (API key) | import (ملف wav جاهز)",
+    "voice_ar": "ar-EG-ShakiraNeural",
+    "voice_en": "en-US-GuyNeural",
+    "music_bed_db": -22
+  },
+  "vault": {
+    "_comment": "المخزون: النشر يسحب منه فقط — لا نشر مباشر من خط الإنتاج",
+    "min_stock_hours": 72,
+    "target_stock_days": 30,
+    "yearly_stock_goal": 8760,
+    "priority": "oldest_first"
+  },
+  "qc": {
+    "require_resolution": "1080x1920",
+    "require_min_seconds": 28,
+    "require_max_seconds": 60,
+    "require_audio": true,
+    "require_captions": true,
+    "require_watermark": true,
+    "max_lufs_deviation": 3
+  },
+  "safety": {
+    "max_consecutive_errors": 3,
+    "stop_on_ban_signal": true,
+    "dry_run_default": true,
+    "_comment": "dry_run=true تعني: النشر الحقيقي متوقف حتى يأمر دوشة صراحة"
+  },
+  "paths": {
+    "state": "state/factory_state.json",
+    "bank_seed": "topics/bank_seed.json",
+    "bank_full": "topics/bank_full.json",
+    "vault_dir": "vault/",
+    "vault_index": "vault/index.json",
+    "output_dir": "output/",
+    "brand_dir": "brand/"
+  }
+}

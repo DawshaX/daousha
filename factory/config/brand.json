@@ -1,0 +1,67 @@
+{
+  "_comment": "XDAW NOVA — الهوية البصرية الرسمية v2 (مستخرجة من الشعار والغلاف الجديد)",
+  "identity": {
+    "name_en": "XDAW NOVA",
+    "name_ar": "داوسها",
+    "tagline_ar": "نور • معرفة • رحمة • قوة مسؤولة",
+    "tagline_en": "LIGHT • KNOWLEDGE • MERCY • RESPONSIBLE STRENGTH",
+    "banner_variant_en": "LIGHT • KNOWLEDGE • COMPASSION"
+  },
+  "colors": {
+    "void_black": "#050505",
+    "carbon": "#0D0D12",
+    "nova_red": "#FF1E1E",
+    "crimson": "#B30000",
+    "ember": "#FF5A3C",
+    "gold": "#E8B34B",
+    "bone_white": "#F5F2EA",
+    "steel": "#9AA0AA"
+  },
+  "files": {
+    "_comment": "ضع الملفات الأصلية المرفوعة بهذه الأسماء داخل factory/brand/",
+    "avatar_skull": "brand/xdaw-nova-avatar-skull.png",
+    "banner_main": "brand/xdaw-nova-banner-main.png",
+    "banner_wide": "brand/xdaw-nova-banner-wide.png",
+    "watermark": "brand/xdaw-nova-watermark.png"
+  },
+  "video_style": {
+    "background": "void_black with subtle red circuit/nebula texture",
+    "scene_style_suffix": "cinematic dark sci-fi, deep black background, glowing red neon accents, volumetric light, ultra detailed, vertical 9:16 composition, no text, no watermark",
+    "caption": {
+      "font_ar": "Cairo-Bold",
+      "font_en": "Montserrat-ExtraBold",
+      "color": "bone_white",
+      "stroke": "void_black",
+      "stroke_width": 3,
+      "accent_bar": "nova_red",
+      "position": "lower_third_safe",
+      "max_chars_per_line": 22
+    },
+    "title_card": {
+      "layout": "skull emblem top, big white title, red neon underline, tagline bottom",
+      "duration_seconds": 1.5
+    },
+    "watermark": {
+      "text": "XDAW NOVA",
+      "position": "top_right",
+      "opacity": 0.85,
+      "with_skull": true
+    },
+    "intro_sting": {
+      "duration_seconds": 1.2,
+      "effect": "skull logo scales 1.3→1.0 with red glow pulse + whoosh"
+    },
+    "outro_cta": {
+      "duration_seconds": 2.0,
+      "text_ar": "تابع داوسها ⚡",
+      "text_en": "Follow XDAW NOVA ⚡",
+      "effect": "tagline fade-in over skull emblem"
+    }
+  },
+  "captions_platform": {
+    "hashtags_ar": ["داوسها", "حقائق", "علوم", "معرفة", "XDAWNOVA"],
+    "hashtags_en": ["facts", "science", "knowledge", "didyouknow", "XDAWNOVA"],
+    "caption_template_ar": "{title} 🧠\n\n{tagline_ar}\n\n#{tags}",
+    "caption_template_en": "{title} 🧠\n\n{tagline_en}\n\n#{tags}"
+  }
+}

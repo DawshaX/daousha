@@ -1,0 +1,18 @@
+# XDAW NOVA FACTORY v2 — dependencies
+# Core (required)
+requests>=2.31
+Pillow>=10.0
+arabic-reshaper>=3.0
+python-bidi>=0.5
+
+# ffmpeg static binary via pip (no sudo needed)
+imageio-ffmpeg>=0.5
+
+# TTS default provider (free, no key needed)
+edge-tts>=0.2.0
+
+# Optional: premium TTS
+# elevenlabs>=1.0
+
+# Dev / tests
+pytest>=8.0

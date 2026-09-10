@@ -1,0 +1,434 @@
+[
+  {
+    "id": "s01",
+    "cat": "body",
+    "topic_ar": "الدماغ يعمل على ثلث طاقته",
+    "topic_en": "Your brain runs on a third of its power",
+    "angle_ar": "3 حقائق صادمة عن الدماغ",
+    "angle_en": "3 shocking facts about your brain",
+    "facts_ar": [
+      "دماغك يستهلك 20% من طاقة جسمك وهو جالس لا يفعل شيئاً!",
+      "توجد في دماغك وصلات عصبية لو مددتها لالتفت حول الأرض 4 مرات!",
+      "دماغك ينتج طاقة كهربائية تكفي لإضاءة مصباح صغير!"
+    ],
+    "facts_en": [
+      "Your brain consumes 20% of your body's energy while doing nothing!",
+      "Your brain's neurons stretched out would wrap around Earth 4 times!",
+      "Your brain generates enough electricity to power a small light bulb!"
+    ]
+  },
+  {
+    "id": "s02",
+    "cat": "body",
+    "topic_ar": "القلب ينبض 100 ألف مرة يومياً",
+    "topic_en": "Your heart beats 100,000 times a day",
+    "angle_ar": "3 حقائق ستصدمك عن القلب",
+    "angle_en": "3 facts about your heart that will shock you",
+    "facts_ar": [
+      "قلبك يضخ 7500 لتر من الدم كل يوم دون توقف!",
+      "قلبك يملك نظامه الكهربائي الخاص ويواصل النبض خارج الجسم!",
+      "ضحكتك اليومية تحسن كفاءة قلبك مثل التمارين الخفيفة!"
+    ],
+    "facts_en": [
+      "Your heart pumps 7,500 liters of blood every single day!",
+      "Your heart has its own electrical system and beats outside the body!",
+      "Laughing daily improves your heart like light exercise!"
+    ]
+  },
+  {
+    "id": "s03",
+    "cat": "space",
+    "topic_ar": "الشمس تبتلع مليون أرض",
+    "topic_en": "The Sun swallows a million Earths",
+    "angle_ar": "3 حقائق صادمة عن شمسنا",
+    "angle_en": "3 shocking facts about our Sun",
+    "facts_ar": [
+      "تتسع الشمس لـ 1.3 مليون كوكب بحجم الأرض بداخلها!",
+      "ضوء الشمس الذي يدفئك الآن غادرها قبل 8 دقائق!",
+      "الشمس تفقد 4 ملايين طن من وزنها كل ثانية وتزداد إشراقاً!"
+    ],
+    "facts_en": [
+      "The Sun could fit 1.3 million Earths inside it!",
+      "The sunlight warming you left the Sun 8 minutes ago!",
+      "The Sun loses 4 million tons of weight every second!"
+    ]
+  },
+  {
+    "id": "s04",
+    "cat": "space",
+    "topic_ar": "القمر يهرب منا كل سنة",
+    "topic_en": "The Moon escapes us every year",
+    "angle_ar": "3 أسرار عن القمر لم تسمعها",
+    "angle_en": "3 Moon secrets you never heard",
+    "facts_ar": [
+      "القمر يبتعد عن الأرض 3.8 سنتيمتر كل سنة!",
+      "آثار أقدام رواد الفضاء على القمر ستبقى مليون سنة!",
+      "القمر ليس مضيئاً — إنه يعكس نور الشمس فقط!"
+    ],
+    "facts_en": [
+      "The Moon drifts 3.8 cm away from Earth every year!",
+      "Astronaut footprints on the Moon will last a million years!",
+      "The Moon gives no light — it only reflects the Sun!"
+    ]
+  },
+  {
+    "id": "s05",
+    "cat": "animals",
+    "topic_ar": "الأخطبوط يملك 3 قلوب",
+    "topic_en": "The octopus has 3 hearts",
+    "angle_ar": "3 حقائق مذهلة عن الأخطبوط",
+    "angle_en": "3 amazing facts about the octopus",
+    "facts_ar": [
+      "الأخطبوط يملك 3 قلوب ودمه أزرق اللون!",
+      "يتوقف قلبان من قلوبه عن النبض عندما يسبح!",
+      "الأخطبوط يحل الألغاز ويفتح البرطمانات من الداخل!"
+    ],
+    "facts_en": [
+      "The octopus has 3 hearts and blue blood!",
+      "Two of its hearts stop beating when it swims!",
+      "Octopuses solve puzzles and open jars from inside!"
+    ]
+  },
+  {
+    "id": "s06",
+    "cat": "animals",
+    "topic_ar": "النمل يزرع ويحلب الماشية",
+    "topic_en": "Ants farm and milk cattle",
+    "angle_ar": "3 حقائق صادمة عن عالم النمل",
+    "angle_en": "3 shocking facts about ants",
+    "facts_ar": [
+      "النمل يزرع الفطر في مزارع تحت الأرض منذ ملايين السنين!",
+      "بعض النمل يحلب حشرات المن كما نحلب الأبقار!",
+      "مستعمرة النمل الواحدة قد تضم ملايين الأفراد بجيش منظم!"
+    ],
+    "facts_en": [
+      "Ants have farmed fungus underground for millions of years!",
+      "Some ants milk aphids the way we milk cows!",
+      "One ant colony can hold millions with an organized army!"
+    ]
+  },
+  {
+    "id": "s07",
+    "cat": "earth",
+    "topic_ar": "المحيطات لم نكتشف 80% منها",
+    "topic_en": "We haven't explored 80% of oceans",
+    "angle_ar": "3 أسرار في أعماق المحيطات",
+    "angle_en": "3 secrets hiding in ocean depths",
+    "facts_ar": [
+      "اكتشف البشر أقل من 20% من المحيطات فقط!",
+      "خندق ماريانا أعمق من قمة إفرست لو قلبتها فيه!",
+      "توجد بحيرات وأنهار تجري في قاع المحيط نفسه!"
+    ],
+    "facts_en": [
+      "Humans have explored less than 20% of the oceans!",
+      "The Mariana Trench is deeper than Everest is tall!",
+      "Lakes and rivers flow on the ocean floor itself!"
+    ]
+  },
+  {
+    "id": "s08",
+    "cat": "earth",
+    "topic_ar": "البرق أحر من الشمس",
+    "topic_en": "Lightning is hotter than the Sun",
+    "angle_ar": "3 حقائق صادمة عن البرق",
+    "angle_en": "3 shocking facts about lightning",
+    "facts_ar": [
+      "صاعقة البرق أحر 5 مرات من سطح الشمس!",
+      "البرق يضرب كوكب الأرض 100 مرة في كل ثانية تمر!",
+      "الرعد هو صوت الهواء ينفجر من حرارة الصاعقة!"
+    ],
+    "facts_en": [
+      "A lightning bolt is 5 times hotter than the Sun's surface!",
+      "Lightning strikes Earth 100 times every second!",
+      "Thunder is the sound of air exploding from the heat!"
+    ]
+  },
+  {
+    "id": "s09",
+    "cat": "history",
+    "topic_ar": "أهرامات الجيزة كانت بيضاء لامعة",
+    "topic_en": "Giza pyramids were shiny white",
+    "angle_ar": "3 حقائق ستغير نظرتك للأهرامات",
+    "angle_en": "3 facts that change how you see pyramids",
+    "facts_ar": [
+      "الهرم الأكبر كان مغطى بالحجر الجيري الأبيض ويتلألأ كالمرآة!",
+      "بناة الأهرامات كانوا عمالاً مهرة يتقاضون أجوراً لا عبيداً!",
+      "دقة اتجاه الهرم للشمال الحقيقي تنافس أجهزة اليوم!"
+    ],
+    "facts_en": [
+      "The Great Pyramid was covered in white limestone and shone like a mirror!",
+      "Pyramid builders were paid skilled workers, not slaves!",
+      "The pyramid's alignment to true north rivals modern instruments!"
+    ]
+  },
+  {
+    "id": "s10",
+    "cat": "history",
+    "topic_ar": "مكتبة بغداد أنقذت العلم",
+    "topic_en": "Baghdad's library saved science",
+    "angle_ar": "3 اختراعات عربية غيّرت العالم",
+    "angle_en": "3 Arab inventions that changed the world",
+    "facts_ar": [
+      "الخوارزمي وضع علم الجبر الذي تعمل به كل هواتف اليوم!",
+      "ابن الهيثم أسس علم البصريات واخترع الكاميرا الأولى!",
+      "الأرقام التي تستخدمها يومياً اسمها الأرقام العربية!"
+    ],
+    "facts_en": [
+      "Al-Khwarizmi founded algebra powering every phone today!",
+      "Ibn al-Haytham founded optics and built the first camera!",
+      "The digits you use daily are called Arabic numerals!"
+    ]
+  },
+  {
+    "id": "s11",
+    "cat": "tech",
+    "topic_ar": "هاتفك أقوى من كمبيوتر ناسا 1969",
+    "topic_en": "Your phone beats NASA's 1969 computer",
+    "angle_ar": "3 حقائق صادمة عن هاتفك",
+    "angle_en": "3 shocking facts about your phone",
+    "facts_ar": [
+      "هاتفك أقوى بملايين المرات من كمبيوتر رحلة القمر!",
+      "أول هاتف محمول كان وزنه كيلو وسعره 4000 دولار!",
+      "تلمس شاشة هاتفك أكثر من 2500 مرة يومياً!"
+    ],
+    "facts_en": [
+      "Your phone is millions of times stronger than the Moon-landing computer!",
+      "The first mobile phone weighed a kilo and cost $4,000!",
+      "You touch your phone screen over 2,500 times a day!"
+    ]
+  },
+  {
+    "id": "s12",
+    "cat": "tech",
+    "topic_ar": "الذكاء الاصطناعي يتعلم كالأطفال",
+    "topic_en": "AI learns like children",
+    "angle_ar": "3 حقائق مدهشة عن الذكاء الاصطناعي",
+    "angle_en": "3 amazing facts about AI",
+    "facts_ar": [
+      "الذكاء الاصطناعي يتعلم من الأخطاء مثل طفل صغير!",
+      "أقوى النماذج قرأت مكتبات كاملة في أسابيع!",
+      "الذكاء الاصطناعي يكتشف أدوية جديدة في شهور بدل سنين!"
+    ],
+    "facts_en": [
+      "AI learns from mistakes just like a small child!",
+      "The strongest models read entire libraries in weeks!",
+      "AI discovers new medicines in months instead of years!"
+    ]
+  },
+  {
+    "id": "s13",
+    "cat": "mind",
+    "topic_ar": "ذاكرتك تكذب عليك",
+    "topic_en": "Your memory lies to you",
+    "angle_ar": "3 أكاذيب عن ذاكرتك",
+    "angle_en": "3 lies about your memory",
+    "facts_ar": [
+      "دماغك يخترع تفاصيل وهمية ويقنعك أنها حقيقية!",
+      "كل مرة تتذكر شيئاً أنت تعيد كتابته وتغيّره قليلاً!",
+      "الذكريات العاطفية القوية هي الأكثر عرضة للتحريف!"
+    ],
+    "facts_en": [
+      "Your brain invents fake details and convinces you they're real!",
+      "Every time you recall something, you rewrite and change it slightly!",
+      "Strong emotional memories are the most distorted of all!"
+    ]
+  },
+  {
+    "id": "s14",
+    "cat": "mind",
+    "topic_ar": "النوم يغسل دماغك",
+    "topic_en": "Sleep washes your brain",
+    "angle_ar": "3 اكتشافات عن دماغك النائم",
+    "angle_en": "3 discoveries about your sleeping brain",
+    "facts_ar": [
+      "أثناء النوم يغسل دماغك نفسه بسائل منظف حقيقي!",
+      "النوم العميق ينقل ذكريات اليوم إلى التخزين الدائم!",
+      "ليلة بلا نوم تضعف مناعتك مثل المرض تماماً!"
+    ],
+    "facts_en": [
+      "During sleep your brain literally washes itself with cleaning fluid!",
+      "Deep sleep moves today's memories into permanent storage!",
+      "One sleepless night weakens immunity just like illness!"
+    ]
+  },
+  {
+    "id": "s15",
+    "cat": "nature",
+    "topic_ar": "الأشجار تتحدث مع بعضها",
+    "topic_en": "Trees talk to each other",
+    "angle_ar": "3 أسرار عن الغابات ستدهشك",
+    "angle_en": "3 forest secrets that will amaze you",
+    "facts_ar": [
+      "الأشجار تتواصل عبر شبكة فطرية تحت الأرض كالإنترنت!",
+      "الشجرة الأم ترسل الغذاء لصغارها عبر الجذور!",
+      "الأشجار تحذر بعضها من الحشرات بإشارات كيميائية!"
+    ],
+    "facts_en": [
+      "Trees communicate through an underground fungal internet!",
+      "Mother trees send food to their babies through roots!",
+      "Trees warn each other about insects with chemical signals!"
+    ]
+  },
+  {
+    "id": "s16",
+    "cat": "nature",
+    "topic_ar": "النحل يرقص ليخبر رفاقه",
+    "topic_en": "Bees dance to guide friends",
+    "angle_ar": "3 أسرار عن نحل العسل",
+    "angle_en": "3 secrets about honeybees",
+    "facts_ar": [
+      "النحلة ترقص رقصة تحدد بها اتجاه الزهور ومسافتها!",
+      "لإنتاج كيلو عسل واحد يطير النحل مسافة حول الأرض 3 مرات!",
+      "ملكة النحل تضع 2000 بيضة كل يوم طوال حياتها!"
+    ],
+    "facts_en": [
+      "Bees dance to tell friends the direction and distance of flowers!",
+      "For one kilo of honey, bees fly 3 times around the Earth!",
+      "The queen bee lays 2,000 eggs every day of her life!"
+    ]
+  },
+  {
+    "id": "s17",
+    "cat": "universe",
+    "topic_ar": "الثقب الأسود يوقف الزمن",
+    "topic_en": "Black holes stop time",
+    "angle_ar": "3 حقائق مرعبة عن الثقوب السوداء",
+    "angle_en": "3 terrifying black hole facts",
+    "facts_ar": [
+      "داخل الثقب الأسود يتوقف الزمن تماماً كما نعرفه!",
+      "ثقب واحد قد تكون كتلته مليارات أضعاف الشمس!",
+      "أقرب ثقب أسود إلينا يبعد 1500 سنة ضوئية فقط!"
+    ],
+    "facts_en": [
+      "Inside a black hole, time itself stops completely!",
+      "One black hole can weigh billions of times more than the Sun!",
+      "The nearest black hole is only 1,500 light-years away!"
+    ]
+  },
+  {
+    "id": "s18",
+    "cat": "universe",
+    "topic_ar": "المادة المضادة أغلى شيء في الكون",
+    "topic_en": "Antimatter is the priciest thing ever",
+    "angle_ar": "3 حقائق صادمة عن المادة المضادة",
+    "angle_en": "3 shocking facts about antimatter",
+    "facts_ar": [
+      "جرام واحد من المادة المضادة يساوي تريليونات الدولارات!",
+      "ملعقة صغيرة منها قد تمد مدينة كاملة بالطاقة!",
+      "العلماء أنتجوا منها كمية أصغر من ذرة الغبار فقط!"
+    ],
+    "facts_en": [
+      "One gram of antimatter is worth trillions of dollars!",
+      "A spoonful could power an entire city!",
+      "Scientists have only made less than a dust speck of it!"
+    ]
+  },
+  {
+    "id": "s19",
+    "cat": "future",
+    "topic_ar": "مدن المستقبل تحت القباب",
+    "topic_en": "Future cities under domes",
+    "angle_ar": "3 حقائق صادمة عن عالم 2099",
+    "angle_en": "3 shocking facts about the year 2099",
+    "facts_ar": [
+      "مهندسون يخططون لمدن كاملة تحت قباب زجاجية عملاقة!",
+      "السيارات الطائرة بدأت تجاربها الحقيقية في عدة دول!",
+      "روبوتات المستشفى ستجري عمليات أدق من يد الجراح!"
+    ],
+    "facts_en": [
+      "Engineers plan entire cities under giant glass domes!",
+      "Flying cars have started real trials in several countries!",
+      "Hospital robots will operate more precisely than surgeons!"
+    ]
+  },
+  {
+    "id": "s20",
+    "cat": "future",
+    "topic_ar": "السفر للمريخ أقرب مما تظن",
+    "topic_en": "Mars travel is closer than you think",
+    "angle_ar": "3 حقائق عن رحلة البشر للمريخ",
+    "angle_en": "3 facts about humanity's Mars trip",
+    "facts_ar": [
+      "الرحلة للمريخ تستغرق 7 شهور فقط بتقنية اليوم!",
+      "رواد المريخ سيزرعون طعامهم داخل بيوت زجاجية!",
+      "يوم المريخ أطول من يوم الأرض بـ 37 دقيقة فقط!"
+    ],
+    "facts_en": [
+      "The trip to Mars takes only 7 months with today's tech!",
+      "Mars settlers will grow food inside glass domes!",
+      "A Mars day is only 37 minutes longer than Earth's!"
+    ]
+  },
+  {
+    "id": "s21",
+    "cat": "money",
+    "topic_ar": "الدولار لم يكن دائماً أخضر",
+    "topic_en": "The dollar wasn't always green",
+    "angle_ar": "3 أسرار عن المال ستدهشك",
+    "angle_en": "3 money secrets that will amaze you",
+    "facts_ar": [
+      "أول عملة ورقية في التاريخ ظهرت في الصين قبل 1000 سنة!",
+      "الملح كان عملة يتقاضى بها الجنود الرومان رواتبهم!",
+      "أغلى عملة معدنية بيعت بـ 18 مليون دولار!"
+    ],
+    "facts_en": [
+      "The first paper money appeared in China 1,000 years ago!",
+      "Salt was currency — Roman soldiers were paid in it!",
+      "The priciest coin ever sold for 18 million dollars!"
+    ]
+  },
+  {
+    "id": "s22",
+    "cat": "money",
+    "topic_ar": "الأغنياء يشترون الوقت لا الأشياء",
+    "topic_en": "The rich buy time, not things",
+    "angle_ar": "3 عادات مالية للأثرياء",
+    "angle_en": "3 money habits of the wealthy",
+    "facts_ar": [
+      "الأثرياء يدفعون المال لشراء وقتهم أولاً قبل أي شيء!",
+      "90% من الأثرياء يقرأون 30 دقيقة يومياً على الأقل!",
+      "أغلب المليونيرات يعيشون بأقل من دخلهم بكثير!"
+    ],
+    "facts_en": [
+      "The wealthy pay money to buy back their time first!",
+      "90% of the rich read at least 30 minutes daily!",
+      "Most millionaires live far below their income!"
+    ]
+  },
+  {
+    "id": "s23",
+    "cat": "sports",
+    "topic_ar": "كرة القدم لعبها الصينيون قديماً",
+    "topic_en": "The Chinese played football first",
+    "angle_ar": "3 حقائق عن أصل الرياضات",
+    "angle_en": "3 facts about sports origins",
+    "facts_ar": [
+      "كرة القدم بدأت في الصين قبل 2000 سنة باسم تسوجو!",
+      "الألعاب الأولمبية القديمة استمرت 12 قرناً متواصلة!",
+      "أسرع هدف في التاريخ سُجل بعد ثانيتين فقط!"
+    ],
+    "facts_en": [
+      "Football started in China 2,000 years ago as Cuju!",
+      "The ancient Olympics ran for 12 straight centuries!",
+      "The fastest goal in history was scored in 2 seconds!"
+    ]
+  },
+  {
+    "id": "s24",
+    "cat": "sports",
+    "topic_ar": "الشطرنج يحوي مباريات بعدد ذرات الكون",
+    "topic_en": "Chess holds more games than atoms",
+    "angle_ar": "3 حقائق صادمة عن الشطرنج",
+    "angle_en": "3 shocking facts about chess",
+    "facts_ar": [
+      "احتمالات مباريات الشطرنج أكثر من ذرات الكون المرئي!",
+      "أطول مباراة شطرنج استمرت 20 ساعة متواصلة!",
+      "الشطرنج يحرق 6000 سعرة حرارية في البطولات الكبرى!"
+    ],
+    "facts_en": [
+      "Possible chess games outnumber atoms in the visible universe!",
+      "The longest chess game lasted 20 straight hours!",
+      "Championship chess burns 6,000 calories a day!"
+    ]
+  }
+]

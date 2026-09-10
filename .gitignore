@@ -6,3 +6,15 @@ dist
 secrets.txt
 *.log
 attached_assets
+
+# XDAW NOVA FACTORY v2
+factory/.venv/
+factory/.env
+factory/state/
+factory/vault/*.mp4
+factory/vault/*.srt
+factory/vault/index.json
+factory/output/
+factory/brand/fonts/
+__pycache__/
+*.pyc
