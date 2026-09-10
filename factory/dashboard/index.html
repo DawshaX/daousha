@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🏭 مصنع XDAW NOVA — لوحة التحكم</title>
+<style>
+:root{--red:#FF1E1E;--gold:#E8B34B;--bg:#050505;--card:#0d0d12;--tx:#F5F2EA}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--tx);font-family:Segoe UI,Tahoma,sans-serif;margin:0;padding:16px}
+h1{color:#fff;border-bottom:2px solid var(--red);padding-bottom:8px;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+.card{background:var(--card);border:1px solid #2a2a30;border-radius:12px;padding:14px}
+.card b{font-size:28px;color:var(--gold)}.card small{color:#9AA0AA}
+.bar{height:10px;background:#222;border-radius:6px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#B30000,var(--red))}
+.vault{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.vitem{background:var(--card);border:1px solid #2a2a30;border-radius:12px;padding:10px}
+.vitem video{width:100%;border-radius:8px;max-height:300px;background:#000}
+.vitem p{font-size:13px;margin:6px 0;color:var(--gold)}
+button{background:var(--red);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-size:15px;cursor:pointer;margin:4px}
+button.ghost{background:#222}
+pre{background:#000;border:1px solid #2a2a30;border-radius:8px;padding:10px;font-size:12px;max-height:220px;overflow:auto;direction:ltr;text-align:left}
+.paused{color:var(--red);font-weight:bold}.run{color:#4ade80;font-weight:bold}
+</style>
+</head>
+<body>
+<h1>🏭 مصنع XDAW NOVA <span id="state"></span></h1>
+<div>
+<button id="pauseBtn" onclick="togglePause()">⏸ إيقاف مؤقت</button>
+<button class="ghost" onclick="load()">🔄 تحديث</button>
+<small id="time"></small>
+</div>
+<div class="grid">
+<div class="card">🎬 مخزون الخزنة<br><b id="stock">–</b> <small id="stockSub"></small><div class="bar"><i id="stockBar"></i></div></div>
+<div class="card">📚 البنك الجاهز<br><b id="bank">–</b> <small id="bankSub"></small></div>
+<div class="card">💓 آخر نبضة<br><b id="beat" style="font-size:16px">–</b><br><small id="beatSub"></small></div>
+<div class="card">🎯 هدف السنة<br><b id="goal">–</b><small>% من 8760</small><div class="bar"><i id="goalBar"></i></div></div>
+</div>
+<h2>🎞️ الخزنة (<span id="vcount">0</span>)</h2>
+<div class="vault" id="vault"></div>
+<h2>📜 السجل</h2>
+<pre id="log">...</pre>
+<script>
+let token=localStorage.getItem('dash_token')||'';
+async function api(p){const r=await fetch(p);return r.json()}
+async function load(){
+ const s=await api('/api/status');
+ document.getElementById('time').textContent='⏰ '+new Date(s.time).toLocaleString('ar-EG');
+ document.getElementById('state').innerHTML=s.paused?'<span class="paused">⏸ متوقف</span>':'<span class="run">● يعمل</span>';
+ document.getElementById('pauseBtn').textContent=s.paused?'▶ استئناف':'⏸ إيقاف مؤقت';
+ document.getElementById('stock').textContent=s.vault.ready_files;
+ document.getElementById('stockSub').textContent='/ 72 ساعة أمان';
+ document.getElementById('stockBar').style.width=Math.min(100,s.vault.ready_files/72*100)+'%';
+ document.getElementById('bank').textContent=s.bank.ready-s.bank.consumed;
+ document.getElementById('bankSub').textContent='متبق من '+s.bank.ready+' جاهز';
+ document.getElementById('beat').textContent=s.heartbeat.last_cycle||'—';
+ document.getElementById('beatSub').textContent=s.heartbeat.made_ok!=null?('أنتج: '+s.heartbeat.made_ok):'';
+ document.getElementById('goal').textContent=s.vault.progress_pct;
+ document.getElementById('goalBar').style.width=Math.min(100,s.vault.progress_pct)+'%';
+ const v=await api('/api/vault');
+ document.getElementById('vcount').textContent=v.entries.length;
+ document.getElementById('vault').innerHTML=v.entries.map(e=>
+  `<div class="vitem"><video controls preload="none" src="/video/${e.id}"></video><p>${e.id} — ${e.title}</p><small>${e.size_mb}MB • ${e.created_at.slice(0,16)}</small></div>`).join('');
+ const l=await api('/api/log');
+ document.getElementById('log').textContent=l.log.join('\n')||'(لا سجل بعد)';
+}
+async function togglePause(){
+ if(!token){token=prompt('رمز اللوحة:','dawsha')||'';localStorage.setItem('dash_token',token)}
+ const s=await api('/api/status');
+ await api('/api/control?token='+encodeURIComponent(token)+'&pause='+(s.paused?'0':'1'));
+ load();
+}
+load();setInterval(load,30000);
+</script>
+</body>
+</html>
