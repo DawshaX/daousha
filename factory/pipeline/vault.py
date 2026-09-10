@@ -28,7 +28,7 @@ def save_index(data: dict):
     idx.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
-def add(video: Path, srt: Path, script_json: Path, branded: bool = True) -> dict:
+def add(video: Path, srt: Path, script_json: Path, branded: bool = True, voice: str = "test") -> dict:
     vdir, _ = _paths()
     vdir.mkdir(parents=True, exist_ok=True)
     script = json.loads(Path(script_json).read_text(encoding="utf-8"))
@@ -43,7 +43,7 @@ def add(video: Path, srt: Path, script_json: Path, branded: bool = True) -> dict
         "title": script["title"], "caption": script["caption"],
         "video": str(dest_v), "srt": str(dest_s) if dest_s.exists() else None,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "branded": branded, "published": {},
+        "branded": branded, "voice": voice, "published": {},
     }
     data = load_index()
     data["entries"] = [e for e in data["entries"] if e["id"] != vid]
@@ -69,10 +69,12 @@ def status() -> dict:
 
 
 def next_for_platform(platform: str) -> dict | None:
-    """الأقدم أولاً من غير المنشور على هذه المنصة."""
+    """الأقدم أولاً من غير المنشور على هذه المنصة + بصوت الروح فقط."""
     data = load_index()
+    soul_only = CFG["vault"].get("require_soul_voice", True)
     cands = [e for e in sorted(data["entries"], key=lambda x: x["created_at"])
-             if platform not in e.get("published", {}) and Path(e["video"]).exists()]
+             if platform not in e.get("published", {}) and Path(e["video"]).exists()
+             and (e.get("voice") == "soul" or not soul_only)]
     return cands[0] if cands else None
 
 

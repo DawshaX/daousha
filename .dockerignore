@@ -1,0 +1,13 @@
+.git
+factory/.venv
+factory/.env
+factory/state
+factory/output
+factory/vault/*.mp4
+factory/vault/*.srt
+factory/vault/index.json
+factory/brand/fonts
+__pycache__
+*.pyc
+docs/episode*
+test_run

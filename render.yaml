@@ -1,0 +1,16 @@
+# Render Blueprint — نشر مجاني بضغطة واحدة
+services:
+  - type: web
+    name: xdaw-factory
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/status
+    envVars:
+      - key: FACTORY_DRY_RUN
+        value: "true"
+      - key: DASH_TOKEN
+        generateValue: true
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        value: "1890579200"

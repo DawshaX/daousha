@@ -42,7 +42,7 @@ def redub(entry_id: str, audio: Path) -> dict:
     qc = check(Path(rep["video"]), Path(rep["srt"]), branded=True)
     if not qc["pass"]:
         return {"ok": False, "error": f"QC:{qc['errors']}"}
-    entry = vault_add(Path(rep["video"]), Path(rep["srt"]), work / "script.json", branded=True)
+    entry = vault_add(Path(rep["video"]), Path(rep["srt"]), work / "script.json", branded=True, voice="soul")
     return {"ok": True, "entry": entry["id"], "duration": qc["duration"], "video": entry["video"]}
 
 

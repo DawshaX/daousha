@@ -60,7 +60,7 @@ async function load(){
  const v=await api('/api/vault');
  document.getElementById('vcount').textContent=v.entries.length;
  document.getElementById('vault').innerHTML=v.entries.map(e=>
-  `<div class="vitem"><video controls preload="none" src="/video/${e.id}"></video><p>${e.id} — ${e.title}</p><small>${e.size_mb}MB • ${e.created_at.slice(0,16)}</small></div>`).join('');
+  `<div class="vitem"><video controls preload="none" src="/video/${e.id}"></video><p>${e.voice=='soul'?'🎙️':'🔇'} ${e.id} — ${e.title}</p><small>${e.size_mb}MB • ${e.created_at.slice(0,16)}</small></div>`).join('');
  const l=await api('/api/log');
  document.getElementById('log').textContent=l.log.join('\n')||'(لا سجل بعد)';
 }

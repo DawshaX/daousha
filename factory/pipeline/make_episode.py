@@ -67,7 +67,7 @@ def make_one(topic: dict, lang: str, tts_provider: str) -> dict:
         return {"ok": False, "stage": "qc", "errors": qc["errors"]}
 
     # 7) مخزون
-    entry = vault_add(Path(rep["video"]), Path(rep["srt"]), sj, branded=True)
+    entry = vault_add(Path(rep["video"]), Path(rep["srt"]), sj, branded=True, voice="test")
     return {"ok": True, "entry": entry["id"], "duration": qc["duration"],
             "chars": script.chars, "video": entry["video"]}
 

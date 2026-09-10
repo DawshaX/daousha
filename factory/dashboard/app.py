@@ -96,7 +96,7 @@ def api_vault():
     out = []
     for e in sorted(load_index()["entries"], key=lambda x: x["created_at"], reverse=True):
         vp = Path(e["video"])
-        out.append({"id": e["id"], "title": e["title"], "created_at": e["created_at"],
+        out.append({"id": e["id"], "title": e["title"], "created_at": e["created_at"], "voice": e.get("voice", "?"),
                     "size_mb": round(vp.stat().st_size / 1e6, 1) if vp.exists() else 0})
     return {"entries": out}
 
