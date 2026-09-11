@@ -1,0 +1,78 @@
+name: NOVA — دورة ذاتية كل ساعة (إنتاج + نشر + متابعة)
+
+on:
+  schedule:
+    - cron: "7 * * * *"   # كل ساعة (دقيقة 7 — خارج زحف الذروة)
+  workflow_dispatch: {}    # تشغيل يدوي من تبويب Actions
+
+concurrency:
+  group: nova
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  nova:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      NOVA_AUTO_GIT: "1"
+      # ---- ضوابط النشر (غيّرها من Secrets لو حبيت) ----
+      NOVA_DAILY_CAP: ${{ secrets.NOVA_DAILY_CAP || '4' }}
+      NOVA_PLATFORM_GAP_H: ${{ secrets.NOVA_PLATFORM_GAP_H || '1' }}
+      NOVA_LANGS: ${{ secrets.NOVA_LANGS || 'ar' }}
+      NOVA_VOICE_AR: ${{ secrets.NOVA_VOICE_AR || 'ar-EG-SalmaNeural' }}
+      NOVA_VOICE_EN: ${{ secrets.NOVA_VOICE_EN || 'en-US-JennyNeural' }}
+      NOVA_TIKTOK_ENABLED: ${{ secrets.NOVA_TIKTOK_ENABLED || '0' }}
+      # ---- مفاتيح المنصات (كلها اختيارية) ----
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_REFRESH_TOKEN_FULL: ${{ secrets.YOUTUBE_REFRESH_TOKEN_FULL }}
+      YOUTUBE_REFRESH_TOKEN_OLD: ${{ secrets.YOUTUBE_REFRESH_TOKEN_OLD }}
+      FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+      FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+      FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+      INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+      INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      META_APP_ID: ${{ secrets.META_APP_ID }}
+      META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
+      FACEBOOK_LONG_LIVED_TOKEN: ${{ secrets.FACEBOOK_LONG_LIVED_TOKEN }}
+      LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL || 'llama-3.3-70b-versatile' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: تثبيت المكتبات
+        run: pip install -r requirements.txt
+
+      - name: صحة التوكنات والتجديد التلقائي
+        run: python scripts/renew_tokens.py
+
+      - name: الدورة الذاتية (إنتاج + نشر)
+        run: python -m nova.run_cycle
+
+      - name: تقرير ربط المنصات (تلجرام)
+        if: always()
+        run: python scripts/link_platforms.py
+
+      - name: رفع مخرجات الفيديو كـ Artifacts (7 أيام)
+        uses: actions/upload-artifact@v4
+        with:
+          name: episodes-${{ github.run_number }}
+          path: |
+            content/out/*.mp4
+            content/out/*.jpg
+          retention-days: 7
+          if-no-files-found: ignore

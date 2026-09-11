@@ -1,36 +1,25 @@
-name: Probe Secrets — فحص التوكنات
-on:
-  workflow_dispatch: {}
+name: probe
+"on":
+  workflow_dispatch:
 jobs:
-  probe:
+  p:
     runs-on: ubuntu-latest
     env:
-      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-      YOUTUBE_REFRESH_TOKEN_FULL: ${{ secrets.YOUTUBE_REFRESH_TOKEN_FULL }}
-      YOUTUBE_REFRESH_TOKEN_OLD: ${{ secrets.YOUTUBE_REFRESH_TOKEN_OLD }}
-      FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
-      FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      C: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      S: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      R1: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      R2: ${{ secrets.YOUTUBE_REFRESH_TOKEN_FULL }}
+      F1: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+      F2: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+      TG: ${{ secrets.TELEGRAM_BOT_TOKEN }}
     steps:
-      - name: فحص كل توكن
+      - shell: bash
         run: |
-          python3 - <<'PYEOF'
-          import json, os, urllib.request, urllib.parse
-          def api(url, data=None, headers=None):
-              req = urllib.request.Request(url, data=json.dumps(data).encode() if data else None,
-                                           headers=headers or {"Content-Type": "application/json"})
-              try:
-                  with urllib.request.urlopen(req, timeout=25) as r:
-                      return json.loads(r.read())
-              except urllib.error.HTTPError as e:
-                  try: return json.loads(e.read())
-                  except Exception: return {"error": str(e)}
-              except Exception as e:
-                  return {"error": str(e)}
-          L = []
-          cid = os.environ.get("YOUTUBE_CLIENT_ID","").strip()
-          csec = os.environ.get("YOUTUBE_CLIENT_SECRET","").strip()
+          R="${R1:-$R2}"; F="${F1:-$F2}"
+          TK=$(curl -s -d "client_id=$C&client_secret=$S&refresh_token=$R&grant_type=refresh_token" https://oauth2.googleapis.com/token)
+          echo "$TK" | grep -q access_token && echo "YOUTUBE 🟢 شغال" || echo "YOUTUBE 🔴 $(echo "$TK" | grep -o 'invalid_grant\|unauthorized_client\|deleted_client')"
+          FB=$(curl -s "https://graph.facebook.com/me?fields=name,fan_count,instagram_business_account&access_token=$F")
+          echo "$FB" | grep -q '"name"' && echo "FACEBOOK 🟢 $(echo "$FB" | grep -o '"name":"[^"]*"')" || echo "FACEBOOK 🔴 مرفوض"
+          echo "$FB" | grep -q instagram_business_account && echo "INSTAGRAM 🟢 مربوط" || echo "INSTAGRAM ⚪ مش مربوط بالصفحة"
+          M=$(curl -s "https://api.telegram.org/bot$TG/getMe")
+          echo "$M" | grep -q '"ok":true' && echo "TELEGRAM 🟢 شغال" || echo "TELEGRAM 🔴 غير صالح"

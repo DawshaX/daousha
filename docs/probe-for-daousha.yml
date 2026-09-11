@@ -1,0 +1,123 @@
+# ═══════════════════════════════════════════════════════════════
+# 🔍 مجس السكريتس — يكشف التوكنات الشغالة داخل مستودع daousha
+#
+# التركيب (دقيقتين):
+#   1. GitHub → DawshaX/daousha → تبويب Actions
+#   2. لو ظهر تنبيه → "I understand my workflows, go ahead"
+#   3. New workflow → set up a workflow yourself → امسح المحتوى والصق هذا الملف
+#   4. اسمه: probe.yml → Commit changes
+#   5. Actions → Probe Secrets → Run workflow
+#   6. بعد دقيقة: افتح سجل التشغيل للنتيجة + تصلك على تليجرام
+#
+# التوكنات لا تُطبع أبدًا — يظهر فقط: ✓ شغال / ✗ فاسد + أسماء الحسابات
+# ═══════════════════════════════════════════════════════════════
+name: Probe Secrets — فحص التوكنات المخزنة
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_REFRESH_TOKEN_FULL: ${{ secrets.YOUTUBE_REFRESH_TOKEN_FULL }}
+      YOUTUBE_REFRESH_TOKEN_OLD: ${{ secrets.YOUTUBE_REFRESH_TOKEN_OLD }}
+      FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+      FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+    steps:
+      - name: فحص كل توكن بدعوة حقيقية
+        run: |
+          python3 - <<'PYEOF'
+          import json, os, urllib.request, urllib.parse
+
+          def api(url, data=None, headers=None):
+              req = urllib.request.Request(url, data=json.dumps(data).encode() if data else None,
+                                           headers=headers or {"Content-Type": "application/json"})
+              try:
+                  with urllib.request.urlopen(req, timeout=25) as r:
+                      return json.loads(r.read())
+              except urllib.error.HTTPError as e:
+                  try: return json.loads(e.read())
+                  except Exception: return {"error": str(e)}
+              except Exception as e:
+                  return {"error": str(e)}
+
+          lines = []
+          # ---------- YouTube ----------
+          cid = os.environ.get("YOUTUBE_CLIENT_ID", "").strip()
+          csec = os.environ.get("YOUTUBE_CLIENT_SECRET", "").strip()
+          rt = (os.environ.get("YOUTUBE_REFRESH_TOKEN") or os.environ.get("YOUTUBE_REFRESH_TOKEN_FULL")
+                or os.environ.get("YOUTUBE_REFRESH_TOKEN_OLD") or "").strip()
+          rt_name = "YOUTUBE_REFRESH_TOKEN" if os.environ.get("YOUTUBE_REFRESH_TOKEN", "").strip() else \
+                    ("YOUTUBE_REFRESH_TOKEN_FULL" if os.environ.get("YOUTUBE_REFRESH_TOKEN_FULL", "").strip() else
+                     ("YOUTUBE_REFRESH_TOKEN_OLD" if os.environ.get("YOUTUBE_REFRESH_TOKEN_OLD", "").strip() else None))
+          if cid and csec and rt:
+              tk = api("https://oauth2.googleapis.com/token", {
+                  "client_id": cid, "client_secret": csec, "refresh_token": rt,
+                  "grant_type": "refresh_token"})
+              if tk.get("access_token"):
+                  ch = api("https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true",
+                           headers={"Authorization": f"Bearer {tk['access_token']}"})
+                  title = (ch.get("items") or [{}])[0].get("snippet", {}).get("title", "?")
+                  lines.append(f"🟢 YouTube شغال — قناة: {title} (سكرِت: {rt_name})")
+              else:
+                  lines.append(f"🔴 YouTube: التوكن مرفوض ({tk.get('error','?')}) — سكرِت: {rt_name}")
+          else:
+              missing = [n for n, v in [("CLIENT_ID", cid), ("CLIENT_SECRET", csec), ("REFRESH_TOKEN", rt)] if not v]
+              lines.append(f"⚪ YouTube: ناقص {missing}")
+          # ---------- Facebook ----------
+          fb = (os.environ.get("FACEBOOK_PAGE_ACCESS_TOKEN") or os.environ.get("FACEBOOK_PAGE_TOKEN") or "").strip()
+          if fb:
+              q = urllib.parse.urlencode({"fields": "name,fan_count,instagram_business_account",
+                                          "access_token": fb})
+              pg = api(f"https://graph.facebook.com/v23.0/1265727539958933?{q}")
+              if pg.get("name"):
+                  lines.append(f"🟢 Facebook شغال — صفحة: {pg['name']} ({pg.get('fan_count','?')} متابع)")
+                  ig = pg.get("instagram_business_account", {}).get("id")
+                  if ig:
+                      q2 = urllib.parse.urlencode({"fields": "username,followers_count", "access_token": fb})
+                      u = api(f"https://graph.facebook.com/v23.0/{ig}?{q2}")
+                      lines.append(f"🟢 Instagram شغال — @{u.get('username','?')} ({u.get('followers_count','?')} متابع) — ID: {ig}")
+                  else:
+                      lines.append("🟡 انستجرام غير مربوط بالصفحة — اربط @xdaw_nova Business من إعدادات الصفحة")
+              else:
+                  lines.append(f"🔴 Facebook: التوكن مرفوض — {json.dumps(pg.get('error',{}), ensure_ascii=False)[:90]}")
+          else:
+              lines.append("⚪ Facebook: لا توكن (FACEBOOK_PAGE_ACCESS_TOKEN)")
+          # ---------- Telegram ----------
+          tg = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+          chat = os.environ.get("TELEGRAM_CHAT_ID", "").strip() or "1890579200"
+          if tg:
+              me = api(f"https://api.telegram.org/bot{tg}/getMe")
+              if me.get("ok"):
+                  lines.append(f"🟢 Telegram شغال — بوت @{me['result']['username']}")
+                  # إرسال التقرير للمالك
+                  msg = "🔍 <b>تقرير سكريتس daousha</b>\n" + "\n".join(lines)
+                  api(f"https://api.telegram.org/bot{tg}/sendMessage",
+                      {"chat_id": chat, "text": msg, "parse_mode": "HTML"})
+              else:
+                  lines.append("🔴 Telegram: توكن غير صالح")
+          else:
+              lines.append("⚪ Telegram: لا توكن")
+          if os.environ.get("PEXELS_API_KEY", "").strip():
+              lines.append("🟢 Pexels موجود")
+          print("=" * 50)
+          for l in lines:
+              print(l)
+          print("=" * 50)
+          with open("probe_result.txt", "w", encoding="utf-8") as f:
+              f.write("\n".join(lines))
+          PYEOF
+
+      - name: حفظ النتيجة كـ Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: probe-result
+          path: probe_result.txt

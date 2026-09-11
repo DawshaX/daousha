@@ -1,0 +1,1969 @@
+[
+ {
+  "id": "ep1-done",
+  "topic": "الدماغ يعمل على ثلث طاقته فقط",
+  "angle": "3 حقائق صادمة عن الدماغ",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  }
+ },
+ {
+  "id": "ep2-done",
+  "topic": "القلب",
+  "angle": "3 حقائق ستصدمك عن القلب",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  }
+ },
+ {
+  "id": "ep3-done",
+  "topic": "العين تكذب عليك",
+  "angle": "3 حيل تخدع بها دماغك",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  }
+ },
+ {
+  "id": "ep4-done",
+  "topic": "أكاذيب الذاكرة",
+  "angle": "3 أكاذيب عن ذاكرتك",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  }
+ },
+ {
+  "id": "ep5",
+  "topic": "أسرار النوم",
+  "angle": "3 اكتشافات عن دماغك النائم",
+  "origin": "legacy",
+  "status": "partial",
+  "title_ar": "دماغك يستيقظ وأنت نائم! 3 اكتشافات صادمة عن النوم",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "دماغك يستيقظ حين تنام!"
+    },
+    {
+     "seg": "hook",
+     "text": "أثناء نومك، دماغك لا يرتاح إطلاقًا، بل يعمل بنشاط أدهش العلماء."
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: دماغك يشغّل غسالة داخلية تغسل خلاياه من السموم المتراكمة طوال اليوم."
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: أثناء الحلم، يتجمد جسمك كاملًا بحماية طبيعية تمنعك من تنفيذ أحلامك."
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: النوم القليل لا يضعف ذاكرتك فقط، بل يفتح الجوع على دماغك ويزيد وزنك!"
+    },
+    {
+     "seg": "outro",
+     "text": "تابع داوسها!"
+    }
+   ]
+  },
+  "published": {
+   "youtube": "https://www.youtube.com/watch?v=dXHrU4Nm11k"
+  },
+  "produced_at": "2026-09-10 18:09",
+  "video": [
+   "/home/user/xdaw-nova-final/content/out/ep5.mp4"
+  ],
+  "videos": {
+   "ar": "/home/user/xdaw-nova-final/content/out/ep5.mp4"
+  },
+  "covers": {
+   "ar": "/home/user/xdaw-nova-final/work/ep5/cover.png"
+  }
+ },
+ {
+  "id": "ep6",
+  "topic": "النوم والأحلام",
+  "angle": "لماذا نحلم؟ 3 أسرار علمية",
+  "origin": "legacy",
+  "status": "partial",
+  "published": {
+   "instagram": "(منشور على IG — النظام القديم)"
+  },
+  "title_ar": "أحلامك ليست عشوائية! 3 أسرار علمية ستصدمك",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "هل تعلم أن الحلم الذي رأيته الليلة ليس عشوائيًا؟"
+    },
+    {
+     "seg": "hook",
+     "text": "العلم اكتشف أن أحلامك تخفي أسرارًا مذهلة عن دماغك."
+    },
+    {
+     "seg": "fact1",
+     "text": "السر الأول: أحلامك وسيلة دماغك لتجربة مواقف خطرة بأمان كامل وأنت نائم!"
+    },
+    {
+     "seg": "fact2",
+     "text": "السر الثاني: أكثر من نصف أحلامك تكون سلبية، وأنت تنسى 95 بالمئة منها خلال دقائق!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والسر الثالث: عندما تحلم، يشل دماغك عضلاتك تمامًا حتى لا تمشي وأنت نائم!"
+    },
+    {
+     "seg": "outro",
+     "text": "أحلامك أذكى مما تتخيل."
+    },
+    {
+     "seg": "outro",
+     "text": "تابع داوسها!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep7",
+  "topic": "الجاذبية الأرضية",
+  "angle": "3 أشياء لا تعرفها عن الجاذبية",
+  "origin": "legacy",
+  "status": "produced",
+  "title_ar": "الجاذبية ليست قوة! 3 أسرار ستقلب فهمك رأسًا على عقب",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "هل تعلم أن الجاذبية التي تمسك بك الآن ليست قوة كما تتخيل؟"
+    },
+    {
+     "seg": "hook",
+     "text": "آينشتاين قلب فهمنا لها رأسًا على عقب."
+    },
+    {
+     "seg": "fact1",
+     "text": "السر الأول: الجاذبية في الحقيقة انحناء في نسيج الفضاء نفسه، والأرض تسبح في هذا الانحناء!"
+    },
+    {
+     "seg": "fact2",
+     "text": "السر الثاني: بدون الجاذبية ستذوب فقاعاتك في معدتك وتطفو عظامك وتفقد كتلة عضلاتك خلال أسابيع!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والسر الثالث: الجاذبية على سطح الشمس أقوى 28 مرة منها على الأرض — وزنك هناك سيكون أكثر من طنين!"
+    },
+    {
+     "seg": "outro",
+     "text": "العلم يواصل إدهاشك."
+    },
+    {
+     "seg": "outro",
+     "text": "تابع داوسها!"
+    }
+   ]
+  },
+  "produced_at": "2026-09-10 20:08",
+  "video": [
+   "/home/user/xdaw-nova-final/content/out/ep7.mp4"
+  ],
+  "videos": {
+   "ar": "/home/user/xdaw-nova-final/content/out/ep7.mp4"
+  },
+  "covers": {
+   "ar": "/home/user/xdaw-nova-final/work/ep7/cover.png"
+  }
+ },
+ {
+  "id": "ep8",
+  "topic": "المحيطات",
+  "angle": "3 أسرار لم يكتشفها البشر في أعماق المحيطات",
+  "origin": "legacy",
+  "status": "partial",
+  "published": {
+   "instagram": "(منشور على IG — النظام القديم)"
+  },
+  "title_ar": "المحيطات تخفي أسرارًا مرعبة! 3 حقائق لن تصدقها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "هل تعلم أننا استكشفنا من محيطاتنا أقل مما استكشفنا من القمر؟"
+    },
+    {
+     "seg": "hook",
+     "text": "أعماق البحار تخفي أسرارًا ستصدمك."
+    },
+    {
+     "seg": "fact1",
+     "text": "السر الأول: أكثر من 80 بالمئة من محيطاتنا لم يُكتشف بعد، وملايين الكائنات لم يرها بشر قط!"
+    },
+    {
+     "seg": "fact2",
+     "text": "السر الثاني: تحت الماء توجد أنهار وبحيرات كاملة بأرضية المحيط لا تختلط بمائه، ولها شواطئها الخاصة!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والسر الثالث: الضغط في أعمق نقطة على الأرض «خندق ماريانا» يعادل وضع 50 طائرة جامبو فوق رأسك!"
+    },
+    {
+     "seg": "outro",
+     "text": "المحيط لا يزال لغزًا عملاقًا."
+    },
+    {
+     "seg": "outro",
+     "text": "تابع داوسها!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep9",
+  "topic": "الفضاء والشمس",
+  "angle": "3 حقائق صادمة عن شمسنا",
+  "origin": "legacy",
+  "status": "partial",
+  "title_ar": "شمسنا ليست ما تظن! 3 حقائق صادمة ستغير نظرتك إليها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "هل تعلم أن شمسك تختفي أمامك كل يوم وأنت لا تشعر؟"
+    },
+    {
+     "seg": "hook",
+     "text": "شمسنا تخفي أسرارًا صادمة."
+    },
+    {
+     "seg": "fact1",
+     "text": "السر الأول: الشمس ليست كرة صلبة، بل محيط من البلازما يغلي عند 15 مليون درجة في قلبه!"
+    },
+    {
+     "seg": "fact2",
+     "text": "السر الثاني: ضوء الشمس الذي تراه الآن غادر قلبها قبل أكثر من 100 ألف عام، لكنه وصلك في 8 دقائق فقط!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والسر الثالث: كل ثانية تُفقد من كتلة الشمس 4 ملايين طن تتحول إلى طاقة تضيء كوكبنا كله!"
+    },
+    {
+     "seg": "outro",
+     "text": "شمسنا محرك كوني لا ينام."
+    },
+    {
+     "seg": "outro",
+     "text": "تابع داوسها!"
+    }
+   ]
+  },
+  "produced_at": "2026-09-10 19:57",
+  "video": [
+   "/home/user/xdaw-nova-final/content/out/ep9.mp4"
+  ],
+  "videos": {
+   "ar": "/home/user/xdaw-nova-final/content/out/ep9.mp4"
+  },
+  "covers": {
+   "ar": "/home/user/xdaw-nova-final/work/ep9/cover.png"
+  },
+  "published": {
+   "youtube": "https://www.youtube.com/watch?v=DOWVLdLwrWk"
+  }
+ },
+ {
+  "id": "ep10",
+  "topic": "DNA",
+  "angle": "3 أسرار في حمضك النووي ستدهشك",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "داخل جسمك شيفرة كونية! 3 أسرار في حمضك النووي ستدهشك",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "هل تعلم أن داخل كل خلية في جسمك مكتبة ضخمة وأنت لا تشعر؟"
+    },
+    {
+     "seg": "hook",
+     "text": "جسمك يخفي أسرارًا صادمة."
+    },
+    {
+     "seg": "fact1",
+     "text": "السر الأول: لو مددت حمضك النووي كله، وصل طوله من الأرض إلى الشمس ثم عاد إليك أكثر من 400 مرة!"
+    },
+    {
+     "seg": "fact2",
+     "text": "السر الثاني: تشارك البشر جميعًا 99.9% من حمضهم النووي، فأنت وأقرب صديق لك كادتان تكونان نسخة واحدة!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والسر الثالث: في جيناتك شرائح وراثية قديمة تركها لك أسلاف بشر انقرضوا منذ عشرات الآلاف من السنين!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت كتاب مفتوح لم تقرأ صفحاته بعد."
+    },
+    {
+     "seg": "outro",
+     "text": "تابع داوسها!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep11",
+  "topic": "النمل",
+  "angle": "3 حقائق مذهلة عن عالم النمل",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "تحت قدميك إمبراطورية كاملة! 3 حقائق صادمة عن عالم النمل",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "تظن أنك تسير وحيدًا على الأرض؟ تحت قدميك إمبراطورية تحكم كوكبنا منذ ملايين السنين!"
+    },
+    {
+     "seg": "fact1",
+     "text": "السر الأول: على سطح الأرض عشرين كوادريليون نملة، أي 2.5 مليون نملة لكل إنسان على هذا الكوكب!"
+    },
+    {
+     "seg": "fact2",
+     "text": "السر الثاني: النملة الواحدة ترفع خمسين ضعف وزنها، ولو كنت أنت بهذه القوة لحملت سيارة كاملة بيد واحدة!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والسر الثالث: مجموع وزن النمل على الأرض يقارب مجموع وزن البشر جميعًا، رغم أنها أخف منك بملايين المرات!"
+    },
+    {
+     "seg": "outro",
+     "text": "إمبراطورية صامتة أقوى من أي جيش."
+    },
+    {
+     "seg": "outro",
+     "text": "تابع داوسها!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep12",
+  "topic": "الوقت",
+  "angle": "3 مفارقات غريبة عن الوقت",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "الوقت لا يتقدم بالتساوي! 3 مفارقات غريبة",
+  "title_en": "Time doesn't flow equally! 3 strange paradoxes",
+  "hook_ar": "توقف عن الاعتقاد أن الساعة تقول الحقيقة!",
+  "hook_en": "Stop believing your clock tells the truth!",
+  "facts_ar": [
+   "الزمن يمشي أسرع فوق جبال الهيمالايا منه عند سطح البحر — الجاذبية تبطئ الوقت فعليًا!",
+   "داخل أسرع مرصد لاسيرن، الفوتونات تعبر مسافة 30 كم في 1000 من الثانية — أنت الآن ترى الماضي دائمًا!",
+   "لو سافرت سفينتك بسرعة قريبة من الضوء عشر سنوات، قد تعود لتجد الأرض قد مضى عليها قرن كامل!"
+  ],
+  "facts_en": [
+   "Time runs faster on top of the Himalayas than at sea level — gravity literally slows time!",
+   "Inside the fastest laser observatory, photons cross 30 km in a thousandth of a second — you always see the past!",
+   "If your ship traveled near light speed for 10 years, you could return to an Earth that aged a century!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "clock time abstract",
+   "mountain summit clouds",
+   "laser light tunnel",
+   "spaceship warp speed"
+  ],
+  "tags": "الوقت, الزمن, النسبية, علوم, داوسها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "توقف عن الاعتقاد أن الساعة تقول الحقيقة!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الزمن يمشي أسرع فوق جبال الهيمالايا منه عند سطح البحر — الجاذبية تبطئ الوقت فعليًا!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: داخل أسرع مرصد لاسيرن، الفوتونات تعبر مسافة 30 كم في 1000 من الثانية — أنت الآن ترى الماضي دائمًا!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: لو سافرت سفينتك بسرعة قريبة من الضوء عشر سنوات، قد تعود لتجد الأرض قد مضى عليها قرن كامل!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Stop believing your clock tells the truth!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Time runs faster on top of the Himalayas than at sea level — gravity literally slows time!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Inside the fastest laser observatory, photons cross 30 km in a thousandth of a second — you always see the past!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: If your ship traveled near light speed for 10 years, you could return to an Earth that aged a century!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep13",
+  "topic": "اللغة العربية",
+  "angle": "3 حقائق عن أقوى لغة في التاريخ",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "اللغة العربية! 3 حقائق عن أقوى لغة في التاريخ",
+  "title_en": "The Arabic language! 3 facts about history's most powerful tongue",
+  "hook_ar": "لغتك الأم أغنى مما تتخيل — الص笛 sedد أنك لا تعرف!",
+  "hook_en": "Your mother tongue is richer than you imagine!",
+  "facts_ar": [
+   "جذر ع-ل-م واحد يفرّع أكثر من 300 كلمة: علم، عالم، علامة، معلومة، تعليم، أعلم، عالة!",
+   "الشعر الجاهلي محفوظ في الذاكرة الشفوية قرونًا قبل التدوين — ولم تتغير حروفه حتى اليوم!",
+   "علم النحو وُضع لحفظ الفصحى من اللحن عندما اختلطت الأمم بعد الفتوح — بدافع حماية فهم القرآن!"
+  ],
+  "facts_en": [
+   "One Arabic root AIN-LAM-MAM branches into 300+ words: knowledge, scientist, sign, information, teaching!",
+   "Pre-Islamic poetry was preserved orally for centuries — its letters unchanged until today!",
+   "Arabic grammar was invented to protect classical pronunciation when nations mixed after the conquests!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "arabic calligraphy",
+   "ancient manuscript book",
+   "desert caravan stars",
+   "library old books"
+  ],
+  "tags": "اللغة العربية, نحو, تاريخ, داوسها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "لغتك الأم أغنى مما تتخيل — الص笛 sedد أنك لا تعرف!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: جذر ع-ل-م واحد يفرّع أكثر من 300 كلمة: علم، عالم، علامة، معلومة، تعليم، أعلم، عالة!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: الشعر الجاهلي محفوظ في الذاكرة الشفوية قرونًا قبل التدوين — ولم تتغير حروفه حتى اليوم!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: علم النحو وُضع لحفظ الفصحى من اللحن عندما اختلطت الأمم بعد الفتوح — بدافع حماية فهم القرآن!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Your mother tongue is richer than you imagine!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: One Arabic root AIN-LAM-MAM branches into 300+ words: knowledge, scientist, sign, information, teaching!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Pre-Islamic poetry was preserved orally for centuries — its letters unchanged until today!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Arabic grammar was invented to protect classical pronunciation when nations mixed after the conquests!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep14",
+  "topic": "القطط",
+  "angle": "3 أسرار عن أذكى حيوان أليف",
+  "origin": "legacy",
+  "status": "partial",
+  "published": {
+   "instagram": "(منشور على IG — النظام القديم)"
+  }
+ },
+ {
+  "id": "ep15",
+  "topic": "التاريخ الإسلامي",
+  "angle": "3 اختراعات إسلامية غيّرت العالم",
+  "origin": "legacy",
+  "status": "partial",
+  "published": {
+   "instagram": "https://www.instagram.com/reel/DcKnOPslFoe/"
+  }
+ },
+ {
+  "id": "ep16",
+  "topic": "الماء",
+  "angle": "3 حقائق غريبة عن الماء لا تعرفها",
+  "origin": "legacy",
+  "status": "partial",
+  "published": {
+   "instagram": "(منشور على IG — النظام القديم)"
+  }
+ },
+ {
+  "id": "ep17",
+  "topic": "النحل",
+  "angle": "3 أسرار عن نحل العسل ستدهشك",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "نحل العسل! 3 أسرار ستدهشك",
+  "title_en": "Honeybees! 3 secrets that will amaze you",
+  "hook_ar": "ملعقة العسل اللي في بيتك وراها معجزة!",
+  "hook_en": "The spoon of honey in your kitchen hides a miracle!",
+  "facts_ar": [
+   "النحلة تعمل طول عمرها لتحصل على ملعقة عسل واحدة للخلية — تعب في صمت يحلا لك!",
+   "النحل يرقص على القرص الشمعي بلغة حقيقية تخبر رفيقه اتجاه الغذاء والمسافة بالضبط!",
+   "لو اختفى النحل، تخسر البشرية ثلث غذائها — معظم الفواكه والخضار تحتاج التلقيح!"
+  ],
+  "facts_en": [
+   "A worker bee spends its whole life to make one spoonful of honey for the hive!",
+   "Bees dance on the honeycomb in a real language: direction and distance of food, exactly!",
+   "If bees vanished, humanity loses a third of its food — most fruits and vegetables need pollination!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "honeybee macro flower",
+   "beehive honeycomb",
+   "bee dance swarm",
+   "honey jar golden"
+  ],
+  "tags": "النحل, عسل, طبيعة, داوسها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "ملعقة العسل اللي في بيتك وراها معجزة!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: النحلة تعمل طول عمرها لتحصل على ملعقة عسل واحدة للخلية — تعب في صمت يحلا لك!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: النحل يرقص على القرص الشمعي بلغة حقيقية تخبر رفيقه اتجاه الغذاء والمسافة بالضبط!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: لو اختفى النحل، تخسر البشرية ثلث غذائها — معظم الفواكه والخضار تحتاج التلقيح!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The spoon of honey in your kitchen hides a miracle!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: A worker bee spends its whole life to make one spoonful of honey for the hive!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Bees dance on the honeycomb in a real language: direction and distance of food, exactly!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: If bees vanished, humanity loses a third of its food — most fruits and vegetables need pollination!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep18",
+  "topic": "الحديد في جسمك",
+  "angle": "3 حقائق صادمة عن جسمك",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "الحديد في جسمك! 3 حقائق صادمة",
+  "title_en": "The iron in your body! 3 shocking facts",
+  "hook_ar": "في جسمك معدن يصنع منه السيوف — جاد!",
+  "hook_en": "Your body contains the metal that swords are made of!",
+  "facts_ar": [
+   "في دمك نحو 4 جرامات حديد — تكفي لصنع مسمار صغير، وبدونه تختنق خلاياك!",
+   "الحديد في دمك جاء من انفجار نجوم قديمة قبل مليارات السنين — أنت من غبار النجوم حرفيًا!",
+   "جسمك يفقد حديدًا يوميًا ولا يملك مخرجًا له — لذلك الغذاء المتوازن ليس رفاهية!"
+  ],
+  "facts_en": [
+   "Your blood holds about 4 grams of iron — enough for a tiny nail; without it your cells suffocate!",
+   "The iron in your blood was forged in ancient exploding stars — you are literally stardust!",
+   "You lose iron daily and cannot excrete the excess — balanced food is not a luxury!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "red blood cells macro",
+   "forging iron sparks",
+   "supernova star explosion",
+   "healthy food vegetables"
+  ],
+  "tags": "جسم الإنسان, حديد, صحة, داوسها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "في جسمك معدن يصنع منه السيوف — جاد!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: في دمك نحو 4 جرامات حديد — تكفي لصنع مسمار صغير، وبدونه تختنق خلاياك!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: الحديد في دمك جاء من انفجار نجوم قديمة قبل مليارات السنين — أنت من غبار النجوم حرفيًا!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: جسمك يفقد حديدًا يوميًا ولا يملك مخرجًا له — لذلك الغذاء المتوازن ليس رفاهية!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Your body contains the metal that swords are made of!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Your blood holds about 4 grams of iron — enough for a tiny nail; without it your cells suffocate!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: The iron in your blood was forged in ancient exploding stars — you are literally stardust!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: You lose iron daily and cannot excrete the excess — balanced food is not a luxury!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep19",
+  "topic": "القمر",
+  "angle": "3 أسرار عن القمر لم تسمعها",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "القمر! 3 أسرار لم تسمعها",
+  "title_en": "The Moon! 3 secrets you never heard",
+  "hook_ar": "تراه كل ليلة و لا تعرف عنه نصف الحقيقة!",
+  "hook_en": "You see it every night and know half the truth!",
+  "facts_ar": [
+   "القمر يبتعد عن الأرض 3.8 سم كل سنة — بعد ملايين السنين سيصبح الكسوف مستحيلًا!",
+   "بصمة قدمك على القمر ستبقى ملايين السنين — لا رياح ولا مطر يمحوها!",
+   "بدون القمر لاختل محور الأرض فقفزت الفصول فوضى، ولم يظهر الحياة المعقدة كما نعرفها!"
+  ],
+  "facts_en": [
+   "The Moon drifts 3.8 cm away from Earth every year — eclipses will one day be impossible!",
+   "Your footprint on the Moon lasts millions of years — no wind or rain to erase it!",
+   "Without the Moon, Earth's axis would wobble chaotically and complex life might never exist!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "full moon night sky",
+   "astronaut moon footprints",
+   "earth from moon",
+   "lunar craters"
+  ],
+  "tags": "القمر, فضاء, علوم, داوسها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "تراه كل ليلة و لا تعرف عنه نصف الحقيقة!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: القمر يبتعد عن الأرض 3.8 سم كل سنة — بعد ملايين السنين سيصبح الكسوف مستحيلًا!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: بصمة قدمك على القمر ستبقى ملايين السنين — لا رياح ولا مطر يمحوها!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: بدون القمر لاختل محور الأرض فقفزت الفصول فوضى، ولم يظهر الحياة المعقدة كما نعرفها!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "You see it every night and know half the truth!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: The Moon drifts 3.8 cm away from Earth every year — eclipses will one day be impossible!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Your footprint on the Moon lasts millions of years — no wind or rain to erase it!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Without the Moon, Earth's axis would wobble chaotically and complex life might never exist!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep20",
+  "topic": "الصوت",
+  "angle": "3 حقائق عن الصوت ستندهش لها",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "الصوت! 3 حقائق ستندهش لها",
+  "title_en": "Sound! 3 mind-blowing facts",
+  "hook_ar": "في الفضاء يوجد صوت — لكن أذنك لا تسمعه!",
+  "hook_en": "Space has sound — your ears just can't hear it!",
+  "facts_ar": [
+   "في الفضاء يوجد صوت فعليًا — موجات ضغط هائلة في عناقيد المجرات لكن ترددها أخفض من سماع الإنسان بملايين المرات!",
+   "صوت مدفع أطلق عام 1746 سُمع على بعد 200 كم وصولًا — الهواء يحمل الأسرار بعيدًا!",
+   "أذنك لا تتوقف أبدًا حتى في نومك — دماغك فقط يخفض الصوت حتى لا تستيقظ!"
+  ],
+  "facts_en": [
+   "Space actually has sound — massive pressure waves in galaxy clusters, millions of octaves too low to hear!",
+   "A cannon fired in 1746 was heard 200 km away — air carries secrets far!",
+   "Your ears never switch off, even in sleep — your brain just turns the volume down!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "sound wave visualization",
+   "speaker vibration macro",
+   "starry galaxy cluster",
+   "person sleeping quiet"
+  ],
+  "tags": "الصوت, فيزياء, علوم, داوسها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "في الفضاء يوجد صوت — لكن أذنك لا تسمعه!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: في الفضاء يوجد صوت فعليًا — موجات ضغط هائلة في عناقيد المجرات لكن ترددها أخفض من سماع الإنسان بملايين المرات!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: صوت مدفع أطلق عام 1746 سُمع على بعد 200 كم وصولًا — الهواء يحمل الأسرار بعيدًا!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: أذنك لا تتوقف أبدًا حتى في نومك — دماغك فقط يخفض الصوت حتى لا تستيقظ!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Space has sound — your ears just can't hear it!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Space actually has sound — massive pressure waves in galaxy clusters, millions of octaves too low to hear!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: A cannon fired in 1746 was heard 200 km away — air carries secrets far!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Your ears never switch off, even in sleep — your brain just turns the volume down!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep21",
+  "topic": "البرق",
+  "angle": "3 حقائق صادمة عن البرق",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "البرق! 3 حقائق صادمة",
+  "title_en": "Lightning! 3 shocking facts",
+  "hook_ar": "سماء فوقك تخبئ أسلحة أحر من الشمس!",
+  "hook_en": "The sky above you hides weapons hotter than the sun!",
+  "facts_ar": [
+   "حرارة البرق تصل 30 ألف درجة — أحر من سطح الشمس خمس مرات!",
+   "البرق يضرب الأرض نحو 100 مرة كل ثانية — وأنت بين الضربات الآن!",
+   "الرعد يسبقه ضوء البرق لا لأن الصوت جاء بعده، بل لأن الضوء أسرع منه 880 ألف مرة!"
+  ],
+  "facts_en": [
+   "Lightning reaches 30,000°C — five times hotter than the sun's surface!",
+   "Lightning strikes Earth about 100 times every second — you are between strikes right now!",
+   "Thunder lags the flash not because sound came later, but light is 880,000 times faster!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "lightning storm night",
+   "thundercloud timelapse",
+   "city storm dramatic sky",
+   "electric spark dark"
+  ],
+  "tags": "البرق, طبيعة, علوم, داوسها",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "سماء فوقك تخبئ أسلحة أحر من الشمس!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: حرارة البرق تصل 30 ألف درجة — أحر من سطح الشمس خمس مرات!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: البرق يضرب الأرض نحو 100 مرة كل ثانية — وأنت بين الضربات الآن!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: الرعد يسبقه ضوء البرق لا لأن الصوت جاء بعده، بل لأن الضوء أسرع منه 880 ألف مرة!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The sky above you hides weapons hotter than the sun!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Lightning reaches 30,000°C — five times hotter than the sun's surface!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Lightning strikes Earth about 100 times every second — you are between strikes right now!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Thunder lags the flash not because sound came later, but light is 880,000 times faster!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep22",
+  "topic": "العين المجردة",
+  "angle": "3 أشياء لا تراها عينك لكنها حولك",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  }
+ },
+ {
+  "id": "ep23",
+  "topic": "الجاذبية والصفر",
+  "angle": "3 حقائق عن الفضاء والفراغ",
+  "origin": "legacy",
+  "status": "scripted",
+  "title_ar": "الفراغ ليس فارغًا! 3 حقائق صادمة عن الفضاء",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "أنت تطوف في فراغ مليء بالحروب!"
+    },
+    {
+     "seg": "hook",
+     "text": "الفراغ الذي تراه حولنا ليس فارغًا إطلاقًا، والثلاث حقائق التالية ستغير نظرتك للكون."
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: فراغ الفضاء مليء بجسيمات تظهر وتختفي كل لحظة، فالمكان الفارغ يغلي بالطاقة باستمرار!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: انعدام الوزن في المحطة الفضائية ليس بسبب غياب الجاذبية، بل لأن رواد الفضاء يسقطون حول الأرض باستمرار!"
+    },
+    {
+     "seg": "fact3",
+     "text": "الحقيقة الثالثة: إذا غصت في فراغ الفضاء بدون بدلة، دمك لن ينفجر كما في الأفلام، لكنك تفقد الوعي في 15 ثانية فقط!"
+    },
+    {
+     "seg": "outro",
+     "text": "لا تثق بما تراه... تابع دوشة!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep24",
+  "topic": "الدماغ والتعلم",
+  "angle": "3 أسرار عن التعلم السريع",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  }
+ },
+ {
+  "id": "ep25",
+  "topic": "الطاقة الشمسية",
+  "angle": "3 حقائق عن طاقة الشمس الهائلة",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  }
+ },
+ {
+  "id": "ep26",
+  "topic": "الجبال",
+  "angle": "3 أسرار عن أعظم جبال الأرض",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  },
+  "title_ar": "جبالك أخفى مما تظن! 3 أسرار صادمة عن أعظم جبال الأرض",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "الجبال التي تراها ليست ثابتة... بل تتحرك أمام عينيك!"
+    },
+    {
+     "seg": "hook",
+     "text": "وإليك ثلاثة أسرار صادمة عن أعظم جبال الأرض."
+    },
+    {
+     "seg": "fact1",
+     "text": "السر الأول: جبال الهيمالايا ترتفع أكثر من سنتيمتر كامل كل سنة، فإيفرست تكبر أمامنا باستمرار!"
+    },
+    {
+     "seg": "fact2",
+     "text": "السر الثاني: معظم كتلة الجبل ليست فوق الأرض، بل جذر ضخم يغوص أعماق القشرة مثل جبل الجليد، وقد يتجاوز ثمانية كيلومترات!"
+    },
+    {
+     "seg": "fact3",
+     "text": "السر الثالث: أعلى قمة على كوكبنا ليست إيفرست، بل بركان ماونا كيا في هاواي الذي يبلغ طوله الإجمالي أكثر من عشرة آلاف متر تحت الماء!"
+    },
+    {
+     "seg": "outro",
+     "text": "الأرض تحرك جبالها كل ثانية... تابع داوسها!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep27",
+  "topic": "السرعة",
+  "angle": "3 حقائق صادمة عن أسرع الأشياء في الكون",
+  "origin": "legacy",
+  "status": "published",
+  "published": {
+   "youtube": "(منشور سابقًا في النظام القديم)",
+   "instagram": "(منشور سابقًا في النظام القديم)",
+   "facebook": "(منشور سابقًا في النظام القديم)"
+  },
+  "title_ar": "3 حقائق صادمة عن أسرع الأشياء في الكون",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "في الكون مسرعات لا تتوقف... وسرعات تعجز عن تخيلها!"
+    },
+    {
+     "seg": "hook",
+     "text": "وإليك ثلاث حقائق صادمة عن أسرع الأشياء في الكون."
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الضوء هو أسرع شيء معروف، يقطع كوكبنا في جزء من الثانية، ولا يمكن لأي شيء مادي تجاوزه أبدًا!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: الكون نفسه يتمدد أسرع من الضوء، فالمجرات البعيدة تبتعد عنا بسرعة تفوق أي صاروخ صنعته البشرية!"
+    },
+    {
+     "seg": "fact3",
+     "text": "الحقيقة الثالثة: جسيمات النيوترينو تعبر جسدك كل ثانية بملايين، قادمة من النجوم بسرعة تقارب سرعة الضوء دون أن تشعر!"
+    },
+    {
+     "seg": "outro",
+     "text": "السرعة في الكون لا حدود لها... تابع دوشة!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep28",
+  "topic": "أغلى مادة في الكون — المادة المضادة",
+  "angle": "3 حقائق صادمة عن المادة المضادة",
+  "origin": "legacy",
+  "status": "partial",
+  "published": {
+   "instagram": "(منشور على IG — النظام القديم)"
+  },
+  "title_ar": "3 حقائق صادمة عن المادة المضادة",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "ما رأيك بأغلى مادة في الكون كله... تكلف التريليونات؟!"
+    },
+    {
+     "seg": "hook",
+     "text": "أنا واثق أنك لم تسمع بها من قبل، لكن اسمع هذه الحقائق الثلاث وستتغير نظرتك للعالم!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: المادة المضادة أغلى مادة على الأرض، وغرامها الواحد يتجاوز 60 تريليون دولار، أغلى بكثير من أي ألماسة!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: لو جمعت كل المادة المضادة التي صنعتها البشرية منذ البداية، لما ملأت ملعقة شاي واحدة!"
+    },
+    {
+     "seg": "fact3",
+     "text": "الحقيقة الثالثة: المادة المضادة لا تلمس المادة العادية أبدًا، فإذا تلامستا ينفجران ويختفيان في ومضة طاقة خالصة!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنتم خير ونور من الله... أخبرني في التعليقات: هل تظن البشرية ستصل يومًا لاستخدام هذه الطاقة؟!"
+    },
+    {
+     "seg": "outro",
+     "text": "المادة المضادة لغز لم يُحلّ بعد... تابع دوشة!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep29",
+  "topic": "عالم عام 2099 — 3 حقائق صادمة عن المستقبل",
+  "angle": "مدن تحت قباب زجاجية، سيارات طائرة، وروبوتات ذكية",
+  "origin": "legacy",
+  "status": "partial",
+  "published": {
+   "instagram": "(منشور على IG — النظام القديم)"
+  }
+ },
+ {
+  "id": "ep30",
+  "topic": "الثقوب السوداء",
+  "angle": "الثقوب السوداء! 3 حقائق صادمة",
+  "title_ar": "الثقوب السوداء! 3 حقائق صادمة",
+  "title_en": "Black holes! 3 shocking facts",
+  "hook_ar": "توجد وحوش كونية تلتهم النجوم بل وأشعتها!",
+  "hook_en": "Cosmic monsters devour stars — even their light!",
+  "facts_ar": [
+   "الثقب الأسود يبتلع كل شيء حتى الضوء — سرعته للإفلات أعلى من سرعة الضوء نفسها!",
+   "في مركز مجرتنا ثقب أسود كتلته 4 ملايين شمس — ونحن نلف حوله في رحلة دائمة!",
+   "عند حافة الثقب الأسود يتوقف الزمن — ساعة تقترب منه تبطئ حتى تكاد تقف!"
+  ],
+  "facts_en": [
+   "A black hole swallows everything — even light, because escape speed beats light speed itself!",
+   "At our galaxy's center sits a black hole weighing 4 million suns — we orbit it forever!",
+   "Time nearly stops at a black hole's edge — a clock approaching it slows to a crawl!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "black hole space animation",
+   "galaxy spiral stars",
+   "spacetime warp abstract",
+   "cosmic nebula dark"
+  ],
+  "tags": "الثقوب السوداء, فضاء, كون, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "توجد وحوش كونية تلتهم النجوم بل وأشعتها!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الثقب الأسود يبتلع كل شيء حتى الضوء — سرعته للإفلات أعلى من سرعة الضوء نفسها!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: في مركز مجرتنا ثقب أسود كتلته 4 ملايين شمس — ونحن نلف حوله في رحلة دائمة!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: عند حافة الثقب الأسود يتوقف الزمن — ساعة تقترب منه تبطئ حتى تكاد تقف!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Cosmic monsters devour stars — even their light!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: A black hole swallows everything — even light, because escape speed beats light speed itself!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: At our galaxy's center sits a black hole weighing 4 million suns — we orbit it forever!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Time nearly stops at a black hole's edge — a clock approaching it slows to a crawl!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep31",
+  "topic": "أهرامات الجيزة",
+  "angle": "أهرامات الجيزة! 3 حقائق تدهشك",
+  "title_ar": "أهرامات الجيزة! 3 حقائق تدهشك",
+  "title_en": "The pyramids of Giza! 3 astonishing facts",
+  "hook_ar": "آخر عجائب الدنيا السبع الساعية لسر جديد!",
+  "hook_en": "The last standing wonder of the ancient world!",
+  "facts_ar": [
+   "الهرم الأكبر بُني من نحو 2.3 مليون حجر، بعضها يزن 80 طنًا — بلا رافعات ولا آلات!",
+   "ظل الهرم الأكبر ظل أطول بناء على وجه الأرض 3800 سنة كاملة!",
+   "أوجه الهرم تستهدف الجهات الأصلية بدقة تفوق مبنى حديث — بدون بوصلة ولا GPS!"
+  ],
+  "facts_en": [
+   "The Great Pyramid holds 2.3 million stones, some weighing 80 tons — no cranes, no machines!",
+   "It remained the tallest structure on Earth for 3,800 straight years!",
+   "Its sides face true north with precision beyond modern buildings — no compass, no GPS!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "great pyramid giza",
+   "egypt desert pyramids aerial",
+   "ancient egypt pharaoh",
+   "pyramids sunset"
+  ],
+  "tags": "أهرامات, مصر, تاريخ, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "آخر عجائب الدنيا السبع الساعية لسر جديد!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الهرم الأكبر بُني من نحو 2.3 مليون حجر، بعضها يزن 80 طنًا — بلا رافعات ولا آلات!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: ظل الهرم الأكبر ظل أطول بناء على وجه الأرض 3800 سنة كاملة!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: أوجه الهرم تستهدف الجهات الأصلية بدقة تفوق مبنى حديث — بدون بوصلة ولا GPS!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The last standing wonder of the ancient world!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: The Great Pyramid holds 2.3 million stones, some weighing 80 tons — no cranes, no machines!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: It remained the tallest structure on Earth for 3,800 straight years!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Its sides face true north with precision beyond modern buildings — no compass, no GPS!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep32",
+  "topic": "خندق ماريانا",
+  "angle": "خندق ماريانا! 3 أسرار في أعمق نقطة على الأرض",
+  "title_ar": "خندق ماريانا! 3 أسرار في أعمق نقطة على الأرض",
+  "title_en": "The Mariana Trench! 3 secrets of Earth's deepest point",
+  "hook_ar": "تحت أمواج المحيط هاوية تبتلع أعلى جبل في العالم!",
+  "hook_en": "Beneath the waves hides a canyon that swallows Everest!",
+  "facts_ar": [
+   "لو أسقطت جبل إيفرست في خندق ماريانا، لاختفى تمامًا وتبقى فوقه ماء بعمق كيلومترين!",
+   "الضغط في قاعه يعادل 1000 كيلوجرام فوق كل سنتيمتر من جسمك — مع ذلك توجد حياة تزدهر!",
+   "أعماقه مظلمة تمامًا ومع ذلك تسبح فيه أسماك تتوهج وتحول الظلام إلى لوحة فنية!"
+  ],
+  "facts_en": [
+   "Drop Everest into the Mariana Trench and it vanishes — with 2 km of water still above it!",
+   "Pressure at its floor equals 1000 kg on every square centimeter of your body — yet life thrives!",
+   "It's pitch black down there, yet glowing fish turn the darkness into living art!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "deep ocean underwater",
+   "bioluminescent sea creatures",
+   "ocean abyss dark blue",
+   "submarine deep dive"
+  ],
+  "tags": "ماريانا, محيطات, أعماق, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "تحت أمواج المحيط هاوية تبتلع أعلى جبل في العالم!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: لو أسقطت جبل إيفرست في خندق ماريانا، لاختفى تمامًا وتبقى فوقه ماء بعمق كيلومترين!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: الضغط في قاعه يعادل 1000 كيلوجرام فوق كل سنتيمتر من جسمك — مع ذلك توجد حياة تزدهر!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: أعماقه مظلمة تمامًا ومع ذلك تسبح فيه أسماك تتوهج وتحول الظلام إلى لوحة فنية!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Beneath the waves hides a canyon that swallows Everest!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Drop Everest into the Mariana Trench and it vanishes — with 2 km of water still above it!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Pressure at its floor equals 1000 kg on every square centimeter of your body — yet life thrives!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: It's pitch black down there, yet glowing fish turn the darkness into living art!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep33",
+  "topic": "عجائب الأشجار",
+  "angle": "عجائب الأشجار! 3 أسرار تحت أقدامك",
+  "title_ar": "عجائب الأشجار! 3 أسرار تحت أقدامك",
+  "title_en": "Amazing trees! 3 secrets under your feet",
+  "hook_ar": "الغابة تحدث نفسها خلف ظهرك بالسر!",
+  "hook_en": "The forest talks behind your back — secretly!",
+  "facts_ar": [
+   "الأشجار تتواصل تحت الأرض عبر شبكة فطرية هائلة — تتبادل الغذاء وتحذر بعضها من الأمراض!",
+   "أقدم شجرة على كوكب الأرض عمرها يقارب 5000 سنة — وُلدت قبل بناء الأهرامات!",
+   "ظل شجرة واحدة يخفض حرارة الأسفلت نحو 10 درجات — المدينة بلا أشجار فرن يفتح!"
+  ],
+  "facts_en": [
+   "Trees talk underground through a huge fungal network — sharing food and disease warnings!",
+   "The oldest living tree is nearly 5,000 years old — older than the pyramids!",
+   "One tree's shade cools asphalt by about 10°C — a city without trees is an open oven!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "forest canopy sunlight",
+   "tree roots forest floor",
+   "ancient old tree",
+   "green leaves macro"
+  ],
+  "tags": "أشجار, غابات, طبيعة, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "الغابة تحدث نفسها خلف ظهرك بالسر!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الأشجار تتواصل تحت الأرض عبر شبكة فطرية هائلة — تتبادل الغذاء وتحذر بعضها من الأمراض!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: أقدم شجرة على كوكب الأرض عمرها يقارب 5000 سنة — وُلدت قبل بناء الأهرامات!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: ظل شجرة واحدة يخفض حرارة الأسفلت نحو 10 درجات — المدينة بلا أشجار فرن يفتح!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The forest talks behind your back — secretly!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Trees talk underground through a huge fungal network — sharing food and disease warnings!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: The oldest living tree is nearly 5,000 years old — older than the pyramids!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: One tree's shade cools asphalt by about 10°C — a city without trees is an open oven!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep34",
+  "topic": "المريخ",
+  "angle": "المريخ! 3 حقائق عن الكوكب الأحمر",
+  "title_ar": "المريخ! 3 حقائق عن الكوكب الأحمر",
+  "title_en": "Mars! 3 facts about the red planet",
+  "hook_ar": "جارك الأحمر يخبئ مفاجآت تفتح النفس!",
+  "hook_en": "Your red neighbor hides breathtaking surprises!",
+  "facts_ar": [
+   "جبل أوليمبوس على المريخ أعلى بركان في النظام الشمسي — ثلاثة أضعاف إيفرست!",
+   "يوم المريخ 24 ساعة و37 دقيقة تقريبًا — الأقرب ليوم الأرض بين كل الكواكب!",
+   "قبعات الغبار الأحمر تغطي المريخ بسبب صدأ الحديد — كوكب كامل يصدأ ببطء!"
+  ],
+  "facts_en": [
+   "Olympus Mons on Mars is the tallest volcano in the solar system — three times Everest!",
+   "A Martian day lasts 24h 37m — the closest to Earth's day of all planets!",
+   "Its red dust is rusted iron — an entire planet slowly rusting!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "mars planet surface",
+   "mars rover red desert",
+   "volcano olympus mons",
+   "space planets"
+  ],
+  "tags": "المريخ, فضاء, كواكب, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "جارك الأحمر يخبئ مفاجآت تفتح النفس!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: جبل أوليمبوس على المريخ أعلى بركان في النظام الشمسي — ثلاثة أضعاف إيفرست!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: يوم المريخ 24 ساعة و37 دقيقة تقريبًا — الأقرب ليوم الأرض بين كل الكواكب!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: قبعات الغبار الأحمر تغطي المريخ بسبب صدأ الحديد — كوكب كامل يصدأ ببطء!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Your red neighbor hides breathtaking surprises!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Olympus Mons on Mars is the tallest volcano in the solar system — three times Everest!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: A Martian day lasts 24h 37m — the closest to Earth's day of all planets!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Its red dust is rusted iron — an entire planet slowly rusting!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep35",
+  "topic": "زحل",
+  "angle": "زحل! 3 حقائق تصدمك عن جوهرة الكون",
+  "title_ar": "زحل! 3 حقائق تصدمك عن جوهرة الكون",
+  "title_en": "Saturn! 3 stunning facts about the jewel of space",
+  "hook_ar": "الكوكب اللي يلبس خاتم من جليد و صخور!",
+  "hook_en": "The planet wearing a ring of ice and rock!",
+  "facts_ar": [
+   "كوكب زحل أخف من الماء — لو وجد محيط عملاق لطفا فوقه مثل الفلين!",
+   "حلقات زحل بعرض 280 ألف كيلومتر بينما سماكتها في مواضع 10 أمتار فقط!",
+   "يُعتقد أن داخل زحل تمطر الماس — ضغط هائل يضغط الكربون إلى جواهر!"
+  ],
+  "facts_en": [
+   "Saturn is lighter than water — in a giant ocean it would float like cork!",
+   "Saturn's rings span 280,000 km yet are in places just 10 meters thick!",
+   "Scientists believe it rains diamonds inside Saturn — crushing pressure turns carbon into gems!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "saturn rings planet",
+   "solar system planets",
+   "ice crystals abstract",
+   "deep space stars"
+  ],
+  "tags": "زحل, كواكب, فضاء, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "الكوكب اللي يلبس خاتم من جليد و صخور!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: كوكب زحل أخف من الماء — لو وجد محيط عملاق لطفا فوقه مثل الفلين!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: حلقات زحل بعرض 280 ألف كيلومتر بينما سماكتها في مواضع 10 أمتار فقط!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: يُعتقد أن داخل زحل تمطر الماس — ضغط هائل يضغط الكربون إلى جواهر!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The planet wearing a ring of ice and rock!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Saturn is lighter than water — in a giant ocean it would float like cork!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Saturn's rings span 280,000 km yet are in places just 10 meters thick!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Scientists believe it rains diamonds inside Saturn — crushing pressure turns carbon into gems!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep36",
+  "topic": "الأسد ملك السافانا",
+  "angle": "الأسد ملك السافانا! 3 أسرار صادمة",
+  "title_ar": "الأسد ملك السافانا! 3 أسرار صادمة",
+  "title_en": "The lion king of the savanna! 3 shocking secrets",
+  "hook_ar": "ملك الغابة ينام 20 ساعة في اليوم — جاد!",
+  "hook_en": "The king sleeps 20 hours a day — seriously!",
+  "facts_ar": [
+   "الأسد ينام حتى 20 ساعة يوميًا — الملك يوفر طاقته للصيد الكبير فقط!",
+   "زئير الأسد يُسمع من مسافة 8 كيلومترات — إعلان ملكية بلا لافتات!",
+   "ال lionesses تفترس معظم الصيد بينما الحراسة على الأسد — تقسيم عمل مضحك وخطير!"
+  ],
+  "facts_en": [
+   "Lions sleep up to 20 hours a day — the king saves energy for the big hunt!",
+   "A lion's roar carries 8 kilometers — declaring ownership without billboards!",
+   "Lionesses do most of the hunting while males guard — a funny and fierce division of labor!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "lion portrait savanna",
+   "lion pride resting",
+   "africa wildlife sunset",
+   "lion roar closeup"
+  ],
+  "tags": "الأسد, حيوانات, طبيعة, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "ملك الغابة ينام 20 ساعة في اليوم — جاد!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الأسد ينام حتى 20 ساعة يوميًا — الملك يوفر طاقته للصيد الكبير فقط!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: زئير الأسد يُسمع من مسافة 8 كيلومترات — إعلان ملكية بلا لافتات!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: ال lionesses تفترس معظم الصيد بينما الحراسة على الأسد — تقسيم عمل مضحك وخطير!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The king sleeps 20 hours a day — seriously!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Lions sleep up to 20 hours a day — the king saves energy for the big hunt!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: A lion's roar carries 8 kilometers — declaring ownership without billboards!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Lionesses do most of the hunting while males guard — a funny and fierce division of labor!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep37",
+  "topic": "الصحراء",
+  "angle": "الصحراء! 3 أسرار عن عالم من الرمال",
+  "title_ar": "الصحراء! 3 أسرار عن عالم من الرمال",
+  "title_en": "The desert! 3 secrets of a world of sand",
+  "hook_ar": "أكبر صحراء حارة على الأرض تستطيع أن تبتلع أمريكا كلها!",
+  "hook_en": "The largest hot desert could swallow the USA whole!",
+  "facts_ar": [
+   "الصحراء الكبرى بحجم الولايات المتحدة تقريبًا — ولم يكن فيها مطر لعقود في مواضع!",
+   "حرارة الرمل نهارًا قد تصل 80 درجة — تكفي لبيض البيض دون نار!",
+   "تحت رمال الصحراء ينقب الكنوز: بقايا بحيرات ومدن قديمة ومغارات صخرية مدهشة!"
+  ],
+  "facts_en": [
+   "The Sahara is nearly the size of the USA — some spots go decades without rain!",
+   "Sand surface can hit 80°C — hot enough to fry an egg without a stove!",
+   "Beneath the sands lie treasures: ancient lakebeds, lost cities, and stunning caves!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "sahara desert dunes",
+   "camel caravan desert",
+   "desert oasis",
+   "sand dunes aerial"
+  ],
+  "tags": "الصحراء, طبيعة, جغرافيا, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "أكبر صحراء حارة على الأرض تستطيع أن تبتلع أمريكا كلها!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الصحراء الكبرى بحجم الولايات المتحدة تقريبًا — ولم يكن فيها مطر لعقود في مواضع!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: حرارة الرمل نهارًا قد تصل 80 درجة — تكفي لبيض البيض دون نار!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: تحت رمال الصحراء ينقب الكنوز: بقايا بحيرات ومدن قديمة ومغارات صخرية مدهشة!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The largest hot desert could swallow the USA whole!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: The Sahara is nearly the size of the USA — some spots go decades without rain!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Sand surface can hit 80°C — hot enough to fry an egg without a stove!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Beneath the sands lie treasures: ancient lakebeds, lost cities, and stunning caves!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep38",
+  "topic": "الفراشات",
+  "angle": "الفراشات! 3 حقائق ساحرة",
+  "title_ar": "الفراشات! 3 حقائق ساحرة",
+  "title_en": "Butterflies! 3 enchanting facts",
+  "hook_ar": "المخلوق اللي كان دودة و صار يحلق!",
+  "hook_en": "A creature that was a worm — and now it flies!",
+  "facts_ar": [
+   "الفراشة تتذوق بأقدامها — كل خطوة عليها وجبة غذاء!",
+   "فراشة الملك تطير 4000 كيلومتر في هجرة تتطلب أجيالًا متتالية لإكمالها!",
+   "أجنحتها شفافة! الألوان التي تراها انعكاس ضوء على قشور مجهرية — لوحة بصرية هندسية!"
+  ],
+  "facts_en": [
+   "Butterflies taste with their feet — every step is a meal!",
+   "Monarch butterflies fly 4,000 km in a migration that takes generations to complete!",
+   "Their wings are transparent — the colors you see are light bouncing off microscopic scales!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "butterfly macro colorful",
+   "monarch butterfly flight",
+   "flowers butterfly garden",
+   "butterfly wings closeup"
+  ],
+  "tags": "فراشات, حشرات, طبيعة, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "المخلوق اللي كان دودة و صار يحلق!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الفراشة تتذوق بأقدامها — كل خطوة عليها وجبة غذاء!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: فراشة الملك تطير 4000 كيلومتر في هجرة تتطلب أجيالًا متتالية لإكمالها!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: أجنحتها شفافة! الألوان التي تراها انعكاس ضوء على قشور مجهرية — لوحة بصرية هندسية!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "A creature that was a worm — and now it flies!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Butterflies taste with their feet — every step is a meal!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Monarch butterflies fly 4,000 km in a migration that takes generations to complete!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Their wings are transparent — the colors you see are light bouncing off microscopic scales!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep39",
+  "topic": "البراكين",
+  "angle": "البراكين! 3 حقائق صادمة",
+  "title_ar": "البراكين! 3 حقائق صادمة",
+  "title_en": "Volcanoes! 3 shocking facts",
+  "hook_ar": "جبال تنزف نارًا و تصنع قارات!",
+  "hook_en": "Mountains that bleed fire and build continents!",
+  "facts_ar": [
+   "ماغما البراكين تصل 1200 درجة — تذيب الصخر كما يذوب السكر في الماء!",
+   "انفجار تامبورا عام 1815 برّد الأرض كلها — صيف السنة التالية ضاع وثلوج تساقط في يوليو!",
+   "أكثر من 80% من محيط الأرض ما زال غير مستكشف، وبراكين تحت الماء تثور فيه كل يوم!"
+  ],
+  "facts_en": [
+   "Volcanic magma reaches 1,200°C — it melts rock like sugar in water!",
+   "The 1815 Tambora eruption cooled the whole planet — the next year had no summer, snow in July!",
+   "Underwater volcanoes erupt in the ocean every single day — most never seen!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "volcano eruption lava",
+   "lava flow night glow",
+   "volcanic ash cloud",
+   "island volcano aerial"
+  ],
+  "tags": "براكين, طبيعة, علوم, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "جبال تنزف نارًا و تصنع قارات!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: ماغما البراكين تصل 1200 درجة — تذيب الصخر كما يذوب السكر في الماء!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: انفجار تامبورا عام 1815 برّد الأرض كلها — صيف السنة التالية ضاع وثلوج تساقط في يوليو!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: أكثر من 80% من محيط الأرض ما زال غير مستكشف، وبراكين تحت الماء تثور فيه كل يوم!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "Mountains that bleed fire and build continents!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Volcanic magma reaches 1,200°C — it melts rock like sugar in water!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: The 1815 Tambora eruption cooled the whole planet — the next year had no summer, snow in July!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Underwater volcanoes erupt in the ocean every single day — most never seen!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ },
+ {
+  "id": "ep40",
+  "topic": "الزلازل",
+  "angle": "الزلازل! 3 حقائق تهزك",
+  "title_ar": "الزلازل! 3 حقائق تهزك",
+  "title_en": "Earthquakes! 3 earth-shaking facts",
+  "hook_ar": "الأرض اللي تحتك تتحرك الآن — دون أن تشعر!",
+  "hook_en": "The ground beneath you is moving right now!",
+  "facts_ar": [
+   "الأرض تشهد أكثر من 500 ألف زلزال سنويًا — معظمها لا تشعر به أبدًا!",
+   "زلزال تشيلي 1960 كان الأقوى المسجل: 9.5 درجة — هز الأرض لأيام وحرّك مدنًا كاملة!",
+   "موجات الزلازل تخترق الكوكب وتعود — هي أشعة إكس تُظهر لنا ما بداخل الأرض!"
+  ],
+  "facts_en": [
+   "Earth hosts 500,000+ quakes a year — most you never feel!",
+   "Chile 1960 was the strongest recorded: magnitude 9.5 — it rang Earth like a bell for days!",
+   "Seismic waves X-ray the planet — they reveal what hides deep inside Earth!"
+  ],
+  "outro_ar": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!",
+  "outro_en": "You are amazing! Follow Dawsha and see you next episode!",
+  "scene_queries": [
+   "earthquake cracked ground",
+   "seismograph machine",
+   "earth core cutaway",
+   "city damage street"
+  ],
+  "tags": "زلازل, أرض, علوم, داوسها",
+  "status": "queued",
+  "origin": "new",
+  "script": {
+   "lines_ar": [
+    {
+     "seg": "hook",
+     "text": "الأرض اللي تحتك تتحرك الآن — دون أن تشعر!"
+    },
+    {
+     "seg": "fact1",
+     "text": "الحقيقة الأولى: الأرض تشهد أكثر من 500 ألف زلزال سنويًا — معظمها لا تشعر به أبدًا!"
+    },
+    {
+     "seg": "fact2",
+     "text": "الحقيقة الثانية: زلزال تشيلي 1960 كان الأقوى المسجل: 9.5 درجة — هز الأرض لأيام وحرّك مدنًا كاملة!"
+    },
+    {
+     "seg": "fact3",
+     "text": "والحقيقة الثالثة: موجات الزلازل تخترق الكوكب وتعود — هي أشعة إكس تُظهر لنا ما بداخل الأرض!"
+    },
+    {
+     "seg": "outro",
+     "text": "أنت خير ونور! تابع داوسها وسنلتقي في الحلقة القادمة!"
+    }
+   ],
+   "lines_en": [
+    {
+     "seg": "hook",
+     "text": "The ground beneath you is moving right now!"
+    },
+    {
+     "seg": "fact1",
+     "text": "Fact one: Earth hosts 500,000+ quakes a year — most you never feel!"
+    },
+    {
+     "seg": "fact2",
+     "text": "Fact two: Chile 1960 was the strongest recorded: magnitude 9.5 — it rang Earth like a bell for days!"
+    },
+    {
+     "seg": "fact3",
+     "text": "And fact three: Seismic waves X-ray the planet — they reveal what hides deep inside Earth!"
+    },
+    {
+     "seg": "outro",
+     "text": "You are amazing! Follow Dawsha and see you next episode!"
+    }
+   ]
+  }
+ }
+]
