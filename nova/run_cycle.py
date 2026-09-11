@@ -272,6 +272,22 @@ def main():
         state.resume()
         _log("تم إلغاء الإيقاف — النظام يعمل")
         return 0
+    # ═══ بوابة الإيقاع الساعي: نشر واحد على يوتيوب كل ساعة كحد أقصى ═══
+    # تمنع التكرار وتمنع لفّ السلسلة أسرع من ساعة مهما تعددت المحفزات
+    try:
+        _last = 0.0
+        for _e in reversed(state.load_log()):
+            if "youtube" in (_e.get("platforms_done") or []) and not _e.get("error"):
+                from datetime import datetime as _dt
+                _last = _dt.fromisoformat(_e["ts"]).timestamp()
+                break
+        import time as _time
+        _since = _time.time() - _last
+        if _last and _since < 3300:  # 55 دقيقة
+            _log(f"⏳ آخر نشر قبل {int(_since//60)} دقيقة — تخطي الدورة (الإيقاع: حلقة كل ساعة)")
+            return 0
+    except Exception:
+        pass
     return run_cycle(args.episode, args.produce_only)
 
 
