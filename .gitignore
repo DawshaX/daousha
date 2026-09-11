@@ -2,8 +2,12 @@ __pycache__/
 *.pyc
 secrets.txt
 .env
-work/*
+work/
 content/media_cache/
 content/out/*
 !content/out/.gitkeep
-.venv/\nstate/tokens.json\n
+.venv/
+state/tokens.json
+factory.log
+*.zip
+google*.html
