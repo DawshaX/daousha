@@ -144,6 +144,20 @@ def publish_video(topic: dict, video_path: Path, lang: str, cover_path=None) -> 
             _log(f"❌ {name}: {err}")
         else:
             _log(f"✅ {name}: {url}")
+            if name == "youtube":
+                # 📱 إشعار فوري غني للمالك: العنوان + الرابط + الوقت + الحلقة القادمة
+                from datetime import datetime, timedelta
+                now = datetime.now()
+                nxt = (now + timedelta(hours=1)).strftime("%H:%M")
+                try:
+                    from .notify import send as _tg
+                    _tg(f"🚀 <b>نُشرت حلقة جديدة!</b>\n"
+                        f"📺 {title[:80]}\n"
+                        f"▶️ {url}\n"
+                        f"🕐 وقت النشر: {now.strftime('%H:%M')}\n"
+                        f"⏭ الحلقة الجاية: ~{nxt}")
+                except Exception:
+                    pass
         time.sleep(3)
     return {"links": links, "errors": errs}
 
