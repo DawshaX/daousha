@@ -1,0 +1,55 @@
+name: NOVA Keepalive — حارس الجدولة الساعية
+
+# بيقعد كل 5 دقايق: لو مفيش دورة NOVA شغالة في الساعة الحالية → يطلقها بنفسه.
+# ده يضمن فيديو كل ساعة حتى لو جدولة GitHub اتأخرت أو اتوقفت.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: nova-keepalive
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: فحص آخر دورة + تنشيط المستودع
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # آخر دورة NOVA الناجحة
+          LAST=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/nova.yml/runs?per_page=1&status=success" \
+            | python3 -c "import json,sys; r=json.load(sys.stdin)['workflow_runs']; print(r[0]['created_at'] if r else '1970-01-01T00:00:00Z')")
+          HOURS=$(python3 -c "
+          from datetime import datetime, timezone
+          last = datetime.fromisoformat('$LAST'.replace('Z','+00:00'))
+          print(int((datetime.now(timezone.utc) - last).total_seconds() // 3600))")
+          echo "آخر دورة ناجحة: $LAST (منذ $HOURS ساعة)"
+          if [ "$HOURS" -ge 1 ]; then
+            echo "⏰ مرّت ساعة — إطلاق دورة NOVA…"
+            curl -s -X POST -H "Authorization: token $GH_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/workflows/nova.yml/dispatches" \
+              -d '{"ref":"main"}'
+            echo "✅ انطلقت"
+          else
+            echo "✓ الدورة الساعية مازال شغالة أو خلصت للتو — لا شيء مطلوب"
+          fi
+          # تنشيط الجدولة: commit خفيف كل 12 ساعة يمنع GitHub من إيقافها
+          if [ "$(date -u +%-H)" -lt 1 ] || [ "$(date -u +%-H)" -gt 22 ]; then
+            git config --global user.email "nova@xdaw.local"
+            git config --global user.name "XDAW NOVA"
+            git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" repo
+            cd repo
+            echo "keepalive $(date -u +%FT%TZ)" > .github/keepalive.txt
+            git add .github/keepalive.txt
+            git commit -qm "keepalive: تنشيط الجدولة الساعية" || exit 0
+            git push -q origin main && echo "✓ مستودع منشَّط"
+          fi
