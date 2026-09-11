@@ -17,7 +17,7 @@ permissions:
 jobs:
   nova:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 75
     env:
       GH_REPO: ${{ github.repository }}
       NOVA_AUTO_GIT: "1"
