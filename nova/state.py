@@ -54,12 +54,35 @@ def find_topic(topics: list, tid: str):
 
 
 def next_topic(topics: list) -> dict | None:
-    """الحلقة التالية: أول موضوع بحالة queued/scripted وقابل للإنتاج."""
+    """الحلقة التالية: عشوائية من غير المنشور + منع تكرار العنوان على القناة."""
+    import random as _r
     from .content import can_produce
+    cands = [t for t in topics if t.get("status") in ("queued", "scripted") and can_produce(t)]
+    if not cands:
+        return None
+    # منع التكرار الصارم: نستبعد أي عنوان نُشر من قبل (نقرا لوج النشر كامل)
+    published_titles = set()
+    published_ids = set()
+    try:
+        log = load_log()
+        # لوج بيحمل episode id — نجمع كل المعرفات المنشورة يوتيوب
+        for e in log:
+            if "youtube" in (e.get("platforms_done") or []) and not e.get("error"):
+                eid = str(e.get("episode", ""))
+                if eid:
+                    published_ids.add(eid)
+    except Exception:
+        pass
     for t in topics:
-        if t.get("status") in ("queued", "scripted") and can_produce(t):
-            return t
-    return None
+        if t.get("status") == "published" or (t.get("published") or {}).get("youtube"):
+            published_ids.add(str(t.get("id", "")))
+            for k in ("title_ar", "title_en", "topic"):
+                if t.get(k):
+                    published_titles.add(str(t[k])[:60])
+    fresh = [t for t in cands if str(t.get("id", "")) not in published_ids
+             and str(t.get("title_ar", ""))[:60] not in published_titles]
+    pool = fresh if fresh else cands  # لو كلهم مكررين (نظريًا) خذ أي واحد
+    return _r.choice(pool)
 
 
 def topic_awaiting_publish(topics: list) -> dict | None:
