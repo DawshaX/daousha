@@ -86,15 +86,22 @@ def refill_from_archive(min_pending: int = 100) -> int:
     root = Path(__file__).resolve().parents[1]
     arch_p = root / "content" / "topics_archive.json"
     top_p = root / "content" / "topics.json"
-    if not arch_p.exists():
-        return 0
     try:
         topics = _json.loads(top_p.read_text())
         items = topics if isinstance(topics, list) else topics.get("topics", [])
         pend = sum(1 for x in items if x.get("status") != "published")
         if pend >= min_pending:
             return 0
-        arch = _json.loads(arch_p.read_text())
+        # قراءة الأجزاء (topics_archive_part1..N) — أول جزء فيه وقود كافي غالبًا
+        arch = []
+        for i in range(1, 10):
+            pp = root / "content" / f"topics_archive_part{i}.json"
+            if pp.exists():
+                arch = _json.loads(pp.read_text())
+                arch_p = pp  # نحتفظ بالمصدر لتحديثه لاحقًا
+                break
+        if not arch:
+            return 0
         need = min_pending - pend + 50
         moved, rest = arch[:need], arch[need:]
         if not moved:
