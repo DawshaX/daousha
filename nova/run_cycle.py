@@ -248,9 +248,9 @@ def run_cycle(episode: str | None = None, produce_only: bool = False) -> int:
         if any("no_public_url" in e for e in r["errors"].values()):
             notes.append("إنستجرام يحتاج repo عام (لرابط الفيديو العام)")
 
-    # تحديث الحالة
+    # تحديث الحالة — يوتيوب منشور = خلاص الحلقة اتقفلت (لا تكرار أبدًا)
     pend = state.pending_platforms(topic)
-    if not pend:
+    if not pend or topic.get("published", {}).get("youtube"):
         topic["status"] = "published"
     elif any(topic.get("published", {}).values()):
         topic["status"] = "partial"
