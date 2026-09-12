@@ -170,7 +170,7 @@
   "topic": "DNA",
   "angle": "3 أسرار في حمضك النووي ستدهشك",
   "origin": "legacy",
-  "status": "scripted",
+  "status": "published",
   "title_ar": "داخل جسمك شيفرة كونية! 3 أسرار في حمضك النووي ستدهشك",
   "script": {
    "lines_ar": [
@@ -203,6 +203,9 @@
      "text": "تابع داوسها!"
     }
    ]
+  },
+  "published": {
+   "youtube": "https://www.youtube.com/watch?v=ghuxIws-Oc8"
   }
  },
  {
