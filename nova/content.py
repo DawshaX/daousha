@@ -80,6 +80,34 @@ def make_title_caption(topic: dict, lang: str) -> tuple[str, str]:
 
 
 # ---------------- التوليد اللانهائي ----------------
+def refill_from_archive(min_pending: int = 100) -> int:
+    """يسحب من topics_archive.json عندما يقل الوقود — مصنع لا ينضب."""
+    import json as _json
+    root = Path(__file__).resolve().parents[1]
+    arch_p = root / "content" / "topics_archive.json"
+    top_p = root / "content" / "topics.json"
+    if not arch_p.exists():
+        return 0
+    try:
+        topics = _json.loads(top_p.read_text())
+        items = topics if isinstance(topics, list) else topics.get("topics", [])
+        pend = sum(1 for x in items if x.get("status") != "published")
+        if pend >= min_pending:
+            return 0
+        arch = _json.loads(arch_p.read_text())
+        need = min_pending - pend + 50
+        moved, rest = arch[:need], arch[need:]
+        if not moved:
+            return 0
+        new_items = items + moved
+        top_p.write_text(_json.dumps(new_items if isinstance(topics, list) else {**topics, "topics": new_items},
+                                    ensure_ascii=False, indent=1))
+        arch_p.write_text(_json.dumps(rest, ensure_ascii=False))
+        return len(moved)
+    except Exception:
+        return 0
+
+
 def generate_auto_topic(topics: list, force_llm: bool = False) -> dict | None:
     """ينتج موضوعًا جديدًا من بنك الحقائق (بلا مفاتيح) أو عبر LLM مجاني إن توفر."""
     _AUTO_N[0] = _AUTO_N[0] or _bump_auto_number(topics)
