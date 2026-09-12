@@ -181,6 +181,14 @@ def run_cycle(episode: str | None = None, produce_only: bool = False) -> int:
     if state.is_halted() and not produce_only:
         _log("⛔ النظام موقوف:", state.engine_state().get("haltReason"))
         return 1
+    # ⛽ تعبئة الوقود من الأرشيف لو قل (مصنع لا ينضب — 3 سنين+)
+    try:
+        from .content import refill_from_archive
+        _moved = refill_from_archive(100)
+        if _moved:
+            _log(f"⛽ سحبت {_moved} حلقة من الأرشيف للوقود")
+    except Exception:
+        pass
     topics = state.load_topics()
     topic = state.find_topic(topics, episode) if episode else None
     stored_videos = {}
