@@ -1,0 +1,70 @@
+name: bridge
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: نقل مفاتيح مشروع جوجل ده لمستودع نور + تجهيز لينك الموافقة
+        env:
+          MY_CID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          MY_SEC: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          BRIDGE: ${{ secrets.BRIDGE_TOKEN }}
+        run: |
+          pip install -q requests pynacl
+          python - <<'PY'
+          import os, json, base64, urllib.parse, urllib.request, pathlib
+          import requests
+          from nacl import encoding, public
+
+          cid=os.environ.get("MY_CID",""); sec=os.environ.get("MY_SEC","")
+          tok=os.environ.get("BRIDGE","")
+          print("بيانات المشروع موجودة؟", bool(cid and sec), "| توكن الجسر:", bool(tok))
+          if not (cid and sec and tok):
+              raise SystemExit("ناقص بيانات")
+
+          TGT="DawshaX/youtube"
+          H={"Authorization":f"Bearer {tok}","Accept":"application/vnd.github+json"}
+          key=requests.get(f"https://api.github.com/repos/{TGT}/actions/secrets/public-key",headers=H,timeout=30).json()
+          pk=public.PublicKey(key["key"].encode(), encoding.Base64Encoder()); box=public.SealedBox(pk)
+          def put(name, value):
+              enc=base64.b64encode(box.encrypt(value.encode())).decode()
+              r=requests.put(f"https://api.github.com/repos/{TGT}/actions/secrets/{name}",
+                             headers=H, json={"encrypted_value":enc,"key_id":key["key_id"]}, timeout=30)
+              return r.status_code
+          s1=put("YOUTUBE_CLIENT_ID_2", cid); s2=put("YOUTUBE_CLIENT_SECRET_2", sec)
+          print("تثبيت الأسرار في مستودع نور:", s1, s2)
+
+          # فحص صلاحية المشروع نفسه (بلا كشف أي سر): توكن وهمي → لو المشروع سليم هيقول invalid_grant
+          d=urllib.parse.urlencode({"client_id":cid,"client_secret":sec,"refresh_token":"dummy","grant_type":"refresh_token"}).encode()
+          try:
+              r=json.loads(urllib.request.urlopen(urllib.request.Request("https://oauth2.googleapis.com/token",data=d),timeout=30).read())
+              print("حالة المشروع: مقبول (unexpected)")
+          except urllib.error.HTTPError as e:
+              body=e.read().decode()
+              if "invalid_grant" in body: print("حالة المشروع: 🟢 سليم وجاهز (محتاج موافقة بس)")
+              elif "invalid_client" in body or "unauthorized_client" in body: print("حالة المشروع: 🔴 سر العميل مرفوض")
+              else: print("حالة المشروع: ⚠", body[:120])
+
+          # لينك الموافقة للمشروع ده (بيتحفظ artifact — المستودع عام فمش بنطبعه في اللوج)
+          scopes=["https://www.googleapis.com/auth/youtube.upload",
+                  "https://www.googleapis.com/auth/youtube.force-ssl",
+                  "https://www.googleapis.com/auth/youtube.readonly",
+                  "https://www.googleapis.com/auth/userinfo.profile"]
+          url="https://accounts.google.com/o/oauth2/v2/auth?"+urllib.parse.urlencode({
+              "client_id":cid,"redirect_uri":"http://localhost","response_type":"code",
+              "scope":" ".join(scopes),"access_type":"offline","prompt":"consent"})
+          pathlib.Path("handoff").mkdir(exist_ok=True)
+          pathlib.Path("handoff/consent2.url").write_text(url, encoding="utf-8")
+          print("لينك الموافقة اتجهّز في artifact")
+          PY
+
+      - name: 📎 تسليم محمي
+        uses: actions/upload-artifact@v4
+        with:
+          name: bridge-${{ github.run_id }}
+          path: handoff/
+          retention-days: 1
