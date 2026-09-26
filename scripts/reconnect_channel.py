@@ -210,8 +210,7 @@ def mode_probe(pat: str, repo: str, copy_to: str) -> int:
         ok = ok and line.startswith("✅")
     for r in targets:
         print("  ", delete_secret(r, "RECONNECT_TEST", pat))
-    print("
-النتيجة:", "كتابة الأسرار شغالة في كل المستودعات ✅" if ok else "⚠️ فيه مستودع اتقفل عنه")
+    print("النتيجة:", "كتابة الأسرار شغالة في كل المستودعات ✅" if ok else "⚠️ فيه مستودع اتقفل عنه")
     return 0 if ok else 1
 
 
