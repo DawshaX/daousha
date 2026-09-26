@@ -1,0 +1,19 @@
+name: 📨 نقل إشعارات تليجرام لـ Dollars
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  share:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: نسخ الإشعارات
+        env:
+          TG: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CROSS_PAT: ${{ secrets.CROSS_PAT }}
+        run: |
+          pip install -q pynacl
+          python3 scripts/share_tg.py
