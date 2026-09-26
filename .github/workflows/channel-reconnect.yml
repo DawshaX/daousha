@@ -24,6 +24,10 @@ on:
         description: 'مستودع تاني يتثبّت فيه نفس التوكن'
         type: string
         default: 'DawshaX/Dollars'
+      slot:
+        description: 'رقم مشروع جوجل (1 = الأساسي · 2/3/4 = مشاريع إضافية تزود سقف النشر اليومي)'
+        type: string
+        default: '1'
       redirect_uri:
         description: 'عنوان إعادة التوجيه (سيبه فاضي = العنوان المسجّل عند جوجل)'
         type: string
@@ -51,6 +55,15 @@ jobs:
         env:
           CID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           CSEC: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_CLIENT_ID_2: ${{ secrets.YOUTUBE_CLIENT_ID_2 }}
+          YOUTUBE_CLIENT_SECRET_2: ${{ secrets.YOUTUBE_CLIENT_SECRET_2 }}
+          YOUTUBE_CLIENT_ID_3: ${{ secrets.YOUTUBE_CLIENT_ID_3 }}
+          YOUTUBE_CLIENT_SECRET_3: ${{ secrets.YOUTUBE_CLIENT_SECRET_3 }}
+          YOUTUBE_CLIENT_ID_4: ${{ secrets.YOUTUBE_CLIENT_ID_4 }}
+          YOUTUBE_CLIENT_SECRET_4: ${{ secrets.YOUTUBE_CLIENT_SECRET_4 }}
+          SLOT: ${{ inputs.slot }}
           GH_PAT: ${{ secrets.NOVA_GH_TOKEN }}
           TG: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
