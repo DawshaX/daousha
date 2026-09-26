@@ -34,7 +34,7 @@ SCOPES = [
 #   https://8899-ivfx0jnsfhm4lb21x07io-ae1265fb.sg1.manus.computer/callback  ✅ مقبول
 #   https://developers.google.com/oauthplayground                            ✅ مقبول
 #   أي عنوان localhost                                                       ❌ مرفوض (redirect_uri_mismatch)
-REDIRECT = os.environ.get("REDIRECT_URI") or "https://8899-ivfx0jnsfhm4lb21x07io-ae1265fb.sg1.manus.computer/callback"
+REDIRECT = os.environ.get("REDIRECT_URI") or "https://dawshax.github.io/youtube/callback/"   # صفحة حقيقية على موقعنا تستقبل الكود
 
 
 # ───────────────────────── أدوات صغيرة ─────────────────────────
@@ -185,7 +185,16 @@ def mode_url(cid: str) -> int:
     ok, note = check_link(cid)
     print(("✅ الفحص: جوجل قبلت اللينك ده — ماشي صح" if ok else
            "❌ الفحص: جوجل رفضت العنوان للعميل ده — " + note))
-    print("\n— خطوات صاحب القناة —")
+    if not ok:
+        print(telegram(
+            "⚠️ محتاج ضغطة واحدة منك (دقيقة واحدة):\n\n"
+            "افتح: https://console.cloud.google.com/apis/credentials?project=" + cid.split("-")[0] + "\n"
+            "1) اضغط على اسم الـ OAuth client (لو فيه أكتر من واحد، اعمل نفس الخطوة في كل واحد)\n"
+            "2) تحت «Authorized redirect URIs» اضغط ADD URI\n"
+            "3) الصق السطر ده بالحرف:\n" + str(REDIRECT) + "\n"
+            "4) SAVE\n\n"
+            "وبعدها مش هتحتاج تعمل حاجة — اللينك الجديد هيوصلك أوتوماتيك ✅"))
+        print("\n— خطوات صاحب القناة —")
     print("0) مهم: بعد الموافقة المتصفح هيقول «الصفحة مش موجودة» أو يحمّل للأبد — عادي جدًا.")
     print("   مفيش أي مشكلة: **العنوان في شريط العنوان فيه الكود**. انسخ العنوان كامل وابعته.")
     print("1) Google Cloud Console → APIs & Services → OAuth consent screen → زرار «PUBLISH APP»")
