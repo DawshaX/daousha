@@ -261,7 +261,7 @@ def mode_url(cid: str) -> int:
     return 0
 
 
-def mode_token(cid: str, csec: str, raw_code: str, pat: str, copy_to: str, repo: str) -> int:
+def mode_token(cid: str, csec: str, raw_code: str, pat: str, copy_to: str, repo: str, suf: str = "") -> int:
     if not (cid and csec):
         print("❌ ناقص YOUTUBE_CLIENT_ID أو YOUTUBE_CLIENT_SECRET")
         return 2
@@ -298,18 +298,21 @@ def mode_token(cid: str, csec: str, raw_code: str, pat: str, copy_to: str, repo:
     rt = tok["refresh_token"]
     ch = channel_of(tok.get("access_token", ""))
     print("📺 القناة اللي التوكن بيوصلها:", json.dumps(ch, ensure_ascii=False))
-    return _install(cid, csec, rt, ch, pat, copy_to, repo)
+    return _install(cid, csec, rt, ch, pat, copy_to, repo, suf=suf)
 
 
-def _install(cid: str, csec: str, rt: str, ch: dict, pat: str, copy_to: str, repo: str) -> int:
+def _names(suf: str = "") -> tuple:
+    return (f"YOUTUBE_CLIENT_ID{suf}", f"YOUTUBE_CLIENT_SECRET{suf}", f"YOUTUBE_REFRESH_TOKEN{suf}")
+
+
+def _install(cid: str, csec: str, rt: str, ch: dict, pat: str, copy_to: str, repo: str,
+             suf: str = "") -> int:
     results = []
     if pat:
-        for name, val in (("YOUTUBE_CLIENT_ID", cid), ("YOUTUBE_CLIENT_SECRET", csec),
-                          ("YOUTUBE_REFRESH_TOKEN", rt)):
+        for name, val in zip(_names(suf), (cid, csec, rt)):
             results.append(put_secret(repo, name, val, pat))
         if copy_to and copy_to != repo:
-            for name, val in (("YOUTUBE_CLIENT_ID", cid), ("YOUTUBE_CLIENT_SECRET", csec),
-                              ("YOUTUBE_REFRESH_TOKEN", rt)):
+            for name, val in zip(_names(suf), (cid, csec, rt)):
                 results.append(put_secret(copy_to, name, val, pat))
     for r in results:
         print("  ", r)
@@ -375,8 +378,12 @@ def mode_probe(pat: str, repo: str, copy_to: str) -> int:
 
 
 def main() -> int:
-    cid = env("CID", "YOUTUBE_CLIENT_ID")
-    csec = env("CSEC", "YOUTUBE_CLIENT_SECRET")
+    slot = str(env("SLOT", default="1") or "1").strip()          # 1 = المشروع الأساسي، 2/3/4 = مشاريع إضافية
+    suf = "" if slot == "1" else f"_{slot}"
+    cid = env("CID") if slot == "1" else env(f"YOUTUBE_CLIENT_ID{suf}", f"YOUTUBE_CLIENT_ID_{slot}")
+    csec_ = env("CSEC") if slot == "1" else env(f"YOUTUBE_CLIENT_SECRET{suf}", f"YOUTUBE_CLIENT_SECRET_{slot}")
+    cid = cid or env(f"YOUTUBE_CLIENT_ID{suf}", "YOUTUBE_CLIENT_ID")
+    csec = csec_ or env(f"YOUTUBE_CLIENT_SECRET{suf}", "YOUTUBE_CLIENT_SECRET")
     pat = env("GH_PAT", "FG_TOKEN")
     repo = env("REPO", default="DawshaX/Dollars")
     copy_to = env("COPY_TO", "COPY_REPO")
@@ -387,9 +394,10 @@ def main() -> int:
         if not cid:
             print("❌ ناقص YOUTUBE_CLIENT_ID"); return 2
         return mode_url(cid)
+    print(f"🔢 المشروع: رقم {slot} (أسماء الأسرار: {', '.join(_names(suf))})")
     if act == "token":
         raw = env("CODE") or (sys.argv[2] if len(sys.argv) > 2 else "")
-        return mode_token(cid, csec, raw, pat, copy_to, repo)
+        return mode_token(cid, csec, raw, pat, copy_to, repo, suf=suf)
     if act == "probe":
         return mode_probe(pat, repo, copy_to)
     if act == "scan":
