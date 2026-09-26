@@ -201,16 +201,18 @@ def mode_token(cid: str, csec: str, raw_code: str, pat: str, copy_to: str, repo:
 
 
 def mode_probe(pat: str, repo: str, copy_to: str) -> int:
-    """يختبر إن كتابة الأسرار شغالة (بلا أي سر حقيقي)."""
-    out = [put_secret(repo, "RECONNECT_TEST", "ping", pat)]
-    if copy_to and copy_to != repo:
-        out.append(put_secret(copy_to, "RECONNECT_TEST", "ping", pat))
-    for r in out:
-        print("  ", r)
-    for r in out:
-        target = r.split("/", 1)[0].split()[-1]
-        print("  ", delete_secret(target, "RECONNECT_TEST", pat))
-    return 0
+    """يختبر إن كتابة الأسرار شغالة (بلا أي سر حقيقي) ويمسح الأثر."""
+    targets = [repo] + ([copy_to] if copy_to and copy_to != repo else [])
+    ok = True
+    for r in targets:
+        line = put_secret(r, "RECONNECT_TEST", "ping", pat)
+        print("  ", line)
+        ok = ok and line.startswith("✅")
+    for r in targets:
+        print("  ", delete_secret(r, "RECONNECT_TEST", pat))
+    print("
+النتيجة:", "كتابة الأسرار شغالة في كل المستودعات ✅" if ok else "⚠️ فيه مستودع اتقفل عنه")
+    return 0 if ok else 1
 
 
 def main() -> int:
