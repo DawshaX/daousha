@@ -1,0 +1,39 @@
+name: 📣 حزمة القناة على تلجرام (اسم · وصف · إعدادات · عناوين)
+
+# بيبعت ملف نصي من المستودع على تلجرام مقسّم لرسائل مرتّبة.
+# الافتراضي: docs/XDaw_NoVa_TELEGRAM.md — حزمة القناة الكاملة.
+# إضافة بحتة: ما بتلمسش أي مصنع قديم ولا أي حالة.
+
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: 'الملف اللي يتبعت (نسبة للمستودع)'
+        type: string
+        default: 'docs/XDaw_NoVa_TELEGRAM.md'
+      size:
+        description: 'أقصى عدد حروف في الرسالة'
+        type: string
+        default: '3200'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tg-broadcast
+  cancel-in-progress: false
+
+jobs:
+  broadcast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 📣 ابعت الحزمة
+        env:
+          TG: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/broadcast_tg.py "${{ inputs.file }}" "${{ inputs.size }}"
