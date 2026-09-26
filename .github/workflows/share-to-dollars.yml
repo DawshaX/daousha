@@ -1,5 +1,5 @@
 name: 🔗 مشاركة اعتماد يوتيوب مع Dollars
-# بينسخ اعتماد مشروع جوجل بتاع المستودع ده لمستودع Dollars (= حصة نشر زيادة)
+# بينسخ اعتماد مشروع جوجل بتاع المستودع ده لمستودع Dollars كمشروع رقم 2 (= +٦ رفعات/يوم)
 on:
   workflow_dispatch:
 permissions:
@@ -9,13 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
       - name: قراءة الاعتماد · التأكد من القناة · النسخ
         env:
           CID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           CSEC: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           RT: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           CROSS_PAT: ${{ secrets.CROSS_PAT }}
+          TARGET: DawshaX/Dollars
+          PREFIX: '2'
           EXPECT_CHANNEL: UCG9g_26H65D3FahqyiYPHAw
         run: |
           pip install -q pynacl
-          python3 share_yt_creds.py
+          python3 scripts/share_yt_creds.py
