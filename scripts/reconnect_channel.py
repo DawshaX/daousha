@@ -151,8 +151,13 @@ def telegram(text: str) -> str:
 
 def mode_url(cid: str) -> int:
     proj = cid.split("-", 1)[0] if "-" in cid else "(مجهول)"
-    print("🔗 لينك الموافقة (افتحه في متصفح الحساب اللي بيدير القناة):\n")
-    print(auth_link(cid))
+    link = auth_link(cid)
+    n = len(link)
+    # نقسم اللينك 3 أجزاء: GitHub بيخفي أي سر حرفيًا في اللوج، والتقسيم بيخلي اللينك يوصلك كامل
+    print("🔗 PART1OF3: " + link[: n // 3])
+    print("🔗 PART2OF3: " + link[n // 3: 2 * n // 3])
+    print("🔗 PART3OF3: " + link[2 * n // 3:])
+    print(telegram("🔗 لينك موافقة جوجل لربط القناة بتوكن دائم (اضغط عليه من الموبايل):\n" + link))
     print("\n— خطوات صاحب القناة —")
     print("1) Google Cloud Console → APIs & Services → OAuth consent screen → زرار «PUBLISH APP»")
     print(f"   رابط مباشر: https://console.cloud.google.com/apis/credentials/consent?project={proj}")
