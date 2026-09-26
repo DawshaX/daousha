@@ -219,6 +219,8 @@ def mode_url(cid: str) -> int:
              "⏱️ الكود بيموت بعد 10 دقايق — لازم تبعته على طول.")
     print(telegram("🔗 **لينك الربط النهائي** (اضغط عليه من الموبايل):\n" + link + steps))
     # نكتب اللينك في ملف بالمستودع — client_id مش سر (بيظهر في كل لينك OAuth)، والسر مش موجود هنا.
+    pat = env("GH_PAT", "FG_TOKEN")
+    repo = env("REPO", default="DawshaX/Dollars")
     if (os.environ.get("PUBLISH_LINK") or "").strip() in ("1", "true", "yes") and pat:
         import base64 as _b64
         body = {"message": "🔗 لينك الربط الحالي (بيتولّد أوتوماتيك)", "branch": "main",
