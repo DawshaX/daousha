@@ -1,0 +1,57 @@
+name: 🔗 ربط القناة — توكن دائم (بلا أي سر في اللوج)
+
+# ليه الحلقة دي موجودة؟
+# أي تطبيق جوجل في وضع Testing بيقتل التوكن كل 7 أيام → invalid_grant → المصنع يوقف بصمت.
+# الحل: 1) انشر شاشة الموافقة (Production)  2) اعمل تفويض جديد → توكن دائم.
+# الحلقة دي بتعمل الخطوة 2 كلها جوه GitHub، والأسرار **ما بتطلعش** في أي لوج:
+#   - وضع url   : تطبع لينك الموافقة + رقم مشروع جوجل.
+#   - وضع token : تبدّل الكود بتوكن تجديد → تتأكد من القناة → تثبّت الأسرار (هنا + في DawshaX/Dollars).
+#   - وضع probe : تختبر كتابة الأسرار بمفتاح وهمي وتمسحه (بلا أي سر حقيقي).
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'نوع العملية'
+        type: choice
+        options: [url, token, probe]
+        default: url
+      code:
+        description: 'العنوان الكامل اللي نُسخ من شريط العنوان بعد الموافقة (لوضع token بس)'
+        type: string
+        default: ''
+      copy_to:
+        description: 'مستودع تاني يتثبّت فيه نفس التوكن'
+        type: string
+        default: 'DawshaX/Dollars'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-reconnect
+  cancel-in-progress: false
+
+jobs:
+  reconnect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: أدوات
+        run: pip install -q pynacl
+      - name: 🔗 العملية (url · token · probe)
+        env:
+          CID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          CSEC: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          GH_PAT: ${{ secrets.NOVA_GH_TOKEN }}
+          TG: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ACT: ${{ inputs.action }}
+          CODE: ${{ inputs.code }}
+          COPY_TO: ${{ inputs.copy_to }}
+          REPO: ${{ github.repository }}
+        run: python scripts/reconnect_channel.py
