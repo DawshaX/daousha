@@ -14,7 +14,7 @@ on:
       action:
         description: 'نوع العملية'
         type: choice
-        options: [url, token, probe]
+        options: [url, token, probe, scan]
         default: url
       code:
         description: 'العنوان الكامل اللي نُسخ من شريط العنوان بعد الموافقة (لوضع token بس)'

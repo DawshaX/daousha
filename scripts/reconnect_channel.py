@@ -289,6 +289,45 @@ def _install(cid: str, csec: str, rt: str, ch: dict, pat: str, copy_to: str, rep
     return 0 if ok else 1
 
 
+CANDIDATES = [
+    "http://localhost",
+    "http://localhost/",
+    "http://localhost:8085/",
+    "http://localhost:8899/callback",
+    "http://127.0.0.1:8899/callback",
+    "https://dawshax.github.io/youtube/callback/",
+    "https://dawshax.github.io/youtube/",
+    "https://8899-ivfx0jnsfhm4lb21x07io-ae1265fb.sg1.manus.computer/callback",
+    "https://developers.google.com/oauthplayground",
+    "urn:ietf:wg:oauth:2.0:oob",
+]
+
+
+def mode_scan(cid: str) -> int:
+    """يجرب كل عناوين التحويل المحتملة ويقول أيها **مقبول فعلًا** على العميل ده.
+
+    كده مفيش تخمين: بنعرف العنوان الصح من جوجل نفسها في تشغيل واحد.
+    """
+    good = []
+    for r in CANDIDATES:
+        ok, note = check_link(cid, r)
+        print(("✅ مقبول  " if ok else "❌ مرفوض  ") + r + ("" if ok else "   (" + note[:70] + ")"))
+        if ok:
+            good.append(r)
+    best = ""
+    for pref in ("https://dawshax.github.io/youtube/callback/", "http://localhost", "https://developers.google.com/oauthplayground"):
+        if pref in good:
+            best = pref
+            break
+    print("\nالنتيجة: " + (("العنوان المستخدم: " + best) if best else "مفيش عنوان مسجّل من القايمة — لازم تضيف واحد"))
+    print(telegram("🔎 فحص عناوين التحويل\n\n" + ("\n".join(good) if good else "مفيش عنوان مسجّل") +
+                   ("\n\nاللي هنستخدمه: " + best if best else
+                    "\n\nافتح https://console.cloud.google.com/apis/credentials?project=" + cid.split("-")[0] +
+                    "\nواختار الـ OAuth client، وفي «Authorized redirect URIs» اضغط ADD URI والصق:\n"
+                    "https://dawshax.github.io/youtube/callback/\nثم SAVE (كرّرها في كل العملا لو فيه أكتر من واحد)")))
+    return 0
+
+
 def mode_probe(pat: str, repo: str, copy_to: str) -> int:
     """يختبر إن كتابة الأسرار شغالة (بلا أي سر حقيقي) ويمسح الأثر."""
     targets = [repo] + ([copy_to] if copy_to and copy_to != repo else [])
@@ -321,6 +360,10 @@ def main() -> int:
         return mode_token(cid, csec, raw, pat, copy_to, repo)
     if act == "probe":
         return mode_probe(pat, repo, copy_to)
+    if act == "scan":
+        if not cid:
+            print("❌ ناقص YOUTUBE_CLIENT_ID"); return 2
+        return mode_scan(cid)
     print(f"وضع غير معروف: {act} (المتاح: url · token · probe)")
     return 2
 
