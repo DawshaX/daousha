@@ -252,9 +252,16 @@ def mode_token(cid: str, csec: str, raw_code: str, pat: str, copy_to: str, repo:
         print("❌ مفيش كود — ابعت العنوان اللي ظهر بعد الموافقة")
         return 2
     if raw_code.strip().startswith("1//"):            # المالك جاب refresh token جاهز (Playground) — نقبله
-        rt, ch = raw_code.strip(), channel_of("")
-        st_ok = True
-        print("📺 توكن جاهز:", json.dumps(ch, ensure_ascii=False))
+        rt = raw_code.strip()
+        st, tok = http("https://oauth2.googleapis.com/token", data={
+            "client_id": cid, "client_secret": csec, "refresh_token": rt,
+            "grant_type": "refresh_token"})
+        if st != 200 or "access_token" not in tok:
+            print(f"❌ التوكن الجاهز مرفوض ({st}): {str(tok)[:200]}")
+            print("   غالبًا اتعمل بعميل تاني — استخدم لينك وضع «url» بدل كده.")
+            return 3
+        ch = channel_of(tok["access_token"])           # تأكيد حقيقي: القناة اللي التوكن بيوصلها
+        print("📺 التوكن شغّال — القناة:", json.dumps(ch, ensure_ascii=False))
         return _install(cid, csec, rt, ch, pat, copy_to, repo)
     st, tok = exchange(cid, csec, code)
     if st != 200 or "refresh_token" not in tok:
