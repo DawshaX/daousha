@@ -67,16 +67,46 @@ def gh(pat: str) -> dict:
 # ───────────────────────── جوجل ─────────────────────────
 
 def check_link(cid: str, redirect: str | None = None) -> tuple[bool, str]:
-    """يختبر اللينك مع جوجل من غير ما يستهلك أي كود: يبص على وجود redirect_uri_mismatch."""
+    """فحص أمين: نطلب من جوجل من غير متابعة التحويل، ونفكّ تشفير الخطأ لو موجود.
+
+    ملاحظة مهمة: صفحة خطأ جوجل بتغطّي السبب في باراميتر base64 — فمجرد البحث عن كلمة
+    «mismatch» في الرد **مش كفاية** (كانت بتقول ✅ غلط). هنا بنفكّ التشفير ونتأكد.
+    """
+    import base64
     import re as _re
     red = redirect or REDIRECT
     q = urllib.parse.urlencode({"client_id": cid, "redirect_uri": red, "response_type": "code",
                                 "scope": SCOPES[0], "access_type": "offline", "prompt": "consent"})
-    st, body = http("https://accounts.google.com/o/oauth2/v2/auth?" + q, headers={"User-Agent": "Mozilla/5.0"})
-    txt = (body or b"").decode("utf-8", "ignore")[:4000]
-    if "mismatch" in txt.lower() or st == 400:
-        return False, f"لازم تضيف العنوان ده: {red}"
-    return True, ""
+    url = "https://accounts.google.com/o/oauth2/v2/auth?" + q
+
+    class _NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, *a, **k):
+            return None
+
+    op = urllib.request.build_opener(_NoRedirect)
+    loc = ""
+    try:
+        with op.open(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:
+            code, loc = r.status, (r.headers.get("Location") or "")
+    except urllib.error.HTTPError as e:
+        code, loc = e.code, ((e.headers.get("Location") or "") if e.headers else "")
+    except Exception as e:
+        return False, f"مش قادر أفحص ({type(e).__name__})"
+    reason = ""
+    m = _re.search(r"authError=([^&]+)", loc)
+    if m:
+        try:
+            reason = base64.urlsafe_b64decode(m.group(1) + "==").decode("utf-8", "ignore")
+        except Exception:
+            reason = m.group(1)
+    blob = (loc + " " + reason).lower()
+    if "mismatch" in blob:
+        return False, f"العنوان مش مسجّل على العميل ده — لازم تضيف: {red}"
+    if "invalid_client" in blob:
+        return False, "العميل نفسه مرفوض (client_id غلط/مقفول)"
+    if "/signin/" in loc or "/v3/signin" in loc or code == 200:
+        return True, ""
+    return False, f"رد غير متوقع ({code}) {loc[:80]}"
 
 
 def auth_link(cid: str) -> str:
