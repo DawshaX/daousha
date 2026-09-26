@@ -34,7 +34,10 @@ SCOPES = [
 #   https://8899-ivfx0jnsfhm4lb21x07io-ae1265fb.sg1.manus.computer/callback  ✅ مقبول
 #   https://developers.google.com/oauthplayground                            ✅ مقبول
 #   أي عنوان localhost                                                       ❌ مرفوض (redirect_uri_mismatch)
-REDIRECT = os.environ.get("REDIRECT_URI") or "https://dawshax.github.io/youtube/callback/"   # صفحة حقيقية على موقعنا تستقبل الكود
+# العنوان المسجّل فعلًا على عميل المصنع (اتأكدنا من جوجل نفسها بماسح كامل):
+#   https://developers.google.com/oauthplayground   ✅ مقبول
+#   أي localhost أو دومين بيئات قديمة أو صفحتنا    ❌ مرفوض (لحد ما يتضاف من Cloud Console)
+REDIRECT = os.environ.get("REDIRECT_URI") or "https://developers.google.com/oauthplayground"
 
 
 # ───────────────────────── أدوات صغيرة ─────────────────────────
@@ -208,7 +211,11 @@ def mode_url(cid: str) -> int:
              "1) سجّل دخول بالحساب اللي بيدير القناة\n"
              "2) اختار القناة xDaw NoVa\n"
              "3) Allow / موافقة\n"
-             "4) الصفحة اللي بعدها **مش هتفتح** — عادي. انسخ العنوان كامل من شريط العنوان وابعته فورًا\n\n"
+             "4) هتفتح صفحة Google OAuth Playground:\n"
+             "   • لو ظهر فيها «Authorization code» → انسخه\n"
+             "   • لو ظهر «Refresh token» → انسخه\n"
+             "   • ولو الصفحة مش واضحة → انسخ **العنوان كامل** من شريط العنوان (الكود جواه)\n"
+             "5) ابعته فورًا هنا أو على تلجرام\n\n"
              "⏱️ الكود بيموت بعد 10 دقايق — لازم تبعته على طول.")
     print(telegram("🔗 **لينك الربط النهائي** (اضغط عليه من الموبايل):\n" + link + steps))
     # فحص تلقائي: هل جوجل بتقبل العنوان مع العميل ده؟ (بنختبر من غير ما نستهلك أي كود)
