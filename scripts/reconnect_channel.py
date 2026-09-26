@@ -66,6 +66,19 @@ def gh(pat: str) -> dict:
 
 # ───────────────────────── جوجل ─────────────────────────
 
+def check_link(cid: str, redirect: str | None = None) -> tuple[bool, str]:
+    """يختبر اللينك مع جوجل من غير ما يستهلك أي كود: يبص على وجود redirect_uri_mismatch."""
+    import re as _re
+    red = redirect or REDIRECT
+    q = urllib.parse.urlencode({"client_id": cid, "redirect_uri": red, "response_type": "code",
+                                "scope": SCOPES[0], "access_type": "offline", "prompt": "consent"})
+    st, body = http("https://accounts.google.com/o/oauth2/v2/auth?" + q, headers={"User-Agent": "Mozilla/5.0"})
+    txt = (body or b"").decode("utf-8", "ignore")[:4000]
+    if "mismatch" in txt.lower() or st == 400:
+        return False, f"لازم تضيف العنوان ده: {red}"
+    return True, ""
+
+
 def auth_link(cid: str) -> str:
     q = urllib.parse.urlencode({
         "client_id": cid,
@@ -161,7 +174,12 @@ def mode_url(cid: str) -> int:
     print("🔗 PART1OF3: " + link[: n // 3])
     print("🔗 PART2OF3: " + link[n // 3: 2 * n // 3])
     print("🔗 PART3OF3: " + link[2 * n // 3:])
-    print(telegram("🔗 لينك موافقة جوجل لربط القناة بتوكن دائم (اضغط عليه من الموبايل):\n" + link))
+    print(telegram("🔗 لينك موافقة جوجل لربط القناة بتوكن دائم (اضغط عليه من الموبايل):\n" + link
+                   + "\n\n⏱️ الكود بيخلص بعد 10 دقايق — بعد الموافقة انسخ العنوان كامل وابعته فورًا."))
+    # فحص تلقائي: هل جوجل بتقبل العنوان مع العميل ده؟ (بنختبر من غير ما نستهلك أي كود)
+    ok, note = check_link(cid)
+    print(("✅ الفحص: جوجل قبلت اللينك ده — ماشي صح" if ok else
+           "❌ الفحص: جوجل رفضت العنوان للعميل ده — " + note))
     print("\n— خطوات صاحب القناة —")
     print("0) مهم: بعد الموافقة المتصفح هيقول «الصفحة مش موجودة» أو يحمّل للأبد — عادي جدًا.")
     print("   مفيش أي مشكلة: **العنوان في شريط العنوان فيه الكود**. انسخ العنوان كامل وابعته.")
@@ -189,10 +207,17 @@ def mode_token(cid: str, csec: str, raw_code: str, pat: str, copy_to: str, repo:
         return _install(cid, csec, rt, ch, pat, copy_to, repo)
     st, tok = exchange(cid, csec, code)
     if st != 200 or "refresh_token" not in tok:
-        err = str(tok)[:220]
+        err = str(tok)[:260]
         print(f"❌ التبديل فشل ({st}): {err}")
-        if "invalid_grant" in err:
-            print("   السبب الغالب: الكود اتستخدم قبل كده أو عدّى عليه وقت — اعمل موافقة جديدة.")
+        low = err.lower()
+        if "invalid_grant" in low:
+            print("   السبب الغالب: الكود اتستخدم قبل كده أو عدّى عليه 10 دقايق — اعمل موافقة جديدة من لينك وضع «url».")
+        elif "unauthorized_client" in low:
+            print("   السبب: عميل جوجل اللي في الأسرار مختلف عن اللي طلعت بيه الموافقة.")
+            print("   الحل: استخدم لينك وضع «url» (بيتبني من نفس العميل اللي بيعمل التبديل) — سطر واحد وخلاص.")
+        elif "redirect_uri_mismatch" in low:
+            print(f"   السبب: العنوان {REDIRECT} مش مسجّل على العميل ده.")
+            print("   الحل: Google Cloud → Credentials → OAuth client → Authorized redirect URIs → أضفه ثم أعد المحاولة.")
         return 3
     rt = tok["refresh_token"]
     ch = channel_of(tok.get("access_token", ""))
