@@ -24,6 +24,10 @@ on:
         description: 'مستودع تاني يتثبّت فيه نفس التوكن'
         type: string
         default: 'DawshaX/Dollars'
+      redirect_uri:
+        description: 'عنوان إعادة التوجيه (سيبه فاضي = العنوان المسجّل عند جوجل)'
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -53,5 +57,6 @@ jobs:
           ACT: ${{ inputs.action }}
           CODE: ${{ inputs.code }}
           COPY_TO: ${{ inputs.copy_to }}
+          REDIRECT_URI: ${{ inputs.redirect_uri }}
           REPO: ${{ github.repository }}
         run: python scripts/reconnect_channel.py
