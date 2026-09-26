@@ -35,9 +35,10 @@ SCOPES = [
 #   https://developers.google.com/oauthplayground                            ✅ مقبول
 #   أي عنوان localhost                                                       ❌ مرفوض (redirect_uri_mismatch)
 # العنوان المسجّل فعلًا على عميل المصنع (اتأكدنا من جوجل نفسها بماسح كامل):
-#   https://developers.google.com/oauthplayground   ✅ مقبول
+#   https://dawshax.github.io/youtube/callback/     ✅ مقبول (الافتراضي دلوقتي)
+#   https://developers.google.com/oauthplayground   ✅ مقبول (احتياطي)
 #   أي localhost أو دومين بيئات قديمة أو صفحتنا    ❌ مرفوض (لحد ما يتضاف من Cloud Console)
-REDIRECT = os.environ.get("REDIRECT_URI") or "https://developers.google.com/oauthplayground"
+REDIRECT = os.environ.get("REDIRECT_URI") or "https://dawshax.github.io/youtube/callback/"   # صفحتنا الحقيقية (مسجّلة ومقبولة عند جوجل ✅)
 
 
 # ───────────────────────── أدوات صغيرة ─────────────────────────
