@@ -218,6 +218,21 @@ def mode_url(cid: str) -> int:
              "5) ابعته فورًا هنا أو على تلجرام\n\n"
              "⏱️ الكود بيموت بعد 10 دقايق — لازم تبعته على طول.")
     print(telegram("🔗 **لينك الربط النهائي** (اضغط عليه من الموبايل):\n" + link + steps))
+    # نكتب اللينك في ملف بالمستودع — client_id مش سر (بيظهر في كل لينك OAuth)، والسر مش موجود هنا.
+    if (os.environ.get("PUBLISH_LINK") or "").strip() in ("1", "true", "yes") and pat:
+        import base64 as _b64
+        body = {"message": "🔗 لينك الربط الحالي (بيتولّد أوتوماتيك)", "branch": "main",
+                "content": _b64.b64encode((link + "\n").encode()).decode()}
+        st_g, cur = http(f"https://api.github.com/repos/{repo}/contents/docs/consent_link.txt", headers=gh(pat))
+        if st_g == 200:
+            try:
+                body["sha"] = json.loads(cur)["sha"]
+            except Exception:
+                pass
+        st_p, _ = http(f"https://api.github.com/repos/{repo}/contents/docs/consent_link.txt",
+                       data=json.dumps(body).encode(), method="PUT",
+                       headers={**gh(pat), "Content-Type": "application/json"})
+        print("حفظ اللينك في المستودع:", "✅" if st_p in (200, 201) else f"❌ {st_p}")
     # فحص تلقائي: هل جوجل بتقبل العنوان مع العميل ده؟ (بنختبر من غير ما نستهلك أي كود)
     ok, note = check_link(cid)
     print(("✅ الفحص: جوجل قبلت اللينك ده — ماشي صح" if ok else

@@ -30,7 +30,7 @@ on:
         default: ''
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: channel-reconnect
@@ -59,4 +59,5 @@ jobs:
           COPY_TO: ${{ inputs.copy_to }}
           REDIRECT_URI: ${{ inputs.redirect_uri }}
           REPO: ${{ github.repository }}
+          PUBLISH_LINK: '1'
         run: python scripts/reconnect_channel.py
